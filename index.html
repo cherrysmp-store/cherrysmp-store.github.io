@@ -11,300 +11,325 @@
 <style>
 /* =================================================
    ROOT VARIABLES
+   - Colors, glass effects, and accents
 =================================================*/
-:root{
-  --primary:#ff2d6f;
-  --secondary:#ff7eb3;
-  --accent:#ff9ec9;
-  --dark:#0e0e14;
-  --glass:rgba(255,255,255,0.06);
-  --border:rgba(255,255,255,0.08);
+:root {
+  --primary: #ff2d6f;
+  --secondary: #ff7eb3;
+  --accent: #ff9ec9;
+  --dark: #0e0e14;
+  --glass: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.08);
 }
 
 /* =================================================
    GLOBAL RESET
+   - Remove margins/padding, box-sizing
 =================================================*/
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-body{
-  font-family:'Inter',sans-serif;
-  background:linear-gradient(-45deg,#ff2d6f,#7b2ff7,#ff7eb3,#ff2d6f);
-  background-size:400% 400%;
-  animation:gradient 18s ease infinite;
-  color:#fff;
-  min-height:100vh;
-  overflow-x:hidden;
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(-45deg, #ff2d6f, #7b2ff7, #ff7eb3, #ff2d6f);
+  background-size: 400% 400%;
+  animation: gradient 18s ease infinite;
+  color: #fff;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 /* =================================================
    BACKGROUND ANIMATION
 =================================================*/
-@keyframes gradient{
-  0%{background-position:0% 50%}
-  50%{background-position:100% 50%}
-  100%{background-position:0% 50%}
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* =================================================
-   NAVIGATION
+   NAVIGATION BAR
 =================================================*/
-nav{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:20px 8%;
-  background:rgba(0,0,0,0.4);
-  backdrop-filter:blur(20px);
-  position:sticky;
-  top:0;
-  z-index:1000;
-  border-bottom:1px solid var(--border);
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 8%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid var(--border);
 }
 
-nav h1{
-  font-size:26px;
-  font-weight:800;
-  letter-spacing:1px;
+nav h1 {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 1px;
 }
 
-nav ul{
-  display:flex;
-  gap:30px;
-  list-style:none;
+nav ul {
+  display: flex;
+  gap: 30px;
+  list-style: none;
 }
 
-nav a{
-  color:white;
-  text-decoration:none;
-  font-weight:600;
-  position:relative;
-  transition:0.3s;
+nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  position: relative;
+  transition: 0.3s;
 }
 
-nav a:hover{
-  color:var(--accent);
+nav a:hover {
+  color: var(--accent);
 }
 
 /* =================================================
    HERO SECTION
 =================================================*/
-.hero{
-  text-align:center;
-  padding:120px 20px 80px;
+.hero {
+  text-align: center;
+  padding: 120px 20px 80px;
 }
 
-.hero img{
-  width:120px;
-  margin-bottom:20px;
+.hero img {
+  width: 120px;
+  margin-bottom: 20px;
+  animation: logoPop 1s ease forwards;
 }
 
-.hero h2{
-  font-size:64px;
-  font-weight:800;
-  margin-bottom:10px;
+@keyframes logoPop {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
-.hero p{
-  margin-top:15px;
-  font-size:18px;
-  opacity:0.85;
+.hero h2 {
+  font-size: 64px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  animation: fadeIn 1.2s ease forwards;
 }
 
-.hero input[type="text"]{
-  margin-top:20px;
-  padding:10px 15px;
-  border-radius:10px;
-  border:none;
-  outline:none;
-  font-size:16px;
-  width:250px;
-  text-align:center;
+.hero p {
+  margin-top: 15px;
+  font-size: 18px;
+  opacity: 0.85;
+  animation: fadeIn 1.5s ease forwards;
+}
+
+.hero input[type="text"] {
+  margin-top: 20px;
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  width: 250px;
+  text-align: center;
+  transition: 0.3s;
+}
+
+.hero input[type="text"]:focus {
+  box-shadow: 0 0 10px var(--accent);
 }
 
 /* =================================================
    CATEGORY BUTTONS
 =================================================*/
-.categories{
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:20px;
-  padding:40px 8%;
+.categories {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 40px 8%;
 }
 
-.category-btn{
-  padding:14px 28px;
-  border-radius:50px;
-  border:none;
-  font-weight:700;
-  cursor:pointer;
-  background:var(--glass);
-  backdrop-filter:blur(20px);
-  color:#fff;
-  border:1px solid var(--border);
-  transition:0.3s;
+.category-btn {
+  padding: 14px 28px;
+  border-radius: 50px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  color: #fff;
+  border: 1px solid var(--border);
+  transition: 0.3s;
 }
 
 .category-btn:hover,
-.category-btn.active{
-  background:linear-gradient(90deg,var(--primary),var(--secondary));
-  transform:scale(1.1);
+.category-btn.active {
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
 }
 
 /* =================================================
    PRODUCT GRID
 =================================================*/
-.products{
-  padding:40px 8% 100px;
+.products {
+  padding: 40px 8% 100px;
 }
 
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:30px;
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
 }
 
 /* =================================================
    PRODUCT CARD
 =================================================*/
-.card{
-  background:var(--glass);
-  border:1px solid var(--border);
-  backdrop-filter:blur(25px);
-  border-radius:20px;
-  padding:30px;
-  transition:0.4s;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
+.card {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(25px);
+  border-radius: 20px;
+  padding: 30px;
+  transition: 0.4s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.card:hover{
-  transform:translateY(-10px) scale(1.03);
-  box-shadow:0 0 30px rgba(255,255,255,0.2);
+.card:hover {
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
 }
 
-.card h3{
-  font-size:22px;
-  margin-bottom:10px;
+.card h3 {
+  font-size: 22px;
+  margin-bottom: 10px;
 }
 
-.card p{
-  opacity:0.85;
-  margin-bottom:15px;
+.card p {
+  opacity: 0.85;
+  margin-bottom: 15px;
 }
 
-.price{
-  font-size:20px;
-  font-weight:800;
-  margin-top:auto;
+.price {
+  font-size: 20px;
+  font-weight: 800;
+  margin-top: auto;
 }
 
-.buy{
-  margin-top:15px;
-  padding:10px;
-  border-radius:10px;
-  border:none;
-  font-weight:700;
-  cursor:pointer;
-  background:var(--primary);
-  color:white;
-  transition:0.3s;
+.buy {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--primary);
+  color: white;
+  transition: 0.3s;
 }
 
-.buy:hover{
-  background:var(--secondary);
+.buy:hover {
+  background: var(--secondary);
 }
 
 /* =================================================
    QUANTITY BUTTONS
 =================================================*/
-.qty-btn{
-  padding:5px 10px;
-  margin-right:5px;
-  border-radius:8px;
-  border:1px solid var(--border);
-  background:transparent;
-  cursor:pointer;
-  font-weight:600;
-  transition:0.3s;
+.qty-btn {
+  padding: 5px 10px;
+  margin-right: 5px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
 }
 
-.qty-btn:hover{
-  background:var(--accent);
+.qty-btn:hover {
+  background: var(--accent);
 }
 
 /* =================================================
    MODALS
 =================================================*/
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.75);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  opacity:0;
-  pointer-events:none;
-  transition:0.3s;
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.3s;
 }
 
-.modal.active{
-  opacity:1;
-  pointer-events:auto;
+.modal.active {
+  opacity: 1;
+  pointer-events: auto;
 }
 
-.modal-content{
-  background:#111118;
-  padding:40px;
-  border-radius:20px;
-  width:90%;
-  max-width:500px;
-  text-align:center;
-  animation:pop 0.3s ease;
+.modal-content {
+  background: #111118;
+  padding: 40px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+  animation: pop 0.3s ease;
 }
 
-@keyframes pop{
-  from{transform:scale(0.8);opacity:0}
-  to{transform:scale(1);opacity:1}
+@keyframes pop {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
-.close{
-  margin-top:20px;
-  padding:8px 20px;
-  border:none;
-  border-radius:10px;
-  background:#444;
-  color:#fff;
-  cursor:pointer;
+.close {
+  margin-top: 20px;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 10px;
+  background: #444;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.close:hover {
+  background: #666;
 }
 
 /* =================================================
    FOOTER
 =================================================*/
-footer{
-  text-align:center;
-  padding:40px;
-  opacity:0.6;
+footer {
+  text-align: center;
+  padding: 40px;
+  opacity: 0.6;
 }
 
 /* =================================================
    RESPONSIVE
 =================================================*/
 @media(max-width:768px){
-  .hero h2{
-    font-size:42px;
-  }
-  .hero input[type="text"]{
-    width:200px;
-  }
+  .hero h2 { font-size: 42px; }
+  .hero input[type="text"] { width: 200px; }
+}
+
+/* =================================================
+   ANIMATIONS
+=================================================*/
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>
-</head>
+
 <body>
 
 <!-- NAVIGATION -->
@@ -334,20 +359,20 @@ footer{
 <button class="category-btn" data-category="bundles">Bundles</button>
 </section>
 
-<!-- PRODUCT GRID -->
+<!-- PRODUCTS GRID -->
 <section class="products">
 <div class="grid" id="productGrid"></div>
 </section>
 
 <!-- CART MODAL -->
 <div class="modal" id="cartModal">
-  <div class="modal-content">
-    <h2>Your Cart</h2>
-    <div id="cartItems"></div>
-    <div style="margin-top:15px;font-weight:700;" id="cartTotal"></div>
-    <button class="buy" id="checkoutBtn">Complete Order</button>
-    <button class="close" onclick="closeCart()">Close</button>
-  </div>
+<div class="modal-content">
+<h2>Your Cart</h2>
+<div id="cartItems"></div>
+<div style="margin-top:15px;font-weight:700;" id="cartTotal"></div>
+<button class="buy" id="checkoutBtn">Complete Order</button>
+<button class="close" onclick="closeCart()">Close</button>
+</div>
 </div>
 
 <!-- DISCORD MODAL -->
@@ -368,56 +393,46 @@ footer{
 © 2026 CherrySMP • Not affiliated with Mojang
 </footer>
 
+<!-- JAVASCRIPT -->
 <script>
 // ============================================
-// PRODUCT DATA
+// PRODUCT DATA WITH ADJUSTED SPAWNERS PRICES
 // ============================================
 const storeData = {
 crates:[
-{name:"Snow Key",price:"0.19€"},
-{name:"Ocean Key",price:"0.49€"},
-{name:"Slime Key",price:"0.99€"},
-{name:"Maple Key",price:"1.79€"},
-{name:"Cherry Key",price:"2.49€"},
+{name:"Snow Key",price:0.19},
+{name:"Ocean Key",price:0.49},
+{name:"Slime Key",price:0.99},
+{name:"Maple Key",price:1.79},
+{name:"Cherry Key",price:2.49},
 ],
 ranks:[
-{name:"VIP (Lifetime)",price:"2€"},
-{name:"Maple (Lifetime)",price:"4€"},
-{name:"Cherry (Lifetime)",price:"7€"},
-{name:"VIP (30d)",price:"1€"},
-{name:"Maple (30d)",price:"2€"},
-{name:"Cherry (30d)",price:"3.50€"},
-{name:"Cherry+ (30d)",price:"5€"},
+{name:"VIP (Lifetime)",price:2},
+{name:"Maple (Lifetime)",price:4},
+{name:"Cherry (Lifetime)",price:7},
+{name:"VIP (30d)",price:1},
+{name:"Maple (30d)",price:2},
+{name:"Cherry (30d)",price:3.5},
+{name:"Cherry+ (30d)",price:5},
 ],
 credits:[
-{name:"100x Credits",price:"1€"},
-{name:"250x Credits",price:"2.29€"},
-{name:"500x Credits",price:"4.69€"},
-{name:"1000x Credits",price:"9.19€"},
-{name:"2500x Credits",price:"23.50€"},
+{name:"100x Credits",price:1},
+{name:"250x Credits",price:2.29},
+{name:"500x Credits",price:4.69},
+{name:"1000x Credits",price:9.19},
+{name:"2500x Credits",price:23.50},
 ],
 spawners:[
-{name:"Skeleton x1",price:"0.05€"},
-{name:"Skeleton x10",price:"0.50€"},
-{name:"Skeleton x25",price:"1.09€"},
-{name:"Skeleton x50",price:"2.19€"},
-{name:"Skeleton x100",price:"4.49€"},
-{name:"Iron Golem x1",price:"0.05€"},
-{name:"Iron Golem x10",price:"0.50€"},
-{name:"Iron Golem x25",price:"1.09€"},
-{name:"Iron Golem x50",price:"2.19€"},
-{name:"Iron Golem x100",price:"4.49€"},
-{name:"Creeper x1",price:"0.03€"},
-{name:"Creeper x10",price:"0.30€"},
-{name:"Creeper x25",price:"0.70€"},
-{name:"Creeper x50",price:"1.29€"},
-{name:"Creeper x100",price:"2.29€"},
+{name:"Skeleton",price:0.05},
+{name:"Iron Golem",price:0.05},
+{name:"Creeper",price:0.03},
+{name:"Blaze",price:0.03},
 ],
 bundles:[
-{name:"Starter Bundle",price:"1.99€",desc:"VIP Lifetime + 2 Snow Keys"},
-{name:"Maple Bundle",price:"6.99€",desc:"Maple Lifetime + 2 Maple Keys"},
-{name:"Cherry Elite Bundle",price:"11.99€",desc:"Cherry Lifetime + 5 Cherry Keys"},
-{name:"Ultimate Supporter",price:"19.99€",desc:"Cherry+ 30d + 10 Cherry Keys + 1000 Credits"},
+{name:"Starter Bundle",price:1.99,desc:"VIP Lifetime + 2 Snow Keys"},
+{name:"Maple Bundle",price:6.99,desc:"Maple Lifetime + 2 Maple Keys"},
+{name:"Cherry Elite Bundle",price:11.99,desc:"Cherry Lifetime + 5 Cherry Keys"},
+{name:"Ultimate Supporter",price:19.99,desc:"Cherry+ 30d + 10 Cherry Keys + 1000 Credits"},
 ]
 };
 
@@ -427,15 +442,18 @@ bundles:[
 let cart = [];
 const grid = document.getElementById("productGrid");
 
-// Render products per category
+// ============================================
+// RENDER CATEGORY FUNCTION WITH DYNAMIC PRICING
+// ============================================
 function renderCategory(category){
 grid.innerHTML="";
 storeData[category].forEach(product=>{
   const card=document.createElement("div");
   card.classList.add("card");
 
+  // Determine which items have quantity buttons
   let qtyButtons = "";
-  if(category==="crates"||category==="spawners"){
+  if(category==="crates" || category==="spawners" || category==="credits"){
     qtyButtons = `<div style="margin-bottom:10px;">
       <button class="qty-btn" data-qty="1">1x</button>
       <button class="qty-btn" data-qty="3">3x</button>
@@ -444,29 +462,38 @@ storeData[category].forEach(product=>{
     </div>`;
   }
 
+  // Initial display price
+  const displayPrice = category==="crates" || category==="spawners" || category==="credits" ? product.price.toFixed(2) + "€" : product.price + "€";
+
   card.innerHTML=`
     <h3>${product.name}</h3>
     <p>${product.desc ? product.desc : "Premium server item"}</p>
-    <div class="price">${product.price}</div>
+    <div class="price">${displayPrice}</div>
     ${qtyButtons}
     <button class="buy">Add to Cart</button>
   `;
 
   let selectedQty = 1;
+  const priceDiv = card.querySelector(".price");
+
+  // Quantity buttons logic with dynamic price display
   card.querySelectorAll(".qty-btn").forEach(btn=>{
     btn.addEventListener("click",()=>{
-      selectedQty=parseInt(btn.dataset.qty);
+      selectedQty = parseInt(btn.dataset.qty);
       card.querySelectorAll(".qty-btn").forEach(b=>b.style.background="transparent");
       btn.style.background="var(--accent)";
+      // Update price display
+      priceDiv.textContent = (product.price * selectedQty).toFixed(2) + "€";
     });
   });
 
+  // Add to cart button
   card.querySelector(".buy").addEventListener("click",()=>{
     const mcName = document.getElementById("mcName").value || "No Name";
     cart.push({
       name: product.name,
       qty: selectedQty,
-      price: parseFloat(product.price.replace("€","")),
+      price: product.price,
       mcName: mcName
     });
     alert(`${product.name} x${selectedQty} added to cart!`);
@@ -476,7 +503,9 @@ storeData[category].forEach(product=>{
 });
 }
 
+// ============================================
 // CATEGORY BUTTON SWITCH
+// ============================================
 const buttons = document.querySelectorAll(".category-btn");
 buttons.forEach(btn=>{
 btn.addEventListener("click",()=>{
@@ -486,7 +515,9 @@ btn.addEventListener("click",()=>{
 });
 });
 
-// CART MODAL
+// ============================================
+// CART MODAL FUNCTIONS
+// ============================================
 function openCart(){
   const cartModal = document.getElementById("cartModal");
   cartModal.classList.add("active");
@@ -514,20 +545,26 @@ function removeFromCart(index){
   openCart();
 }
 
-// CHECKOUT
+// ============================================
+// CHECKOUT SYSTEM
+// ============================================
 document.getElementById("checkoutBtn").addEventListener("click",()=>{
   document.getElementById("modal").classList.add("active");
   closeCart();
   cart = [];
 });
 
+// ============================================
 // DISCORD MODAL CLOSE
+// ============================================
 const modal = document.getElementById("modal");
 const closeModal = document.getElementById("closeModal");
 closeModal.addEventListener("click",()=>{modal.classList.remove("active");});
 window.addEventListener("click",(e)=>{if(e.target===modal){modal.classList.remove("active");}});
 
+// ============================================
 // INITIAL LOAD
+// ============================================
 renderCategory("crates");
 </script>
 
