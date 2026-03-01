@@ -359,8 +359,61 @@ for(let c in storeData){ storeData[c].sort((a,b)=>a.price-b.price); }
 let cart = JSON.parse(localStorage.getItem("cart"))||[];
 let topCustomers = JSON.parse(localStorage.getItem("topCustomers"))||{};
 let recentOrders = JSON.parse(localStorage.getItem("recentOrders"))||[];
-let tooltip = document.getElementById("tooltip");
-let grid = document.getElementById("productGrid");
+let lastSpin = localStorage.getItem("lastSpin")||0;
+
+const spinRewards = ["Nothing","Crate","Rank","Bundle"];
+const spinWeights = [91,5,3,1];
+
+const tooltip = document.getElementById("tooltip");
+const grid = document.getElementById("productGrid");
+
+// ---------------------- CLOUDS ANIMATION ----------------------
+const cloudsContainer = document.createElement("div");
+cloudsContainer.id = "rankCloudsContainer";
+cloudsContainer.style.position="fixed";
+cloudsContainer.style.top=0;
+cloudsContainer.style.left=0;
+cloudsContainer.style.width="100%";
+cloudsContainer.style.height="100%";
+cloudsContainer.style.pointerEvents="none";
+cloudsContainer.style.zIndex=999;
+cloudsContainer.style.display="none";
+document.body.appendChild(cloudsContainer);
+
+let cloudElements = [];
+const cloudCount = 12;
+function createClouds(){
+  for(let i=0;i<cloudCount;i++){
+    const cloud = document.createElement("div");
+    cloud.style.position="absolute";
+    cloud.style.width=(50 + Math.random()*100)+"px";
+    cloud.style.height=(20 + Math.random()*30)+"px";
+    cloud.style.background="rgba(255,255,255,0.15)";
+    cloud.style.borderRadius="50%";
+    cloud.style.top=Math.random()*window.innerHeight+"px";
+    cloud.style.left=Math.random()*window.innerWidth+"px";
+    cloud.style.pointerEvents="none";
+    cloud.style.filter="blur(3px)";
+    cloudsContainer.appendChild(cloud);
+    cloudElements.push({
+      el: cloud,
+      speed: 0.2 + Math.random()*0.5,
+      direction: Math.random()<0.5?1:-1
+    });
+  }
+}
+function animateClouds(){
+  cloudElements.forEach(cloud=>{
+    let currentLeft=parseFloat(cloud.el.style.left);
+    currentLeft+=cloud.speed*cloud.direction;
+    if(currentLeft>window.innerWidth) currentLeft=-parseFloat(cloud.el.style.width);
+    if(currentLeft<-parseFloat(cloud.el.style.width)) currentLeft=window.innerWidth;
+    cloud.el.style.left=currentLeft+"px";
+  });
+  requestAnimationFrame(animateClouds);
+}
+createClouds();
+animateClouds();
 
 // ---------------------- RENDER CATEGORY ----------------------
 function renderCategory(category){
@@ -369,7 +422,6 @@ function renderCategory(category){
     let card=document.createElement("div");
     card.className="card";
 
-    // Quantity buttons for crates/spawners
     let qtyOptions="";
     let defaultQty = 1;
     if(category==="crates"){
@@ -399,7 +451,6 @@ function renderCategory(category){
     `;
 
     let selectedQty = defaultQty;
-
     card.querySelectorAll(".qty-btn").forEach(btn=>{
       btn.addEventListener("click",()=>{
         selectedQty=parseInt(btn.dataset.qty);
@@ -426,7 +477,7 @@ function renderCategory(category){
       let mc=document.getElementById("mcName")?.value||"Unknown";
       let itemName = product.name;
       let totalPrice = product.price;
-      if(category==="crates" || category==="spawners"){
+      if(category==="crates"||category==="spawners"){
         itemName += ` x${selectedQty}`;
         totalPrice *= selectedQty;
       }
@@ -439,19 +490,18 @@ function renderCategory(category){
   });
 }
 
-// ---------------------- CATEGORY SWITCH ----------------------
+// ---------------------- CATEGORY BUTTONS ----------------------
 document.querySelectorAll(".category-btn").forEach(btn=>{
   btn.addEventListener("click",()=>{
     document.querySelectorAll(".category-btn").forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
-
+    cloudsContainer.style.display="none";
     if(btn.dataset.category==="ranks"){
       document.getElementById("rankModal").style.display="block";
       document.getElementById("rankOverlay").style.display="block";
+      cloudsContainer.style.display="block";
       grid.innerHTML="";
-    } else {
-      renderCategory(btn.dataset.category);
-    }
+    } else renderCategory(btn.dataset.category);
   });
 });
 
@@ -464,28 +514,18 @@ function showLiveSale(player,item){
 }
 
 // ---------------------- CART ----------------------
-const cartModal = document.getElementById("cartModal");
-const cartOverlay = document.getElementById("cartOverlay");
-const cartItems = document.getElementById("cartItems");
-
-document.getElementById("openCartBtn").addEventListener("click",()=>{showCart();});
-document.getElementById("closeCart").addEventListener("click",()=>{hideCart();});
-
-function showCart(){
-  cartModal.style.display="flex";
-  cartOverlay.style.display="block";
-  renderCartItems();
-}
-function hideCart(){
-  cartModal.style.display="none";
-  cartOverlay.style.display="none";
-}
-
+const cartModal=document.getElementById("cartModal");
+const cartOverlay=document.getElementById("cartOverlay");
+const cartItems=document.getElementById("cartItems");
+document.getElementById("openCartBtn").addEventListener("click",()=>showCart());
+document.getElementById("closeCart").addEventListener("click",()=>hideCart());
+function showCart(){cartModal.style.display="flex";cartOverlay.style.display="block";renderCartItems();}
+function hideCart(){cartModal.style.display="none";cartOverlay.style.display="none";}
 function renderCartItems(){
   cartItems.innerHTML="";
   cart.forEach((item,index)=>{
     let li=document.createElement("li");
-    li.textContent=`${item.mc} - ${item.name} - ${(item.price).toFixed(2)}€`;
+    li.textContent=`${item.mc} - ${item.name} - ${item.price.toFixed(2)}€`;
     let removeBtn=document.createElement("button"); removeBtn.textContent="❌";
     removeBtn.addEventListener("click",()=>{
       cart.splice(index,1);
@@ -496,7 +536,6 @@ function renderCartItems(){
     cartItems.appendChild(li);
   });
 }
-
 document.getElementById("finishOrder").addEventListener("click",()=>{
   cart.forEach(item=>{
     topCustomers[item.mc]=(topCustomers[item.mc]||0)+item.qty;
@@ -506,30 +545,17 @@ document.getElementById("finishOrder").addEventListener("click",()=>{
   cart=[]; localStorage.setItem("cart",JSON.stringify(cart));
   localStorage.setItem("topCustomers",JSON.stringify(topCustomers));
   localStorage.setItem("recentOrders",JSON.stringify(recentOrders));
-  updateTopCustomers();
-  updateRecentOrders();
-  hideCart();
+  updateTopCustomers(); updateRecentOrders(); hideCart();
 });
-
-// ---------------------- UPDATE TOP CUSTOMERS ----------------------
 function updateTopCustomers(){
-  let list=document.getElementById("topCustomers");
-  list.innerHTML="";
+  let list=document.getElementById("topCustomers"); list.innerHTML="";
   Object.entries(topCustomers).sort((a,b)=>b[1]-a[1]).slice(0,5).forEach(entry=>{
-    let li=document.createElement("li");
-    li.textContent=`${entry[0]} - ${entry[1]} items`;
-    list.appendChild(li);
+    let li=document.createElement("li"); li.textContent=`${entry[0]} - ${entry[1]} items`; list.appendChild(li);
   });
 }
-
 function updateRecentOrders(){
-  let list=document.getElementById("recentOrders");
-  list.innerHTML="";
-  recentOrders.forEach(order=>{
-    let li=document.createElement("li");
-    li.textContent=order;
-    list.appendChild(li);
-  });
+  let list=document.getElementById("recentOrders"); list.innerHTML="";
+  recentOrders.forEach(order=>{let li=document.createElement("li"); li.textContent=order; list.appendChild(li);});
 }
 updateTopCustomers(); updateRecentOrders();
 
@@ -537,6 +563,7 @@ updateTopCustomers(); updateRecentOrders();
 document.getElementById("closeRankModal").addEventListener("click",()=>{
   document.getElementById("rankModal").style.display="none";
   document.getElementById("rankOverlay").style.display="none";
+  cloudsContainer.style.display="none";
 });
 
 document.querySelectorAll(".rankTypeBtn").forEach(btn=>{
@@ -544,15 +571,15 @@ document.querySelectorAll(".rankTypeBtn").forEach(btn=>{
     let type = btn.dataset.type;
     document.getElementById("rankModal").style.display="none";
     document.getElementById("rankOverlay").style.display="none";
+    cloudsContainer.style.display="none";
 
     grid.innerHTML="";
     let filteredRanks = storeData.ranks.filter(rank=>{
-      return type==="lifetime" ? rank.name.toLowerCase().includes("lifetime") : rank.name.toLowerCase().includes("30d");
+      return type==="lifetime"? rank.name.toLowerCase().includes("lifetime") : rank.name.toLowerCase().includes("30d");
     });
 
     filteredRanks.forEach(rank=>{
-      let card=document.createElement("div");
-      card.className="card";
+      let card=document.createElement("div"); card.className="card";
       card.innerHTML=`
         <h3>${rank.name}</h3>
         <p>${rank.desc}</p>
