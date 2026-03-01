@@ -353,7 +353,6 @@ const storeData = {
     {name:"Ultimate Supporter",price:19.99,desc:"All perks + exclusive items."}
   ]
 };
-for(let c in storeData){ storeData[c].sort((a,b)=>a.price-b.price); }
 
 // ---------------------- STORAGE ----------------------
 let cart = JSON.parse(localStorage.getItem("cart"))||[];
@@ -367,9 +366,8 @@ const spinWeights = [91,5,3,1];
 const tooltip = document.getElementById("tooltip");
 const grid = document.getElementById("productGrid");
 
-// ---------------------- CLOUDS ANIMATION ----------------------
+// ---------------------- CLOUDS ----------------------
 const cloudsContainer = document.createElement("div");
-cloudsContainer.id = "rankCloudsContainer";
 cloudsContainer.style.position="fixed";
 cloudsContainer.style.top=0;
 cloudsContainer.style.left=0;
@@ -386,44 +384,42 @@ function createClouds(){
   for(let i=0;i<cloudCount;i++){
     const cloud = document.createElement("div");
     cloud.style.position="absolute";
-    cloud.style.width=(50 + Math.random()*100)+"px";
-    cloud.style.height=(20 + Math.random()*30)+"px";
+    cloud.style.width=(50+Math.random()*100)+"px";
+    cloud.style.height=(20+Math.random()*30)+"px";
     cloud.style.background="rgba(255,255,255,0.15)";
     cloud.style.borderRadius="50%";
     cloud.style.top=Math.random()*window.innerHeight+"px";
     cloud.style.left=Math.random()*window.innerWidth+"px";
-    cloud.style.pointerEvents="none";
     cloud.style.filter="blur(3px)";
     cloudsContainer.appendChild(cloud);
     cloudElements.push({
-      el: cloud,
-      speed: 0.2 + Math.random()*0.5,
+      el:cloud,
+      speed:0.2+Math.random()*0.5,
       direction: Math.random()<0.5?1:-1
     });
   }
 }
 function animateClouds(){
   cloudElements.forEach(cloud=>{
-    let currentLeft=parseFloat(cloud.el.style.left);
-    currentLeft+=cloud.speed*cloud.direction;
-    if(currentLeft>window.innerWidth) currentLeft=-parseFloat(cloud.el.style.width);
-    if(currentLeft<-parseFloat(cloud.el.style.width)) currentLeft=window.innerWidth;
-    cloud.el.style.left=currentLeft+"px";
+    let left=parseFloat(cloud.el.style.left);
+    left+=cloud.speed*cloud.direction;
+    if(left>window.innerWidth) left=-parseFloat(cloud.el.style.width);
+    if(left<-parseFloat(cloud.el.style.width)) left=window.innerWidth;
+    cloud.el.style.left=left+"px";
   });
   requestAnimationFrame(animateClouds);
 }
-createClouds();
-animateClouds();
+createClouds(); animateClouds();
 
 // ---------------------- RENDER CATEGORY ----------------------
 function renderCategory(category){
   grid.innerHTML="";
   storeData[category].forEach(product=>{
-    let card=document.createElement("div");
-    card.className="card";
+    let card=document.createElement("div"); card.className="card";
 
+    // Quantity buttons
     let qtyOptions="";
-    let defaultQty = 1;
+    let defaultQty = category==="spawners"?3:1;
     if(category==="crates"){
       qtyOptions=`<div class="qty-options">
         <button class="qty-btn active" data-qty="1">1x</button>
@@ -431,15 +427,13 @@ function renderCategory(category){
         <button class="qty-btn" data-qty="5">5x</button>
         <button class="qty-btn" data-qty="15">15x</button>
       </div>`;
-    }
-    if(category==="spawners"){
+    } else if(category==="spawners"){
       qtyOptions=`<div class="qty-options">
         <button class="qty-btn active" data-qty="3">3x</button>
         <button class="qty-btn" data-qty="5">5x</button>
         <button class="qty-btn" data-qty="10">10x</button>
         <button class="qty-btn" data-qty="25">25x</button>
       </div>`;
-      defaultQty=3;
     }
 
     card.innerHTML=`
@@ -461,26 +455,19 @@ function renderCategory(category){
 
     // Tooltip
     card.addEventListener("mouseover",e=>{
-      tooltip.style.display="block";
-      tooltip.textContent=product.desc;
-      tooltip.style.left=e.pageX+15+"px";
-      tooltip.style.top=e.pageY+15+"px";
+      tooltip.style.display="block"; tooltip.textContent=product.desc;
+      tooltip.style.left=e.pageX+15+"px"; tooltip.style.top=e.pageY+15+"px";
     });
     card.addEventListener("mousemove",e=>{
-      tooltip.style.left=e.pageX+15+"px";
-      tooltip.style.top=e.pageY+15+"px";
+      tooltip.style.left=e.pageX+15+"px"; tooltip.style.top=e.pageY+15+"px";
     });
     card.addEventListener("mouseleave",()=>{tooltip.style.display="none";});
 
     // Add to cart
     card.querySelector(".buy").addEventListener("click",()=>{
       let mc=document.getElementById("mcName")?.value||"Unknown";
-      let itemName = product.name;
-      let totalPrice = product.price;
-      if(category==="crates"||category==="spawners"){
-        itemName += ` x${selectedQty}`;
-        totalPrice *= selectedQty;
-      }
+      let totalPrice = product.price * selectedQty;
+      let itemName = product.name + ((category==="crates"||category==="spawners")? ` x${selectedQty}`:"");
       cart.push({name:itemName,qty:selectedQty,price:totalPrice,mc:mc});
       localStorage.setItem("cart",JSON.stringify(cart));
       showLiveSale(mc,itemName);
@@ -496,6 +483,7 @@ document.querySelectorAll(".category-btn").forEach(btn=>{
     document.querySelectorAll(".category-btn").forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
     cloudsContainer.style.display="none";
+
     if(btn.dataset.category==="ranks"){
       document.getElementById("rankModal").style.display="block";
       document.getElementById("rankOverlay").style.display="block";
@@ -528,12 +516,9 @@ function renderCartItems(){
     li.textContent=`${item.mc} - ${item.name} - ${item.price.toFixed(2)}€`;
     let removeBtn=document.createElement("button"); removeBtn.textContent="❌";
     removeBtn.addEventListener("click",()=>{
-      cart.splice(index,1);
-      localStorage.setItem("cart",JSON.stringify(cart));
-      renderCartItems();
+      cart.splice(index,1); localStorage.setItem("cart",JSON.stringify(cart)); renderCartItems();
     });
-    li.appendChild(removeBtn);
-    cartItems.appendChild(li);
+    li.appendChild(removeBtn); cartItems.appendChild(li);
   });
 }
 document.getElementById("finishOrder").addEventListener("click",()=>{
@@ -559,7 +544,7 @@ function updateRecentOrders(){
 }
 updateTopCustomers(); updateRecentOrders();
 
-// ---------------------- RANKS MODAL ----------------------
+// ---------------------- RANKS ----------------------
 document.getElementById("closeRankModal").addEventListener("click",()=>{
   document.getElementById("rankModal").style.display="none";
   document.getElementById("rankOverlay").style.display="none";
@@ -597,7 +582,82 @@ document.querySelectorAll(".rankTypeBtn").forEach(btn=>{
   });
 });
 
-// ---------------------- INITIAL RENDER ----------------------
+// ---------------------- SPIN WHEEL ----------------------
+const spinBtn=document.getElementById("heroSpinBtn");
+const spinModal=document.getElementById("spinModal");
+const closeSpin=document.getElementById("closeSpin");
+const spinCanvas=document.getElementById("spinWheel");
+const spinMsg=document.getElementById("spinMessage");
+spinBtn.addEventListener("click",()=>{spinModal.style.display="flex";});
+closeSpin.addEventListener("click",()=>{spinModal.style.display="none";});
+
+let ctx=spinCanvas.getContext("2d");
+const sectors = spinRewards.length;
+const anglePer = 2*Math.PI/sectors;
+
+function drawWheel(rotation=0){
+  ctx.clearRect(0,0,400,400);
+  for(let i=0;i<sectors;i++){
+    ctx.save();
+    ctx.translate(200,200);
+    ctx.rotate(rotation+i*anglePer);
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.arc(0,0,200,0,anglePer);
+    ctx.fillStyle=i%2===0?"#FF4081":"#FFEB3B";
+    ctx.fill();
+    ctx.fillStyle="white";
+    ctx.font="16px Inter";
+    ctx.fillText(spinRewards[i],120,0);
+    ctx.restore();
+  }
+}
+drawWheel();
+
+function spin(){
+  let now=Date.now();
+  if(now-lastSpin<24*60*60*1000){spinMsg.textContent="⏳ Already spun today!"; return;}
+  lastSpin=now; localStorage.setItem("lastSpin",lastSpin);
+
+  let spins = Math.random()*3 + 5;
+  let randSector=Math.random();
+  let cumulative=0;
+  let chosenIndex=0;
+  for(let i=0;i<spinWeights.length;i++){ cumulative+=spinWeights[i]/100; if(randSector<cumulative){chosenIndex=i;break;}}
+  let totalAngle=spins*2*Math.PI + chosenIndex*anglePer + anglePer/2;
+  let currentAngle=0;
+  const anim = setInterval(()=>{
+    currentAngle+=0.2;
+    drawWheel(currentAngle);
+    if(currentAngle>=totalAngle){
+      clearInterval(anim);
+      spinMsg.textContent="🎉 You got: "+spinRewards[chosenIndex];
+      if(spinRewards[chosenIndex]!=="Nothing"){
+        let mc=document.getElementById("mcName")?.value||"Unknown";
+        cart.push({name:spinRewards[chosenIndex],qty:1,price:0,mc:mc});
+        localStorage.setItem("cart",JSON.stringify(cart));
+      }
+      confetti();
+    }
+  },10);
+}
+spinCanvas.addEventListener("click",spin);
+
+// ---------------------- CONFETTI ----------------------
+function confetti(){
+  for(let i=0;i<150;i++){
+    const div=document.createElement("div");
+    div.style.position="fixed"; div.style.width="6px"; div.style.height="6px";
+    div.style.background=["#FF4081","#FFEB3B","#4CAF50","#2196F3","#9C27B0"][Math.floor(Math.random()*5)];
+    div.style.left=Math.random()*window.innerWidth+"px";
+    div.style.top=Math.random()*window.innerHeight+"px";
+    div.style.opacity=0.8; div.style.borderRadius="50%";
+    document.body.appendChild(div);
+    setTimeout(()=>div.remove(),3000);
+  }
+}
+
+// ---------------------- INITIAL ----------------------
 renderCategory("crates");
 </script>
 </body>
