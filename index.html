@@ -8,11 +8,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
-
 /* ============================================================
    CHERRYSMP STORE FULL EXTENDED VERSION (650+ LINES)
-   Fully expanded with comments and sections
-   Designed to feel alive and premium
+   Original styling preserved, fully extended
+   Added: Countdown bar, Spin Wheel, Cart Fix
 ============================================================ */
 
 /* ============================================================
@@ -102,6 +101,7 @@ nav a:hover{
 .hero{
   text-align:center;
   padding:120px 20px 80px;
+  position:relative;
 }
 
 .hero h2{
@@ -128,6 +128,17 @@ nav a:hover{
 
 .hero input:focus{
   box-shadow:0 0 15px var(--accent);
+}
+
+/* Countdown bar */
+#countdown{
+  margin-top:30px;
+  font-size:22px;
+  font-weight:700;
+  padding:12px 15px;
+  background:rgba(0,0,0,0.4);
+  border-radius:10px;
+  display:inline-block;
 }
 
 /* ============================================================
@@ -284,6 +295,58 @@ nav a:hover{
 }
 
 /* ============================================================
+   SPIN WHEEL
+============================================================ */
+#spinWheel{
+  margin:20px auto;
+  display:block;
+  border:2px solid var(--border);
+  border-radius:50%;
+  background:#111;
+  transition:transform 3s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+#spinMessage{
+  margin-top:15px;
+  font-weight:700;
+}
+
+/* Spin button */
+#spinBtn{
+  margin-top:20px;
+  padding:10px 25px;
+  font-weight:700;
+  border:none;
+  border-radius:10px;
+  background:var(--accent);
+  color:white;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+#spinBtn:hover{
+  background:var(--secondary);
+}
+
+/* ============================================================
+   PLACE ORDER BUTTON
+============================================================ */
+#placeOrder{
+  padding:12px 25px;
+  font-weight:700;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  background:var(--primary);
+  color:white;
+  margin-bottom:40px;
+}
+
+#placeOrder:hover{
+  background:var(--secondary);
+}
+
+/* ============================================================
    FOOTER
 ============================================================ */
 footer{
@@ -291,11 +354,11 @@ footer{
   padding:40px;
   opacity:0.6;
 }
-
 </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav>
 <h1>CherrySMP Store</h1>
 <ul>
@@ -305,12 +368,16 @@ footer{
 </ul>
 </nav>
 
+<!-- HERO -->
 <section class="hero">
 <h2>Premium Server Store</h2>
 <p>Support the server and unlock exclusive perks</p>
 <input type="text" id="mcName" placeholder="Enter your Minecraft username">
+
+<div id="countdown"></div>
 </section>
 
+<!-- CATEGORY BUTTONS -->
 <section class="categories">
 <button class="category-btn active" data-category="crates">Crates</button>
 <button class="category-btn" data-category="ranks">Ranks</button>
@@ -319,10 +386,17 @@ footer{
 <button class="category-btn" data-category="bundles">Bundles</button>
 </section>
 
+<!-- PRODUCT GRID -->
 <section class="products">
 <div class="grid" id="productGrid"></div>
 </section>
 
+<!-- PLACE ORDER BUTTON -->
+<div style="text-align:center;">
+<button id="placeOrder">Place Order on Discord</button>
+</div>
+
+<!-- TOP CUSTOMERS & RECENT ORDERS -->
 <div class="panel">
 <h3>🏆 Top Customers</h3>
 <ul id="topCustomers"></ul>
@@ -333,20 +407,28 @@ footer{
 <ul id="recentOrders"></ul>
 </div>
 
+<!-- SPIN WHEEL -->
+<section style="text-align:center;">
+<h2>🎡 Daily Spin Wheel</h2>
+<canvas id="spinWheel" width="400" height="400"></canvas>
+<div id="spinMessage"></div>
+<button id="spinBtn">Spin</button>
+</section>
+
+<!-- LIVE SALE -->
 <div class="live-sale" id="liveSale"></div>
 
+<!-- FOOTER -->
 <footer>
 © 2026 CherrySMP • Not affiliated with Mojang
 </footer>
 
 <script>
-
 /* ============================================================
    STORE DATA
 ============================================================ */
 
 const storeData = {
-
 crates:[
 {name:"Snow Key",price:0.19},
 {name:"Ocean Key",price:0.49},
@@ -354,7 +436,6 @@ crates:[
 {name:"Maple Key",price:1.79},
 {name:"Cherry Key",price:2.49}
 ],
-
 ranks:[
 {name:"VIP (Lifetime)",price:2},
 {name:"Maple (Lifetime)",price:4},
@@ -365,7 +446,6 @@ ranks:[
 {name:"Cherry (30d)",price:3.5},
 {name:"Cherry+ (30d)",price:5}
 ],
-
 credits:[
 {name:"100x Credits",price:1},
 {name:"250x Credits",price:2.29},
@@ -373,21 +453,18 @@ credits:[
 {name:"1000x Credits",price:9.19},
 {name:"2500x Credits",price:23.50}
 ],
-
 spawners:[
 {name:"Blaze",price:0.03},
 {name:"Creeper",price:0.04},
 {name:"Skeleton",price:0.05},
 {name:"Iron Golem",price:0.07}
 ],
-
 bundles:[
 {name:"Starter Bundle",price:1.99},
 {name:"Maple Bundle",price:6.99},
 {name:"Cherry Elite Bundle",price:11.99},
 {name:"Ultimate Supporter",price:19.99}
 ]
-
 };
 
 // Sort cheapest → richest
@@ -398,7 +475,6 @@ storeData[category].sort((a,b)=>a.price-b.price);
 /* ============================================================
    VARIABLES
 ============================================================ */
-
 let cart=[];
 let topCustomers={};
 let recentOrders=[];
@@ -406,25 +482,17 @@ let recentOrders=[];
 /* ============================================================
    RENDER PRODUCTS
 ============================================================ */
-
 const grid=document.getElementById("productGrid");
 
 function renderCategory(category){
-
 grid.innerHTML="";
-
 storeData[category].forEach(product=>{
-
 let card=document.createElement("div");
 card.className="card";
 
 let qtyButtons="";
 let quantities=[1,3,5,10];
-
-if(category==="spawners"){
-quantities=[1,3,5,25];
-}
-
+if(category==="spawners"){ quantities=[1,3,5,25]; }
 if(category==="spawners"||category==="crates"||category==="credits"){
 qtyButtons="<div>";
 quantities.forEach(q=>{
@@ -458,15 +526,12 @@ showLiveSale(mc,product.name);
 });
 
 grid.appendChild(card);
-
 });
-
 }
 
 /* ============================================================
    CATEGORY SWITCH
 ============================================================ */
-
 document.querySelectorAll(".category-btn").forEach(btn=>{
 btn.addEventListener("click",()=>{
 document.querySelectorAll(".category-btn").forEach(b=>b.classList.remove("active"));
@@ -478,26 +543,20 @@ renderCategory(btn.dataset.category);
 /* ============================================================
    COMPLETE ORDER (Simulated Checkout)
 ============================================================ */
-
-function completeOrder(){
-
-cart.forEach(item=>{
-
-// Top customer tracking
-if(topCustomers[item.mc]){
-topCustomers[item.mc]+=item.qty;
-}else{
-topCustomers[item.mc]=item.qty;
-}
-
-// Recent orders tracking
-recentOrders.unshift(`${item.mc} bought ${item.qty}x ${item.name}`);
-if(recentOrders.length>8){
-recentOrders.pop();
-}
-
+const placeOrderBtn=document.getElementById("placeOrder");
+placeOrderBtn.addEventListener("click",()=>{
+if(cart.length===0){ alert("Your cart is empty!"); return; }
+alert("Order sent to Discord! ✅");
+completeOrder();
 });
 
+function completeOrder(){
+cart.forEach(item=>{
+if(topCustomers[item.mc]){ topCustomers[item.mc]+=item.qty; }
+else{ topCustomers[item.mc]=item.qty; }
+recentOrders.unshift(`${item.mc} bought ${item.qty}x ${item.name}`);
+if(recentOrders.length>8){ recentOrders.pop(); }
+});
 updateTopCustomers();
 updateRecentOrders();
 cart=[];
@@ -506,7 +565,6 @@ cart=[];
 /* ============================================================
    UPDATE UI
 ============================================================ */
-
 function updateTopCustomers(){
 let list=document.getElementById("topCustomers");
 list.innerHTML="";
@@ -533,7 +591,6 @@ list.appendChild(li);
 /* ============================================================
    LIVE SALE POPUP
 ============================================================ */
-
 function showLiveSale(player,item){
 let popup=document.getElementById("liveSale");
 popup.textContent=`🔥 ${player} just added ${item} to cart!`;
@@ -544,19 +601,67 @@ setTimeout(()=>popup.classList.remove("active"),4000);
 /* ============================================================
    AUTO COMPLETE BUTTON FOR DEMO
 ============================================================ */
-
 setInterval(()=>{
-if(cart.length>0){
-completeOrder();
-}
+if(cart.length>0){ completeOrder(); }
 },15000);
 
 /* ============================================================
-   INIT
+   COUNTDOWN TIMER
 ============================================================ */
+const countdownEl=document.getElementById("countdown");
+const countdownKey="eventStartDate";
+let startDate=localStorage.getItem(countdownKey);
+if(!startDate){ startDate=new Date().getTime(); localStorage.setItem(countdownKey,startDate); }
+const countdownDuration=10*24*60*60*1000; // 10 days
 
-renderCategory("crates");
+function updateCountdown(){
+const now=new Date().getTime();
+const distance=countdownDuration-(now-startDate);
+if(distance<=0){ countdownEl.textContent="🎉 Event has ended!"; return; }
+const days=Math.floor(distance/(1000*60*60*24));
+const hours=Math.floor((distance%(1000*60*60*24))/(1000*60*60));
+const minutes=Math.floor((distance%(1000*60*60))/(1000*60));
+const seconds=Math.floor((distance%(1000*60))/1000);
+countdownEl.textContent=`⏳ Event ends in: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+}
+setInterval(updateCountdown,1000);
+updateCountdown();
 
-</script>
-</body>
-</html>
+/* ============================================================
+   SPIN WHEEL
+============================================================ */
+const spinBtn=document.getElementById("spinBtn");
+const spinCanvas=document.getElementById("spinWheel");
+const spinCtx=spinCanvas.getContext("2d");
+const spinMessage=document.getElementById("spinMessage");
+
+const wheelRewards=[
+{name:"Cherry Key",type:"crate"},
+{name:"Maple Rank (30d)",type:"rank"},
+{name:"Cherry Rank (30d)",type:"rank"},
+{name:"Starter Bundle",type:"bundle"},
+{name:"Nothing",type:"nothing"}
+];
+
+// Weighted segments
+const wheelSegments=[
+{reward:wheelRewards[0],weight:15},
+{reward:wheelRewards[1],weight:10},
+{reward:wheelRewards[2],weight:10},
+{reward:wheelRewards[3],weight:5},
+{reward:wheelRewards[4],weight:60}
+];
+
+let canSpin=true;
+const spinKey="lastSpinTime";
+function checkSpinAvailable(){
+const lastSpin=localStorage.getItem(spinKey);
+if(!lastSpin) return true;
+const now=new Date().getTime();
+return now-parseInt(lastSpin)>24*60*60*1000;
+}
+canSpin=checkSpinAvailable();
+
+// Draw wheel
+const numSegments=wheelSegments.length;
+const radius
