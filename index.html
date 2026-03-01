@@ -426,7 +426,12 @@ function renderCategory(category){
       let mc=document.getElementById("mcName")?.value||"Unknown";
       let itemName = product.name;
       if(category==="crates" || category==="spawners") itemName += ` x${selectedQty}`;
-      cart.push({name:itemName,qty:selectedQty,price:product.price,mc:mc});
+      cart.push({
+        name:itemName,
+        qty:selectedQty,
+        price:product.price * selectedQty,
+        mc:mc
+      });
       localStorage.setItem("cart",JSON.stringify(cart));
       showLiveSale(mc,itemName);
     });
@@ -436,20 +441,88 @@ function renderCategory(category){
 }
 
 // ---------------------- CATEGORY SWITCH ----------------------
+function openRankModal(){
+  const modal = document.getElementById("rankModal");
+  const overlay = document.getElementById("rankOverlay");
+  modal.style.display="block";
+  overlay.style.display="block";
+
+  // Add floating clouds
+  modal.style.position="relative";
+  const clouds = [];
+  for(let i=0;i<3;i++){
+    let cloud=document.createElement("div");
+    cloud.style.position="absolute";
+    cloud.style.width="100px";
+    cloud.style.height="50px";
+    cloud.style.borderRadius="50%";
+    cloud.style.background="rgba(255,255,255,0.2)";
+    cloud.style.top=Math.random()*50+"px";
+    cloud.style.left=Math.random()*200+"px";
+    cloud.style.filter="blur(8px)";
+    modal.appendChild(cloud);
+    clouds.push(cloud);
+  }
+  let cloudAnim = setInterval(()=>{
+    clouds.forEach(c=>{
+      let left = parseFloat(c.style.left);
+      left+=0.3;
+      if(left>modal.offsetWidth) left=-100;
+      c.style.left = left+"px";
+    });
+  },30);
+
+  // Rank buttons
+  document.querySelectorAll(".rankTypeBtn").forEach(btn=>{
+    btn.onclick=()=>{
+      clearInterval(cloudAnim);
+      clouds.forEach(c=>c.remove());
+      modal.style.display="none";
+      overlay.style.display="none";
+      let type = btn.dataset.type;
+      grid.innerHTML="";
+      let filteredRanks = storeData.ranks.filter(rank=>{
+        if(type==="lifetime") return rank.name.toLowerCase().includes("(lifetime)");
+        else return rank.name.toLowerCase().includes("(30d)");
+      });
+      filteredRanks.forEach(rank=>{
+        let card=document.createElement("div");
+        card.className="card";
+        card.innerHTML=`
+          <h3>${rank.name}</h3>
+          <p>${rank.desc}</p>
+          <div class="price">${rank.price.toFixed(2)}€</div>
+          <button class="buy">Add to Cart</button>
+        `;
+        card.querySelector(".buy").addEventListener("click",()=>{
+          let mc=document.getElementById("mcName")?.value||"Unknown";
+          cart.push({name:rank.name,qty:1,price:rank.price,mc:mc});
+          localStorage.setItem("cart",JSON.stringify(cart));
+          showLiveSale(mc,rank.name);
+        });
+        grid.appendChild(card);
+      });
+    };
+  });
+}
+
 document.querySelectorAll(".category-btn").forEach(btn=>{
   btn.addEventListener("click",()=>{
     document.querySelectorAll(".category-btn").forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
 
     if(btn.dataset.category==="ranks"){
-      // Open rank type modal
-      document.getElementById("rankModal").style.display="block";
-      document.getElementById("rankOverlay").style.display="block";
+      openRankModal();
       grid.innerHTML="";
     } else {
       renderCategory(btn.dataset.category);
     }
   });
+});
+
+document.getElementById("closeRankModal").addEventListener("click",()=>{
+  document.getElementById("rankModal").style.display="none";
+  document.getElementById("rankOverlay").style.display="none";
 });
 
 // ---------------------- LIVE SALE ----------------------
@@ -460,7 +533,7 @@ function showLiveSale(player,item){
   setTimeout(()=>popup.classList.remove("active"),4000);
 }
 
-// ---------------------- CART MODAL ----------------------
+// ---------------------- CART ----------------------
 const cartModal = document.getElementById("cartModal");
 const cartOverlay = document.getElementById("cartOverlay");
 const cartItems = document.getElementById("cartItems");
@@ -472,7 +545,7 @@ function renderCartItems(){
   cartItems.innerHTML="";
   cart.forEach((item,index)=>{
     let li=document.createElement("li");
-    li.textContent=`${item.mc} - ${item.qty}x ${item.name} - ${(item.price*item.qty).toFixed(2)}€`;
+    li.textContent=`${item.mc} - ${item.qty}x ${item.name} - ${(item.price).toFixed(2)}€`;
     let removeBtn=document.createElement("button"); removeBtn.textContent="❌";
     removeBtn.addEventListener("click",()=>{cart.splice(index,1);localStorage.setItem("cart",JSON.stringify(cart));renderCartItems();});
     li.appendChild(removeBtn);
@@ -491,7 +564,7 @@ document.getElementById("finishOrder").addEventListener("click",()=>{
   cart=[];updateTopCustomers();updateRecentOrders();hideCart();
 });
 
-// ---------------------- UPDATE CUSTOMER UI ----------------------
+// ---------------------- CUSTOMER UI ----------------------
 function updateTopCustomers(){
   let list=document.getElementById("topCustomers");
   list.innerHTML="";
@@ -577,43 +650,8 @@ function confetti(){
   }
 }
 
-// ---------------------- RANK MODAL ----------------------
-document.getElementById("closeRankModal").addEventListener("click",()=>{
-  document.getElementById("rankModal").style.display="none";
-  document.getElementById("rankOverlay").style.display="none";
-});
-
-document.querySelectorAll(".rankTypeBtn").forEach(btn=>{
-  btn.addEventListener("click",()=>{
-    let type = btn.dataset.type;
-    document.getElementById("rankModal").style.display="none";
-    document.getElementById("rankOverlay").style.display="none";
-
-    grid.innerHTML="";
-    let filteredRanks = storeData.ranks.filter(rank=>{
-      if(type==="lifetime") return rank.name.toLowerCase().includes("(lifetime)");
-      else return rank.name.toLowerCase().includes("(30d)");
-    });
-
-    filteredRanks.forEach(rank=>{
-      let card=document.createElement("div");
-      card.className="card";
-      card.innerHTML=`
-        <h3>${rank.name}</h3>
-        <p>${rank.desc}</p>
-        <div class="price">${rank.price.toFixed(2)}€</div>
-        <button class="buy">Add to Cart</button>
-      `;
-      card.querySelector(".buy").addEventListener("click",()=>{
-        let mc=document.getElementById("mcName")?.value||"Unknown";
-        cart.push({name:rank.name,qty:1,price:rank.price,mc:mc});
-        localStorage.setItem("cart",JSON.stringify(cart));
-        showLiveSale(mc,rank.name);
-      });
-      grid.appendChild(card);
-    });
-  });
-});
+// ---------------------- INITIAL RENDER ----------------------
+renderCategory("crates");
 </script>
 </body>
 </html>
