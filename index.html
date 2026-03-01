@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CherrySMP Store</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+
+/* ===============================
+   ROOT VARIABLES
+=================================*/
+
+:root{
+  --primary:#ff2d6f;
+  --secondary:#ff7eb3;
+  --accent:#ff9ec9;
+  --dark:#0e0e14;
+  --glass:rgba(255,255,255,0.06);
+  --border:rgba(255,255,255,0.08);
+}
+
+/* ===============================
+   GLOBAL RESET
+=================================*/
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Inter',sans-serif;
+  background:linear-gradient(-45deg,#ff2d6f,#7b2ff7,#ff7eb3,#ff2d6f);
+  background-size:400% 400%;
+  animation:gradient 18s ease infinite;
+  color:#fff;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ===============================
+   BACKGROUND ANIMATION
+=================================*/
+
+@keyframes gradient{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+/* ===============================
+   NAVIGATION
+=================================*/
+
+nav{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:20px 8%;
+  background:rgba(0,0,0,0.4);
+  backdrop-filter:blur(20px);
+  position:sticky;
+  top:0;
+  z-index:1000;
+  border-bottom:1px solid var(--border);
+}
+
+nav h1{
+  font-size:26px;
+  font-weight:800;
+  letter-spacing:1px;
+}
+
+nav ul{
+  display:flex;
+  gap:30px;
+  list-style:none;
+}
+
+nav a{
+  color:white;
+  text-decoration:none;
+  font-weight:600;
+  position:relative;
+  transition:0.3s;
+}
+
+nav a:hover{
+  color:var(--accent);
+}
+
+/* ===============================
+   HERO
+=================================*/
+
+.hero{
+  text-align:center;
+  padding:120px 20px 80px;
+}
+
+.hero h2{
+  font-size:64px;
+  font-weight:800;
+}
+
+.hero p{
+  margin-top:15px;
+  font-size:18px;
+  opacity:0.85;
+}
+
+/* ===============================
+   CATEGORY BUTTONS
+=================================*/
+
+.categories{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:20px;
+  padding:40px 8%;
+}
+
+.category-btn{
+  padding:14px 28px;
+  border-radius:50px;
+  border:none;
+  font-weight:700;
+  cursor:pointer;
+  background:var(--glass);
+  backdrop-filter:blur(20px);
+  color:#fff;
+  border:1px solid var(--border);
+  transition:0.3s;
+}
+
+.category-btn:hover,
+.category-btn.active{
+  background:linear-gradient(90deg,var(--primary),var(--secondary));
+  transform:scale(1.1);
+}
+
+/* ===============================
+   PRODUCT GRID
+=================================*/
+
+.products{
+  padding:40px 8% 100px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:30px;
+}
+
+/* ===============================
+   PRODUCT CARD
+=================================*/
+
+.card{
+  background:var(--glass);
+  border:1px solid var(--border);
+  backdrop-filter:blur(25px);
+  border-radius:20px;
+  padding:30px;
+  transition:0.4s;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+
+.card:hover{
+  transform:translateY(-10px) scale(1.03);
+  box-shadow:0 0 30px rgba(255,255,255,0.2);
+}
+
+.card h3{
+  font-size:22px;
+  margin-bottom:10px;
+}
+
+.card p{
+  opacity:0.85;
+  margin-bottom:15px;
+}
+
+.price{
+  font-size:20px;
+  font-weight:800;
+  margin-top:auto;
+}
+
+.buy{
+  margin-top:15px;
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  font-weight:700;
+  cursor:pointer;
+  background:var(--primary);
+  color:white;
+  transition:0.3s;
+}
+
+.buy:hover{
+  background:var(--secondary);
+}
+
+/* ===============================
+   MODAL
+=================================*/
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.75);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  pointer-events:none;
+  transition:0.3s;
+}
+
+.modal.active{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.modal-content{
+  background:#111118;
+  padding:40px;
+  border-radius:20px;
+  width:90%;
+  max-width:500px;
+  text-align:center;
+  animation:pop 0.3s ease;
+}
+
+@keyframes pop{
+  from{transform:scale(0.8);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+
+.close{
+  margin-top:20px;
+  padding:8px 20px;
+  border:none;
+  border-radius:10px;
+  background:#444;
+  color:#fff;
+  cursor:pointer;
+}
+
+/* ===============================
+   FOOTER
+=================================*/
+
+footer{
+  text-align:center;
+  padding:40px;
+  opacity:0.6;
+}
+
+/* ===============================
+   RESPONSIVE
+=================================*/
+
+@media(max-width:768px){
+  .hero h2{
+    font-size:42px;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<nav>
+<h1>CherrySMP Store</h1>
+<ul>
+<li><a href="#">Home</a></li>
+<li><a href="#">Support</a></li>
+</ul>
+</nav>
+
+<section class="hero">
+<h2>Premium Server Store</h2>
+<p>Support the server and unlock exclusive perks</p>
+</section>
+
+<section class="categories">
+<button class="category-btn active" data-category="crates">Crates</button>
+<button class="category-btn" data-category="ranks">Ranks</button>
+<button class="category-btn" data-category="credits">Credits</button>
+<button class="category-btn" data-category="spawners">Spawners</button>
+<button class="category-btn" data-category="bundles">Bundles</button>
+</section>
+
+<section class="products">
+<div class="grid" id="productGrid"></div>
+</section>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+<div class="modal-content">
+<h2>Complete Purchase</h2>
+<p>Open a ticket on Discord to purchase this item.</p>
+<br>
+<a href="https://discord.gg/QF5kKrX8" target="_blank">
+<button class="buy">Join Discord</button>
+</a>
+<button class="close" id="closeModal">Close</button>
+</div>
+</div>
+
+<footer>
+© 2026 CherrySMP • Not affiliated with Mojang
+</footer>
+
+<script>
+
+/* ===============================
+   PRODUCT DATA
+=================================*/
+
+const storeData = {
+
+crates:[
+{name:"Snow Key",price:"0.19€"},
+{name:"Ocean Key",price:"0.49€"},
+{name:"Slime Key",price:"0.99€"},
+{name:"Maple Key",price:"1.79€"},
+{name:"Cherry Key",price:"2.49€"},
+],
+
+ranks:[
+{name:"VIP (Lifetime)",price:"2€"},
+{name:"Maple (Lifetime)",price:"4€"},
+{name:"Cherry (Lifetime)",price:"7€"},
+{name:"VIP (30d)",price:"1€"},
+{name:"Maple (30d)",price:"2€"},
+{name:"Cherry (30d)",price:"3.50€"},
+{name:"Cherry+ (30d)",price:"5€"},
+],
+
+credits:[
+{name:"100x Credits",price:"1€"},
+{name:"250x Credits",price:"2.29€"},
+{name:"500x Credits",price:"4.69€"},
+{name:"1000x Credits",price:"9.19€"},
+{name:"2500x Credits",price:"23.50€"},
+],
+
+spawners:[
+{name:"Skeleton x1",price:"0.05€"},
+{name:"Skeleton x10",price:"0.50€"},
+{name:"Skeleton x25",price:"1.09€"},
+{name:"Skeleton x50",price:"2.19€"},
+{name:"Skeleton x100",price:"4.49€"},
+{name:"Iron Golem x1",price:"0.05€"},
+{name:"Iron Golem x10",price:"0.50€"},
+{name:"Iron Golem x25",price:"1.09€"},
+{name:"Iron Golem x50",price:"2.19€"},
+{name:"Iron Golem x100",price:"4.49€"},
+{name:"Creeper x1",price:"0.03€"},
+{name:"Creeper x10",price:"0.30€"},
+{name:"Creeper x25",price:"0.70€"},
+{name:"Creeper x50",price:"1.29€"},
+{name:"Creeper x100",price:"2.29€"},
+],
+
+bundles:[
+{name:"Starter Bundle",price:"3.99€",desc:"VIP Lifetime + 2 Snow Keys"},
+{name:"Maple Bundle",price:"6.99€",desc:"Maple Lifetime + 2 Maple Keys"},
+{name:"Cherry Elite Bundle",price:"11.99€",desc:"Cherry Lifetime + 5 Cherry Keys"},
+{name:"Ultimate Supporter",price:"19.99€",desc:"Cherry+ 30d + 10 Cherry Keys + 1000 Credits"},
+]
+
+};
+
+/* ===============================
+   RENDER FUNCTION
+=================================*/
+
+const grid = document.getElementById("productGrid");
+
+function renderCategory(category){
+
+grid.innerHTML="";
+
+storeData[category].forEach(product=>{
+
+const card=document.createElement("div");
+card.classList.add("card");
+
+card.innerHTML=`
+<h3>${product.name}</h3>
+<p>${product.desc ? product.desc : "Premium server item"}</p>
+<div class="price">${product.price}</div>
+<button class="buy">Purchase</button>
+`;
+
+card.querySelector(".buy").addEventListener("click",()=>{
+openModal();
+});
+
+grid.appendChild(card);
+
+});
+
+}
+
+/* ===============================
+   CATEGORY SWITCHING
+=================================*/
+
+const buttons=document.querySelectorAll(".category-btn");
+
+buttons.forEach(btn=>{
+btn.addEventListener("click",()=>{
+
+buttons.forEach(b=>b.classList.remove("active"));
+btn.classList.add("active");
+
+renderCategory(btn.dataset.category);
+
+});
+});
+
+/* ===============================
+   MODAL CONTROL
+=================================*/
+
+const modal=document.getElementById("modal");
+const closeModal=document.getElementById("closeModal");
+
+function openModal(){
+modal.classList.add("active");
+}
+
+closeModal.addEventListener("click",()=>{
+modal.classList.remove("active");
+});
+
+window.addEventListener("click",(e)=>{
+if(e.target===modal){
+modal.classList.remove("active");
+}
+});
+
+/* ===============================
+   INITIAL LOAD
+=================================*/
+
+renderCategory("crates");
+
+</script>
+
+</body>
+</html>
