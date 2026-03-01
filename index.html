@@ -6,14 +6,10 @@
 <title>CherrySMP Store</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-/* ============================================================
-   CHERRYSMP STORE FULL EXTENDED VERSION (650+ LINES)
-   Original styling preserved, fully extended
-   Added: Countdown bar, Spin Wheel, Cart Fix
-============================================================ */
 :root{
---primary:#ff2d6f;--secondary:#ff7eb3;--accent:#ff9ec9;--dark:#0e0e14;--glass:rgba(255,255,255,0.06);
---border:rgba(255,255,255,0.08);--highlight:#fff176;--success:#6eff9e;
+  --primary:#ff2d6f;--secondary:#ff7eb3;--accent:#ff9ec9;
+  --dark:#0e0e14;--glass:rgba(255,255,255,0.06);--border:rgba(255,255,255,0.08);
+  --highlight:#fff176;--success:#6eff9e;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Inter',sans-serif;background:linear-gradient(-45deg,#ff2d6f,#7b2ff7,#ff7eb3,#ff2d6f);
@@ -23,7 +19,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:20px 8
 backdrop-filter:blur(20px);position:sticky;top:0;z-index:1000;border-bottom:1px solid var(--border);}
 nav h1{font-size:26px;font-weight:800;}
 nav ul{list-style:none;display:flex;gap:30px;}
-nav a{text-decoration:none;color:white;font-weight:600;transition:0.3s;}
+nav a{text-decoration:none;color:white;font-weight:600;transition:0.3s;cursor:pointer;}
 nav a:hover{color:var(--accent);}
 .hero{text-align:center;padding:120px 20px 80px;position:relative;}
 .hero h2{font-size:60px;font-weight:800;}
@@ -50,22 +46,30 @@ nav a:hover{color:var(--accent);}
 .panel li{padding:6px 0;border-bottom:1px solid var(--border);}
 .live-sale{position:fixed;bottom:20px;right:20px;background:#111;padding:15px 20px;border-radius:12px;opacity:0;transform:translateY(20px);transition:0.5s;z-index:9999;}
 .live-sale.active{opacity:1;transform:translateY(0);}
-#spinWheel{margin:20px auto;display:block;border:2px solid var(--border);border-radius:50%;background:#111;transition:transform 3s cubic-bezier(0.33,1,0.68,1);}
-#spinMessage{margin-top:15px;font-weight:700;}
-#spinBtn{margin-top:20px;padding:10px 25px;font-weight:700;border:none;border-radius:10px;background:var(--accent);color:white;cursor:pointer;transition:0.3s;}
-#spinBtn:hover{background:var(--secondary);}
-#placeOrder{padding:12px 25px;font-weight:700;border:none;border-radius:10px;cursor:pointer;background:var(--primary);color:white;margin-bottom:40px;}
-#placeOrder:hover{background:var(--secondary);}
+#spinPopup{position:fixed;bottom:50px;right:-200px;width:180px;padding:12px;background:var(--primary);border-radius:10px;text-align:center;font-weight:700;color:white;cursor:pointer;transition:0.5s;z-index:999;}
+#spinPopup.show{right:20px;}
+#spinModal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--glass);backdrop-filter:blur(20px);padding:20px;border-radius:20px;display:none;flex-direction:column;align-items:center;z-index:1000;}
+#spinModal canvas{margin-top:20px;border-radius:50%;border:2px solid var(--border);}
+#spinModal button{margin-top:15px;padding:10px 25px;border:none;border-radius:10px;background:var(--accent);color:white;font-weight:700;cursor:pointer;transition:0.3s;}
+#spinModal button:hover{background:var(--secondary);}
+#cartModal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--glass);backdrop-filter:blur(20px);padding:20px;width:500px;border-radius:20px;display:none;flex-direction:column;z-index:1000;}
+#cartModal h2{margin-bottom:15px;text-align:center;}
+#cartItems{max-height:300px;overflow-y:auto;margin-bottom:15px;}
+#cartItems li{padding:8px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+#cartModal button{padding:10px 20px;border:none;border-radius:10px;background:var(--primary);color:white;font-weight:700;cursor:pointer;margin-top:10px;}
+#cartModal button:hover{background:var(--secondary);}
+#cartOverlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;z-index:999;}
 footer{text-align:center;padding:40px;opacity:0.6;}
 </style>
 </head>
 <body>
+
 <nav>
 <h1>CherrySMP Store</h1>
 <ul>
 <li><a href="#">Home</a></li>
 <li><a href="#">Support</a></li>
-<li><a href="#" onclick="openCart()">Cart 🛒</a></li>
+<li><a id="openCartBtn">Cart 🛒</a></li>
 </ul>
 </nav>
 
@@ -88,10 +92,6 @@ footer{text-align:center;padding:40px;opacity:0.6;}
 <div class="grid" id="productGrid"></div>
 </section>
 
-<div style="text-align:center;">
-<button id="placeOrder">Place Order on Discord</button>
-</div>
-
 <div class="panel">
 <h3>🏆 Top Customers</h3>
 <ul id="topCustomers"></ul>
@@ -102,12 +102,21 @@ footer{text-align:center;padding:40px;opacity:0.6;}
 <ul id="recentOrders"></ul>
 </div>
 
-<section style="text-align:center;">
-<h2>🎡 Daily Spin Wheel</h2>
+<div id="spinPopup">🎡 Spin for Rewards!</div>
+<div id="spinModal">
+<h2>Daily Spin Wheel</h2>
 <canvas id="spinWheel" width="400" height="400"></canvas>
+<button id="closeSpin">Close</button>
 <div id="spinMessage"></div>
-<button id="spinBtn">Spin</button>
-</section>
+</div>
+
+<div id="cartOverlay"></div>
+<div id="cartModal">
+<h2>Your Cart</h2>
+<ul id="cartItems"></ul>
+<button id="finishOrder">Finish Order</button>
+<button id="closeCart">Close</button>
+</div>
 
 <div class="live-sale" id="liveSale"></div>
 <footer>© 2026 CherrySMP • Not affiliated with Mojang</footer>
@@ -124,10 +133,12 @@ bundles:[{name:"Starter Bundle",price:1.99},{name:"Maple Bundle",price:6.99},{na
 for(let cat in storeData){storeData[cat].sort((a,b)=>a.price-b.price);}
 
 // ================== VARIABLES ==================
-let cart=[],topCustomers={},recentOrders=[];
+let cart = JSON.parse(localStorage.getItem("cart"))||[];
+let topCustomers = JSON.parse(localStorage.getItem("topCustomers"))||{};
+let recentOrders = JSON.parse(localStorage.getItem("recentOrders"))||[];
 
 // ================== RENDER PRODUCTS ==================
-const grid=document.getElementById("productGrid");
+const grid = document.getElementById("productGrid");
 function renderCategory(category){
 grid.innerHTML="";
 storeData[category].forEach(product=>{
@@ -148,7 +159,9 @@ btn.addEventListener("click",()=>{selectedQty=parseInt(btn.textContent);priceDiv
 });
 card.querySelector(".buy").addEventListener("click",()=>{
 let mc=document.getElementById("mcName").value||"Unknown";
-cart.push({name:product.name,qty:selectedQty,price:product.price,mc});showLiveSale(mc,product.name);
+cart.push({name:product.name,qty:selectedQty,price:product.price,mc});
+localStorage.setItem("cart",JSON.stringify(cart));
+showLiveSale(mc,product.name);renderCart();
 });
 grid.appendChild(card);
 });
@@ -158,24 +171,53 @@ grid.appendChild(card);
 document.querySelectorAll(".category-btn").forEach(btn=>{
 btn.addEventListener("click",()=>{
 document.querySelectorAll(".category-btn").forEach(b=>b.classList.remove("active"));
-btn.classList.add("active");renderCategory(btn.dataset.category);
+btn.classList.add("active");
+renderCategory(btn.dataset.category);
 });
 });
 
-// ================== COMPLETE ORDER ==================
-const placeOrderBtn=document.getElementById("placeOrder");
-placeOrderBtn.addEventListener("click",()=>{
-if(cart.length===0){alert("Your cart is empty!");return;}
-alert("Order sent to Discord! ✅");completeOrder();
+// ================== CART GUI ==================
+const cartModal=document.getElementById("cartModal");
+const cartOverlay=document.getElementById("cartOverlay");
+const openCartBtn=document.getElementById("openCartBtn");
+const closeCartBtn=document.getElementById("closeCart");
+const finishOrderBtn=document.getElementById("finishOrder");
+const cartItemsEl=document.getElementById("cartItems");
+
+function renderCart(){
+cartItemsEl.innerHTML="";
+cart.forEach((item,i)=>{
+let li=document.createElement("li");
+li.textContent=`${item.mc}: ${item.qty}x ${item.name} - ${(item.price*item.qty).toFixed(2)}€`;
+let removeBtn=document.createElement("button");
+removeBtn.textContent="X";
+removeBtn.style.background="transparent";removeBtn.style.border="none";removeBtn.style.color="white";removeBtn.style.cursor="pointer";
+removeBtn.addEventListener("click",()=>{cart.splice(i,1);localStorage.setItem("cart",JSON.stringify(cart));renderCart();});
+li.appendChild(removeBtn);cartItemsEl.appendChild(li);
 });
-function completeOrder(){
+}
+
+openCartBtn.addEventListener("click",()=>{
+cartOverlay.style.display="block";cartModal.style.display="flex";
+renderCart();
+});
+closeCartBtn.addEventListener("click",()=>{
+cartOverlay.style.display="none";cartModal.style.display="none";
+});
+finishOrderBtn.addEventListener("click",()=>{
 cart.forEach(item=>{
 if(topCustomers[item.mc]) topCustomers[item.mc]+=item.qty; else topCustomers[item.mc]=item.qty;
 recentOrders.unshift(`${item.mc} bought ${item.qty}x ${item.name}`);
 if(recentOrders.length>8) recentOrders.pop();
 });
-updateTopCustomers();updateRecentOrders();cart=[];
-}
+cart=[];localStorage.setItem("cart",JSON.stringify(cart));
+localStorage.setItem("topCustomers",JSON.stringify(topCustomers));
+localStorage.setItem("recentOrders",JSON.stringify(recentOrders));
+updateTopCustomers();updateRecentOrders();renderCart();
+cartOverlay.style.display="none";cartModal.style.display="none";
+});
+
+// ================== TOP CUSTOMERS & ORDERS ==================
 function updateTopCustomers(){
 let list=document.getElementById("topCustomers");list.innerHTML="";
 Object.entries(topCustomers).sort((a,b)=>b[1]-a[1]).slice(0,5).forEach(entry=>{
@@ -186,6 +228,7 @@ function updateRecentOrders(){
 let list=document.getElementById("recentOrders");list.innerHTML="";
 recentOrders.forEach(order=>{let li=document.createElement("li");li.textContent=order;list.appendChild(li);});
 }
+updateTopCustomers();updateRecentOrders();
 
 // ================== LIVE SALE ==================
 function showLiveSale(player,item){
@@ -194,10 +237,7 @@ popup.textContent=`🔥 ${player} just added ${item} to cart!`;
 popup.classList.add("active");setTimeout(()=>popup.classList.remove("active"),4000);
 }
 
-// ================== AUTO COMPLETE DEMO ==================
-setInterval(()=>{if(cart.length>0) completeOrder();},15000);
-
-// ================== COUNTDOWN TIMER ==================
+// ================== COUNTDOWN ==================
 const countdownEl=document.getElementById("countdown");
 const countdownKey="eventStartDate";
 let startDate=localStorage.getItem(countdownKey);
@@ -214,134 +254,74 @@ countdownEl.textContent=`⏳ Event ends in: ${days}d ${hours}h ${minutes}m ${sec
 }
 setInterval(updateCountdown,1000);updateCountdown();
 
-// ================== PREMIUM SPIN WHEEL ==================
-const spinBtn = document.getElementById("spinBtn");
-const spinCanvas = document.getElementById("spinWheel");
-const ctx = spinCanvas.getContext("2d");
-const wheelRadius = 180;
-let spinning = false;
+// ================== SPIN WHEEL POPUP ==================
+const spinPopup=document.getElementById("spinPopup");
+const spinModal=document.getElementById("spinModal");
+const closeSpin=document.getElementById("closeSpin");
+spinPopup.addEventListener("click",()=>{spinModal.style.display="flex";});
+closeSpin.addEventListener("click",()=>{spinModal.style.display="none";});
 
-// Wheel rewards with weights
-const wheelRewards = [
-  {name:"Cherry Key",type:"crate"},
-  {name:"Maple Rank (30d)",type:"rank"},
-  {name:"Cherry Rank (30d)",type:"rank"},
-  {name:"Starter Bundle",type:"bundle"},
-  {name:"Nothing",type:"nothing"}
-];
-const wheelSegments = [
-  {reward:wheelRewards[0],weight:15},
-  {reward:wheelRewards[1],weight:10},
-  {reward:wheelRewards[2],weight:10},
-  {reward:wheelRewards[3],weight:5},
-  {reward:wheelRewards[4],weight:60}
-];
-const colors = ["#ff2d6f","#ff7eb3","#ff9ec9","#7b2ff7","#fff176"];
+// Show spin popup on scroll for 5s
+window.addEventListener("scroll",()=>{
+spinPopup.classList.add("show");
+setTimeout(()=>spinPopup.classList.remove("show"),5000);
+});
 
-// Draw the wheel
-function drawWheel() {
-  const center = {x: spinCanvas.width/2, y: spinCanvas.height/2};
-  let startAngle = 0;
-  ctx.clearRect(0,0,spinCanvas.width,spinCanvas.height);
-  wheelSegments.forEach((seg,i)=>{
-    const angle = (seg.weight/100)*2*Math.PI;
-    ctx.beginPath();
-    ctx.moveTo(center.x, center.y);
-    ctx.arc(center.x, center.y, wheelRadius, startAngle, startAngle+angle);
-    ctx.fillStyle = colors[i % colors.length];
-    ctx.fill();
-    ctx.strokeStyle = "#111"; ctx.lineWidth=2; ctx.stroke();
-    ctx.save();
-    ctx.translate(center.x, center.y);
-    ctx.rotate(startAngle + angle/2);
-    ctx.textAlign="right"; ctx.fillStyle="#fff"; ctx.font="14px Inter";
-    ctx.fillText(seg.reward.name, wheelRadius-10, 5);
-    ctx.restore();
-    startAngle += angle;
-  });
+// ================== SPIN WHEEL ==================
+const spinBtn=document.getElementById("spinBtn");
+const spinWheel=document.getElementById("spinWheel");
+const ctx=spinWheel.getContext("2d");
+const wheelRadius=180;
+let spinningWheel=false;
+const wheelRewards=[
+{name:"Cherry Key",type:"crate"},{name:"Maple Rank (30d)",type:"rank"},{name:"Cherry Rank (30d)",type:"rank"},{name:"Starter Bundle",type:"bundle"},{name:"Nothing",type:"nothing"}];
+const wheelSegments=[
+{reward:wheelRewards[0],weight:15},{reward:wheelRewards[1],weight:10},{reward:wheelRewards[2],weight:10},{reward:wheelRewards[3],weight:5},{reward:wheelRewards[4],weight:60}];
+const colors=["#ff2d6f","#ff7eb3","#ff9ec9","#7b2ff7","#fff176"];
+function drawWheel(){
+const center={x:spinWheel.width/2,y:spinWheel.height/2};
+let startAngle=0;ctx.clearRect(0,0,spinWheel.width,spinWheel.height);
+wheelSegments.forEach((seg,i)=>{
+const angle=(seg.weight/100)*2*Math.PI;ctx.beginPath();ctx.moveTo(center.x,center.y);
+ctx.arc(center.x,center.y,wheelRadius,startAngle,startAngle+angle);
+ctx.fillStyle=colors[i % colors.length];ctx.fill();ctx.strokeStyle="#111";ctx.lineWidth=2;ctx.stroke();
+ctx.save();ctx.translate(center.x,center.y);ctx.rotate(startAngle+angle/2);ctx.textAlign="right";
+ctx.fillStyle="#fff";ctx.font="14px Inter";ctx.fillText(seg.reward.name,wheelRadius-10,5);ctx.restore();
+startAngle+=angle;
+});
 }
 drawWheel();
-
-// Weighted random selection
-function weightedRandom() {
-  const total = wheelSegments.reduce((a,b)=>a+b.weight,0);
-  let r = Math.random()*total;
-  for(const seg of wheelSegments){
-    if(r < seg.weight) return seg.reward;
-    r -= seg.weight;
-  }
-  return wheelSegments[wheelSegments.length-1].reward;
-}
-
-// Check if spin allowed (24h per IP)
-function checkSpinAvailable() {
-  const lastSpin = localStorage.getItem("lastSpinTime");
-  if(!lastSpin) return true;
-  return Date.now() - parseInt(lastSpin) > 24*60*60*1000;
-}
-
-// Easing function for realistic spin
-function easeOutQuart(t){ return 1-(--t)*t*t*t; }
-
-// Confetti effect
-function createConfetti(){
-  const colors = ["#ff2d6f","#ff7eb3","#ff9ec9","#7b2ff7","#fff176"];
-  const duration = 2000;
-  const startTime = performance.now();
-  function drawConfetti(now){
-    const elapsed = now - startTime;
-    ctx.clearRect(0,0,spinCanvas.width,spinCanvas.height);
-    drawWheel();
-    for(let i=0;i<30;i++){
-      ctx.beginPath();
-      ctx.fillStyle = colors[Math.floor(Math.random()*colors.length)];
-      ctx.arc(Math.random()*spinCanvas.width, Math.random()*spinCanvas.height, Math.random()*6+2,0,Math.PI*2);
-      ctx.fill();
-    }
-    if(elapsed < duration) requestAnimationFrame(drawConfetti);
-  }
-  requestAnimationFrame(drawConfetti);
-}
-
-// Spin button
-spinBtn.addEventListener("click", ()=>{
-  if(!checkSpinAvailable()){document.getElementById("spinMessage").textContent="⏱ You can only spin once every 24 hours!"; return;}
-  if(spinning) return;
-  spinning=true; localStorage.setItem("lastSpinTime", Date.now());
-
-  const reward = weightedRandom();
-  const fullRotations = 6;
-  const segIndex = wheelSegments.findIndex(s=>s.reward.name===reward.name);
-  let startAngle = 0;
-  for(let i=0;i<segIndex;i++) startAngle += wheelSegments[i].weight/100*360;
-  const targetRotation = 360*fullRotations + startAngle + Math.random()*(wheelSegments[segIndex].weight/100*360);
-  let currentRotation = 0;
-  const duration = 4000; // 4 seconds spin
-  const startTime = performance.now();
-
-  // Sound effects (optional)
-  const spinAudio = new Audio('https://freesound.org/data/previews/466/466719_1007150-lq.mp3'); // short click
-  spinAudio.volume = 0.2; spinAudio.play();
-
-  function animate(time){
-    const elapsed = time - startTime;
-    const progress = Math.min(elapsed/duration,1);
-    currentRotation = targetRotation * easeOutQuart(progress);
-    spinCanvas.style.transform = `rotate(${currentRotation}deg)`;
-    if(progress < 1) requestAnimationFrame(animate);
-    else{
-      spinning=false;
-      document.getElementById("spinMessage").textContent=`🎉 You won: ${reward.name}!`;
-      let mc = document.getElementById("mcName").value||"Unknown";
-      cart.push({name:reward.name, qty:1, price:0, mc});
-      showLiveSale(mc, reward.name);
-      createConfetti();
-      const winAudio = new Audio('https://freesound.org/data/previews/320/320181_5260879-lq.mp3');
-      winAudio.volume = 0.2; winAudio.play();
-    }
-  }
-  requestAnimationFrame(animate);
+function weightedRandom(){const total=wheelSegments.reduce((a,b)=>a+b.weight,0);let r=Math.random()*total;
+for(const seg of wheelSegments){if(r<seg.weight)return seg.reward;r-=seg.weight;}
+return wheelSegments[wheelSegments.length-1].reward;}
+function checkSpinAvailable(){const lastSpin=localStorage.getItem("lastSpinTime");if(!lastSpin)return true;return Date.now()-parseInt(lastSpin)>24*60*60*1000;}
+function easeOutQuart(t){return 1-(--t)*t*t*t;}
+function createConfetti(){const colors=["#ff2d6f","#ff7eb3","#ff9ec9","#7b2ff7","#fff176"];const duration=2000;const startTime=performance.now();
+function drawConfetti(now){const elapsed=now-startTime;ctx.clearRect(0,0,spinWheel.width,spinWheel.height);drawWheel();
+for(let i=0;i<30;i++){ctx.beginPath();ctx.fillStyle=colors[Math.floor(Math.random()*colors.length)];
+ctx.arc(Math.random()*spinWheel.width,Math.random()*spinWheel.height,Math.random()*6+2,0,Math.PI*2);ctx.fill();}
+if(elapsed<duration)requestAnimationFrame(drawConfetti);}
+requestAnimationFrame(drawConfetti);}
+spinWheel.addEventListener("click",()=>{
+if(!checkSpinAvailable()){document.getElementById("spinMessage").textContent="⏱ You can only spin once every 24h!";return;}
+if(spinningWheel)return;
+spinningWheel=true;localStorage.setItem("lastSpinTime",Date.now());
+const reward=weightedRandom();const fullRotations=6;
+const segIndex=wheelSegments.findIndex(s=>s.reward.name===reward.name);
+let startAngle=0;for(let i=0;i<segIndex;i++)startAngle+=wheelSegments[i].weight/100*360;
+const targetRotation=360*fullRotations+startAngle+Math.random()*(wheelSegments[segIndex].weight/100*360);
+let currentRotation=0;const duration=4000;const startTime=performance.now();
+function animate(time){const elapsed=time-startTime;const progress=Math.min(elapsed/duration,1);
+currentRotation=targetRotation*easeOutQuart(progress);spinWheel.style.transform=`rotate(${currentRotation}deg)`;
+if(progress<1)requestAnimationFrame(animate);
+else{spinningWheel=false;document.getElementById("spinMessage").textContent=`🎉 You won: ${reward.name}!`;
+let mc=document.getElementById("mcName").value||"Unknown";cart.push({name:reward.name,qty:1,price:0,mc});localStorage.setItem("cart",JSON.stringify(cart));
+showLiveSale(mc,reward.name);createConfetti();renderCart();}}
+requestAnimationFrame(animate);
 });
+
+// ================== INIT ==================
+renderCategory("crates");
 </script>
 </body>
 </html>
