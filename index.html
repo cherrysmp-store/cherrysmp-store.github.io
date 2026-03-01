@@ -9,10 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
-/* =================================================
-   ROOT VARIABLES
-   - Colors, glass effects, and accents
-=================================================*/
 :root {
   --primary: #ff2d6f;
   --secondary: #ff7eb3;
@@ -20,319 +16,163 @@
   --dark: #0e0e14;
   --glass: rgba(255, 255, 255, 0.06);
   --border: rgba(255, 255, 255, 0.08);
+  --click-color: #fffa5c;
 }
 
-/* =================================================
-   GLOBAL RESET
-   - Remove margins/padding, box-sizing
-=================================================*/
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
+* { margin:0; padding:0; box-sizing:border-box; }
 body {
   font-family: 'Inter', sans-serif;
   background: linear-gradient(-45deg, #ff2d6f, #7b2ff7, #ff7eb3, #ff2d6f);
   background-size: 400% 400%;
   animation: gradient 18s ease infinite;
-  color: #fff;
-  min-height: 100vh;
-  overflow-x: hidden;
+  color:#fff;
+  min-height:100vh;
+  overflow-x:hidden;
 }
 
-/* =================================================
-   BACKGROUND ANIMATION
-=================================================*/
 @keyframes gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
 }
 
-/* =================================================
-   NAVIGATION BAR
-=================================================*/
 nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 8%;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(20px);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:20px 8%;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter:blur(20px);
   position: sticky;
-  top: 0;
-  z-index: 1000;
-  border-bottom: 1px solid var(--border);
+  top:0;
+  z-index:1000;
+  border-bottom:1px solid var(--border);
 }
-
-nav h1 {
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: 1px;
-}
-
-nav ul {
-  display: flex;
-  gap: 30px;
-  list-style: none;
-}
-
+nav h1 { font-size:26px; font-weight:800; letter-spacing:1px; }
+nav ul { display:flex; gap:30px; list-style:none; }
 nav a {
-  color: white;
-  text-decoration: none;
-  font-weight: 600;
-  position: relative;
-  transition: 0.3s;
+  color:white; text-decoration:none; font-weight:600;
+  position:relative; transition:0.3s;
 }
+nav a:hover{ color:var(--accent); }
 
-nav a:hover {
-  color: var(--accent);
-}
+.hero { text-align:center; padding:120px 20px 80px; }
+.hero img { width:120px; margin-bottom:20px; animation:logoPop 1s ease forwards; }
+@keyframes logoPop { from{transform:scale(0);opacity:0;} to{transform:scale(1);opacity:1;} }
+.hero h2 { font-size:64px; font-weight:800; margin-bottom:10px; animation:fadeIn 1.2s ease forwards; }
+.hero p { margin-top:15px; font-size:18px; opacity:0.85; animation:fadeIn 1.5s ease forwards; }
+.hero input[type="text"] { margin-top:20px; padding:10px 15px; border-radius:10px; border:none; outline:none; font-size:16px; width:250px; text-align:center; transition:0.3s; }
+.hero input[type="text"]:focus { box-shadow:0 0 10px var(--accent); }
 
-/* =================================================
-   HERO SECTION
-=================================================*/
-.hero {
-  text-align: center;
-  padding: 120px 20px 80px;
-}
-
-.hero img {
-  width: 120px;
-  margin-bottom: 20px;
-  animation: logoPop 1s ease forwards;
-}
-
-@keyframes logoPop {
-  from { transform: scale(0); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-.hero h2 {
-  font-size: 64px;
-  font-weight: 800;
-  margin-bottom: 10px;
-  animation: fadeIn 1.2s ease forwards;
-}
-
-.hero p {
-  margin-top: 15px;
-  font-size: 18px;
-  opacity: 0.85;
-  animation: fadeIn 1.5s ease forwards;
-}
-
-.hero input[type="text"] {
-  margin-top: 20px;
-  padding: 10px 15px;
-  border-radius: 10px;
-  border: none;
-  outline: none;
-  font-size: 16px;
-  width: 250px;
-  text-align: center;
-  transition: 0.3s;
-}
-
-.hero input[type="text"]:focus {
-  box-shadow: 0 0 10px var(--accent);
-}
-
-/* =================================================
-   CATEGORY BUTTONS
-=================================================*/
 .categories {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 20px;
-  padding: 40px 8%;
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:20px;
+  padding:40px 8%;
 }
 
 .category-btn {
-  padding: 14px 28px;
-  border-radius: 50px;
-  border: none;
-  font-weight: 700;
-  cursor: pointer;
-  background: var(--glass);
-  backdrop-filter: blur(20px);
-  color: #fff;
-  border: 1px solid var(--border);
-  transition: 0.3s;
+  padding:14px 28px;
+  border-radius:50px;
+  border:none;
+  font-weight:700;
+  cursor:pointer;
+  background:var(--glass);
+  backdrop-filter:blur(20px);
+  color:#fff;
+  border:1px solid var(--border);
+  transition:0.3s;
 }
-
-.category-btn:hover,
-.category-btn.active {
+.category-btn:hover, .category-btn.active {
   background: linear-gradient(90deg, var(--primary), var(--secondary));
-  transform: scale(1.1);
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  transform:scale(1.1);
+  box-shadow:0 0 20px rgba(255,255,255,0.3);
 }
 
-/* =================================================
-   PRODUCT GRID
-=================================================*/
-.products {
-  padding: 40px 8% 100px;
-}
+.products { padding:40px 8% 100px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:30px; }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
-}
-
-/* =================================================
-   PRODUCT CARD
-=================================================*/
 .card {
-  background: var(--glass);
-  border: 1px solid var(--border);
-  backdrop-filter: blur(25px);
-  border-radius: 20px;
-  padding: 30px;
-  transition: 0.4s;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  background:var(--glass);
+  border:1px solid var(--border);
+  backdrop-filter:blur(25px);
+  border-radius:20px;
+  padding:30px;
+  transition:0.4s;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
 }
+.card:hover { transform:translateY(-10px) scale(1.03); box-shadow:0 0 30px rgba(255,255,255,0.2); }
+.card h3 { font-size:22px; margin-bottom:10px; }
+.card p { opacity:0.85; margin-bottom:15px; }
+.price { font-size:20px; font-weight:800; margin-top:auto; }
+.buy { margin-top:15px; padding:10px; border-radius:10px; border:none; font-weight:700; cursor:pointer; background:var(--primary); color:white; transition:0.3s; }
+.buy:hover { background:var(--secondary); }
 
-.card:hover {
-  transform: translateY(-10px) scale(1.03);
-  box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
-}
+.qty-btn { padding:5px 10px; margin-right:5px; border-radius:8px; border:1px solid var(--border); background:transparent; cursor:pointer; font-weight:600; transition:0.3s; }
+.qty-btn:hover{ background:var(--accent); }
 
-.card h3 {
-  font-size: 22px;
-  margin-bottom: 10px;
-}
-
-.card p {
-  opacity: 0.85;
-  margin-bottom: 15px;
-}
-
-.price {
-  font-size: 20px;
-  font-weight: 800;
-  margin-top: auto;
-}
-
-.buy {
-  margin-top: 15px;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  font-weight: 700;
-  cursor: pointer;
-  background: var(--primary);
-  color: white;
-  transition: 0.3s;
-}
-
-.buy:hover {
-  background: var(--secondary);
-}
-
-/* =================================================
-   QUANTITY BUTTONS
-=================================================*/
-.qty-btn {
-  padding: 5px 10px;
-  margin-right: 5px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: transparent;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.3s;
-}
-
-.qty-btn:hover {
-  background: var(--accent);
-}
-
-/* =================================================
-   MODALS
-=================================================*/
 .modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: 0.3s;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.75);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  pointer-events:none;
+  transition:0.3s;
 }
-
-.modal.active {
-  opacity: 1;
-  pointer-events: auto;
-}
+.modal.active { opacity:1; pointer-events:auto; }
 
 .modal-content {
-  background: #111118;
-  padding: 40px;
-  border-radius: 20px;
-  width: 90%;
-  max-width: 500px;
-  text-align: center;
-  animation: pop 0.3s ease;
+  background:#111118;
+  padding:40px;
+  border-radius:20px;
+  width:90%;
+  max-width:500px;
+  text-align:center;
+  animation:pop 0.3s ease;
 }
-
-@keyframes pop {
-  from { transform: scale(0.8); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
+@keyframes pop { from{transform:scale(0.8);opacity:0;} to{transform:scale(1);opacity:1;} }
 
 .close {
-  margin-top: 20px;
-  padding: 8px 20px;
-  border: none;
-  border-radius: 10px;
-  background: #444;
-  color: #fff;
-  cursor: pointer;
-  transition: 0.3s;
+  margin-top:20px;
+  padding:8px 20px;
+  border:none;
+  border-radius:10px;
+  background:#444;
+  color:#fff;
+  cursor:pointer;
+  transition:0.3s;
 }
+.close:hover { background:#666; }
 
-.close:hover {
-  background: #666;
-}
+footer { text-align:center; padding:40px; opacity:0.6; }
 
-/* =================================================
-   FOOTER
-=================================================*/
-footer {
-  text-align: center;
-  padding: 40px;
-  opacity: 0.6;
-}
-
-/* =================================================
-   RESPONSIVE
-=================================================*/
 @media(max-width:768px){
-  .hero h2 { font-size: 42px; }
-  .hero input[type="text"] { width: 200px; }
+  .hero h2 { font-size:42px; }
+  .hero input[type="text"] { width:200px; }
 }
 
+@keyframes fadeIn{ from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
+
 /* =================================================
-   ANIMATIONS
+   EXTRA INTERACTIVE STUFF
 =================================================*/
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+.click-color{transition:0.3s;}
+.click-color.clicked{background:var(--click-color)!important; color:#000 !important;}
+.top-customer, .recent-customer {
+  margin:20px 8%; padding:20px; border-radius:15px; background:var(--glass); backdrop-filter:blur(15px); }
+.top-customer h3, .recent-customer h3 { margin-bottom:10px; text-align:center; }
+.top-customer ul, .recent-customer ul { list-style:none; padding-left:0; }
+.top-customer li, .recent-customer li { padding:5px 0; border-bottom:1px solid var(--border); }
 </style>
 
 <body>
 
-<!-- NAVIGATION -->
 <nav>
 <h1>CherrySMP Store</h1>
 <ul>
@@ -342,7 +182,6 @@ footer {
 </ul>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
 <img src="logo.png" alt="CherrySMP Logo">
 <h2>Premium Server Store</h2>
@@ -350,7 +189,6 @@ footer {
 <input type="text" id="mcName" placeholder="Enter your Minecraft username">
 </section>
 
-<!-- CATEGORY BUTTONS -->
 <section class="categories">
 <button class="category-btn active" data-category="crates">Crates</button>
 <button class="category-btn" data-category="ranks">Ranks</button>
@@ -359,12 +197,24 @@ footer {
 <button class="category-btn" data-category="bundles">Bundles</button>
 </section>
 
-<!-- PRODUCTS GRID -->
 <section class="products">
 <div class="grid" id="productGrid"></div>
 </section>
 
-<!-- CART MODAL -->
+<div class="top-customer">
+<h3>Top Customers</h3>
+<ul id="topCustomers">
+<li>No data yet</li>
+</ul>
+</div>
+
+<div class="recent-customer">
+<h3>Recent Customers</h3>
+<ul id="recentCustomers">
+<li>No data yet</li>
+</ul>
+</div>
+
 <div class="modal" id="cartModal">
 <div class="modal-content">
 <h2>Your Cart</h2>
@@ -375,7 +225,6 @@ footer {
 </div>
 </div>
 
-<!-- DISCORD MODAL -->
 <div class="modal" id="modal">
 <div class="modal-content">
 <h2>Complete Purchase</h2>
@@ -388,17 +237,12 @@ footer {
 </div>
 </div>
 
-<!-- FOOTER -->
 <footer>
 © 2026 CherrySMP • Not affiliated with Mojang
 </footer>
 
-<!-- JAVASCRIPT -->
 <script>
-// ============================================
-// PRODUCT DATA WITH ADJUSTED SPAWNERS PRICES
-// ============================================
-const storeData = {
+const storeData={
 crates:[
 {name:"Snow Key",price:0.19},
 {name:"Ocean Key",price:0.49},
@@ -423,10 +267,10 @@ credits:[
 {name:"2500x Credits",price:23.50},
 ],
 spawners:[
-{name:"Skeleton",price:0.05},
-{name:"Iron Golem",price:0.05},
-{name:"Creeper",price:0.03},
 {name:"Blaze",price:0.03},
+{name:"Creeper",price:0.04},
+{name:"Skeleton",price:0.05},
+{name:"Iron Golem",price:0.07},
 ],
 bundles:[
 {name:"Starter Bundle",price:1.99,desc:"VIP Lifetime + 2 Snow Keys"},
@@ -436,77 +280,67 @@ bundles:[
 ]
 };
 
-// ============================================
-// CART SYSTEM
-// ============================================
-let cart = [];
-const grid = document.getElementById("productGrid");
+// Sort each category by price ascending
+for(const cat in storeData){ storeData[cat].sort((a,b)=>a.price-b.price); }
 
-// ============================================
-// RENDER CATEGORY FUNCTION WITH DYNAMIC PRICING
-// ============================================
+let cart=[];
+const grid=document.getElementById("productGrid");
+
 function renderCategory(category){
 grid.innerHTML="";
 storeData[category].forEach(product=>{
   const card=document.createElement("div");
   card.classList.add("card");
 
-  // Determine which items have quantity buttons
-  let qtyButtons = "";
-  if(category==="crates" || category==="spawners" || category==="credits"){
-    qtyButtons = `<div style="margin-bottom:10px;">
-      <button class="qty-btn" data-qty="1">1x</button>
-      <button class="qty-btn" data-qty="3">3x</button>
-      <button class="qty-btn" data-qty="5">5x</button>
-      <button class="qty-btn" data-qty="10">10x</button>
-    </div>`;
+  // Quantity buttons
+  let qtyButtons="";
+  let quantities = [1,3,5,10];
+  if(category==="crates"||category==="spawners"||category==="credits"){ 
+    if(category==="spawners") quantities=[1,3,5,25];
+    qtyButtons='<div style="margin-bottom:10px;">';
+    quantities.forEach(q=>{ qtyButtons+=`<button class="qty-btn">${q}x</button>`; });
+    qtyButtons+='</div>';
   }
 
-  // Initial display price
-  const displayPrice = category==="crates" || category==="spawners" || category==="credits" ? product.price.toFixed(2) + "€" : product.price + "€";
-
+  const displayPrice=(category==="crates"||category==="spawners"||category==="credits") ? product.price.toFixed(2)+"€" : product.price+"€";
   card.innerHTML=`
-    <h3>${product.name}</h3>
-    <p>${product.desc ? product.desc : "Premium server item"}</p>
+    <h3 class="click-color">${product.name}</h3>
+    <p>${product.desc?product.desc:"Premium server item"}</p>
     <div class="price">${displayPrice}</div>
     ${qtyButtons}
     <button class="buy">Add to Cart</button>
   `;
 
-  let selectedQty = 1;
-  const priceDiv = card.querySelector(".price");
+  let selectedQty=1;
+  const priceDiv=card.querySelector(".price");
 
-  // Quantity buttons logic with dynamic price display
-  card.querySelectorAll(".qty-btn").forEach(btn=>{
+  card.querySelectorAll(".qty-btn").forEach((btn,index)=>{
     btn.addEventListener("click",()=>{
-      selectedQty = parseInt(btn.dataset.qty);
+      selectedQty=parseInt(btn.textContent.replace("x",""));
       card.querySelectorAll(".qty-btn").forEach(b=>b.style.background="transparent");
       btn.style.background="var(--accent)";
-      // Update price display
-      priceDiv.textContent = (product.price * selectedQty).toFixed(2) + "€";
+      priceDiv.textContent=(product.price*selectedQty).toFixed(2)+"€";
     });
   });
 
-  // Add to cart button
   card.querySelector(".buy").addEventListener("click",()=>{
-    const mcName = document.getElementById("mcName").value || "No Name";
-    cart.push({
-      name: product.name,
-      qty: selectedQty,
-      price: product.price,
-      mcName: mcName
-    });
+    const mcName=document.getElementById("mcName").value || "No Name";
+    cart.push({name:product.name,qty:selectedQty,price:product.price,mcName:mcName});
     alert(`${product.name} x${selectedQty} added to cart!`);
+    addRecentCustomer(mcName);
+  });
+
+  card.querySelector(".click-color").addEventListener("click",()=>{
+    card.querySelector(".click-color").classList.add("clicked");
+    setTimeout(()=>card.querySelector(".click-color").classList.remove("clicked"),300);
   });
 
   grid.appendChild(card);
 });
 }
 
-// ============================================
 // CATEGORY BUTTON SWITCH
-// ============================================
-const buttons = document.querySelectorAll(".category-btn");
+const buttons=document.querySelectorAll(".category-btn");
 buttons.forEach(btn=>{
 btn.addEventListener("click",()=>{
   buttons.forEach(b=>b.classList.remove("active"));
@@ -515,56 +349,66 @@ btn.addEventListener("click",()=>{
 });
 });
 
-// ============================================
-// CART MODAL FUNCTIONS
-// ============================================
+// CART MODAL
 function openCart(){
-  const cartModal = document.getElementById("cartModal");
+  const cartModal=document.getElementById("cartModal");
   cartModal.classList.add("active");
 
-  const cartItemsDiv = document.getElementById("cartItems");
-  cartItemsDiv.innerHTML = "";
+  const cartItemsDiv=document.getElementById("cartItems");
+  cartItemsDiv.innerHTML="";
 
-  let total = 0;
+  let total=0;
   cart.forEach((item,i)=>{
-    total += item.price*item.qty;
-    const div = document.createElement("div");
-    div.innerHTML = `${item.name} x${item.qty} - ${(item.price*item.qty).toFixed(2)}€ <button onclick="removeFromCart(${i})">Remove</button>`;
+    total+=item.price*item.qty;
+    const div=document.createElement("div");
+    div.innerHTML=`${item.name} x${item.qty} - ${(item.price*item.qty).toFixed(2)}€ <button onclick="removeFromCart(${i})">Remove</button>`;
     cartItemsDiv.appendChild(div);
   });
 
-  document.getElementById("cartTotal").innerText = `Total: ${total.toFixed(2)}€`;
+  document.getElementById("cartTotal").innerText=`Total: ${total.toFixed(2)}€`;
 }
 
-function closeCart(){
-  document.getElementById("cartModal").classList.remove("active");
-}
+function closeCart(){ document.getElementById("cartModal").classList.remove("active"); }
+function removeFromCart(index){ cart.splice(index,1); openCart(); }
 
-function removeFromCart(index){
-  cart.splice(index,1);
-  openCart();
-}
-
-// ============================================
 // CHECKOUT SYSTEM
-// ============================================
 document.getElementById("checkoutBtn").addEventListener("click",()=>{
   document.getElementById("modal").classList.add("active");
   closeCart();
-  cart = [];
+  cart.forEach(item=>addTopCustomer(item.mcName));
+  cart=[];
 });
 
-// ============================================
 // DISCORD MODAL CLOSE
-// ============================================
-const modal = document.getElementById("modal");
-const closeModal = document.getElementById("closeModal");
-closeModal.addEventListener("click",()=>{modal.classList.remove("active");});
-window.addEventListener("click",(e)=>{if(e.target===modal){modal.classList.remove("active");}});
+const modal=document.getElementById("modal");
+const closeModal=document.getElementById("closeModal");
+closeModal.addEventListener("click",()=>{ modal.classList.remove("active"); });
+window.addEventListener("click",(e)=>{ if(e.target===modal){ modal.classList.remove("active"); } });
 
-// ============================================
+// TOP & RECENT CUSTOMERS
+let topCustomers={};
+function addTopCustomer(name){
+  if(topCustomers[name]) topCustomers[name]++; else topCustomers[name]=1;
+  updateTopCustomerUI();
+}
+function updateTopCustomerUI(){
+  const list=document.getElementById("topCustomers");
+  list.innerHTML="";
+  const sorted=Object.entries(topCustomers).sort((a,b)=>b[1]-a[1]);
+  sorted.slice(0,5).forEach(([name,count])=>{
+    const li=document.createElement("li"); li.textContent=`${name} - ${count} purchases`; list.appendChild(li);
+  });
+}
+
+let recentCustomers=[];
+function addRecentCustomer(name){
+  recentCustomers.unshift(name);
+  if(recentCustomers.length>5) recentCustomers.pop();
+  const list=document.getElementById("recentCustomers"); list.innerHTML="";
+  recentCustomers.forEach(n=>{ const li=document.createElement("li"); li.textContent=n; list.appendChild(li); });
+}
+
 // INITIAL LOAD
-// ============================================
 renderCategory("crates");
 </script>
 
