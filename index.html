@@ -355,26 +355,25 @@ const storeData = {
 };
 for(let c in storeData){ storeData[c].sort((a,b)=>a.price-b.price); }
 
+// ---------------------- STORAGE ----------------------
 let cart = JSON.parse(localStorage.getItem("cart"))||[];
 let topCustomers = JSON.parse(localStorage.getItem("topCustomers"))||{};
 let recentOrders = JSON.parse(localStorage.getItem("recentOrders"))||[];
-let lastSpin = localStorage.getItem("lastSpin")||0;
-let spinRewards = ["Nothing","Crate","Rank","Bundle"];
-let spinWeights = [91,5,3,1];
+let tooltip = document.getElementById("tooltip");
+let grid = document.getElementById("productGrid");
 
-const tooltip = document.getElementById("tooltip");
-const grid = document.getElementById("productGrid");
-
-// ---------------------- RENDER PRODUCTS ----------------------
+// ---------------------- RENDER CATEGORY ----------------------
 function renderCategory(category){
   grid.innerHTML="";
   storeData[category].forEach(product=>{
     let card=document.createElement("div");
     card.className="card";
 
+    // Quantity buttons for crates/spawners
     let qtyOptions="";
+    let defaultQty = 1;
     if(category==="crates"){
-      qtyOptions = `<div class="qty-options">
+      qtyOptions=`<div class="qty-options">
         <button class="qty-btn active" data-qty="1">1x</button>
         <button class="qty-btn" data-qty="3">3x</button>
         <button class="qty-btn" data-qty="5">5x</button>
@@ -382,12 +381,13 @@ function renderCategory(category){
       </div>`;
     }
     if(category==="spawners"){
-      qtyOptions = `<div class="qty-options">
+      qtyOptions=`<div class="qty-options">
         <button class="qty-btn active" data-qty="3">3x</button>
         <button class="qty-btn" data-qty="5">5x</button>
         <button class="qty-btn" data-qty="10">10x</button>
         <button class="qty-btn" data-qty="25">25x</button>
       </div>`;
+      defaultQty=3;
     }
 
     card.innerHTML=`
@@ -398,7 +398,7 @@ function renderCategory(category){
       <button class="buy">Add to Cart</button>
     `;
 
-    let selectedQty = category==="spawners" ? 3 : 1;
+    let selectedQty = defaultQty;
 
     card.querySelectorAll(".qty-btn").forEach(btn=>{
       btn.addEventListener("click",()=>{
@@ -425,8 +425,12 @@ function renderCategory(category){
     card.querySelector(".buy").addEventListener("click",()=>{
       let mc=document.getElementById("mcName")?.value||"Unknown";
       let itemName = product.name;
-      if(category==="crates" || category==="spawners") itemName += ` x${selectedQty}`;
-      cart.push({name:itemName,qty:selectedQty,price:product.price,mc:mc});
+      let totalPrice = product.price;
+      if(category==="crates" || category==="spawners"){
+        itemName += ` x${selectedQty}`;
+        totalPrice *= selectedQty;
+      }
+      cart.push({name:itemName,qty:selectedQty,price:totalPrice,mc:mc});
       localStorage.setItem("cart",JSON.stringify(cart));
       showLiveSale(mc,itemName);
     });
@@ -442,7 +446,6 @@ document.querySelectorAll(".category-btn").forEach(btn=>{
     btn.classList.add("active");
 
     if(btn.dataset.category==="ranks"){
-      // Open rank type modal
       document.getElementById("rankModal").style.display="block";
       document.getElementById("rankOverlay").style.display="block";
       grid.innerHTML="";
@@ -460,38 +463,55 @@ function showLiveSale(player,item){
   setTimeout(()=>popup.classList.remove("active"),4000);
 }
 
-// ---------------------- CART MODAL ----------------------
+// ---------------------- CART ----------------------
 const cartModal = document.getElementById("cartModal");
 const cartOverlay = document.getElementById("cartOverlay");
 const cartItems = document.getElementById("cartItems");
+
 document.getElementById("openCartBtn").addEventListener("click",()=>{showCart();});
 document.getElementById("closeCart").addEventListener("click",()=>{hideCart();});
-function showCart(){cartModal.style.display="flex";cartOverlay.style.display="block";renderCartItems();}
-function hideCart(){cartModal.style.display="none";cartOverlay.style.display="none";}
+
+function showCart(){
+  cartModal.style.display="flex";
+  cartOverlay.style.display="block";
+  renderCartItems();
+}
+function hideCart(){
+  cartModal.style.display="none";
+  cartOverlay.style.display="none";
+}
+
 function renderCartItems(){
   cartItems.innerHTML="";
   cart.forEach((item,index)=>{
     let li=document.createElement("li");
-    li.textContent=`${item.mc} - ${item.qty}x ${item.name} - ${(item.price*item.qty).toFixed(2)}€`;
+    li.textContent=`${item.mc} - ${item.name} - ${(item.price).toFixed(2)}€`;
     let removeBtn=document.createElement("button"); removeBtn.textContent="❌";
-    removeBtn.addEventListener("click",()=>{cart.splice(index,1);localStorage.setItem("cart",JSON.stringify(cart));renderCartItems();});
+    removeBtn.addEventListener("click",()=>{
+      cart.splice(index,1);
+      localStorage.setItem("cart",JSON.stringify(cart));
+      renderCartItems();
+    });
     li.appendChild(removeBtn);
     cartItems.appendChild(li);
   });
 }
+
 document.getElementById("finishOrder").addEventListener("click",()=>{
   cart.forEach(item=>{
     topCustomers[item.mc]=(topCustomers[item.mc]||0)+item.qty;
-    recentOrders.unshift(`${item.mc} bought ${item.qty}x ${item.name}`);
+    recentOrders.unshift(`${item.mc} bought ${item.name}`);
     if(recentOrders.length>8) recentOrders.pop();
   });
-  localStorage.setItem("cart",JSON.stringify([]));
+  cart=[]; localStorage.setItem("cart",JSON.stringify(cart));
   localStorage.setItem("topCustomers",JSON.stringify(topCustomers));
   localStorage.setItem("recentOrders",JSON.stringify(recentOrders));
-  cart=[];updateTopCustomers();updateRecentOrders();hideCart();
+  updateTopCustomers();
+  updateRecentOrders();
+  hideCart();
 });
 
-// ---------------------- UPDATE CUSTOMER UI ----------------------
+// ---------------------- UPDATE TOP CUSTOMERS ----------------------
 function updateTopCustomers(){
   let list=document.getElementById("topCustomers");
   list.innerHTML="";
@@ -501,83 +521,19 @@ function updateTopCustomers(){
     list.appendChild(li);
   });
 }
+
 function updateRecentOrders(){
   let list=document.getElementById("recentOrders");
   list.innerHTML="";
   recentOrders.forEach(order=>{
-    let li=document.createElement("li"); li.textContent=order; list.appendChild(li);
+    let li=document.createElement("li");
+    li.textContent=order;
+    list.appendChild(li);
   });
 }
 updateTopCustomers(); updateRecentOrders();
 
-// ---------------------- SPIN WHEEL ----------------------
-const spinBtn=document.getElementById("heroSpinBtn");
-const spinModal=document.getElementById("spinModal");
-const closeSpin=document.getElementById("closeSpin");
-const spinCanvas=document.getElementById("spinWheel");
-const spinMsg=document.getElementById("spinMessage");
-spinBtn.addEventListener("click",()=>{spinModal.style.display="flex";});
-closeSpin.addEventListener("click",()=>{spinModal.style.display="none";});
-
-let ctx=spinCanvas.getContext("2d");
-let sectors = spinRewards.length;
-let anglePer = 2*Math.PI/sectors;
-function drawWheel(){
-  for(let i=0;i<sectors;i++){
-    ctx.beginPath();
-    ctx.moveTo(200,200);
-    ctx.arc(200,200,200,i*anglePer,(i+1)*anglePer);
-    ctx.fillStyle=i%2==0?"#FF4081":"#FFEB3B";
-    ctx.fill();
-    ctx.save();
-    ctx.translate(200,200);
-    ctx.rotate(i*anglePer+anglePer/2);
-    ctx.fillStyle="white";
-    ctx.font="16px Inter";
-    ctx.fillText(spinRewards[i],120,0);
-    ctx.restore();
-  }
-}
-drawWheel();
-
-function spin(){
-  let now=Date.now();
-  if(now-lastSpin<24*60*60*1000){spinMsg.textContent="⏳ Already spun today!"; return;}
-  lastSpin=now; localStorage.setItem("lastSpin",lastSpin);
-  let spins=Math.random()*3+5;
-  let randSector=Math.random(); let cumulative=0; let chosenIndex=0;
-  for(let i=0;i<spinWeights.length;i++){ cumulative+=spinWeights[i]/100; if(randSector<cumulative){chosenIndex=i;break;}}
-  let totalAngle=spins*2*Math.PI+chosenIndex*anglePer+anglePer/2;
-  let currentAngle=0;
-  let anim=setInterval(()=>{
-    currentAngle+=0.2; ctx.save(); ctx.clearRect(0,0,400,400); ctx.translate(200,200); ctx.rotate(currentAngle); ctx.translate(-200,-200); drawWheel(); ctx.restore();
-    if(currentAngle>=totalAngle){clearInterval(anim);spinMsg.textContent="🎉 You got: "+spinRewards[chosenIndex];
-      if(spinRewards[chosenIndex]!=="Nothing"){
-        let mc=document.getElementById("mcName")?.value||"Unknown";
-        cart.push({name:spinRewards[chosenIndex],qty:1,price:0,mc:mc});
-        localStorage.setItem("cart",JSON.stringify(cart));
-      }
-      confetti();
-    }
-  },10);
-}
-spinCanvas.addEventListener("click",spin);
-
-// ---------------------- CONFETTI ----------------------
-function confetti(){
-  for(let i=0;i<150;i++){
-    let div=document.createElement("div");
-    div.style.position="fixed"; div.style.width="6px"; div.style.height="6px";
-    div.style.background=["#FF4081","#FFEB3B","#4CAF50","#2196F3","#9C27B0"][Math.floor(Math.random()*5)];
-    div.style.left=Math.random()*window.innerWidth+"px";
-    div.style.top=Math.random()*window.innerHeight+"px";
-    div.style.opacity=0.8; div.style.borderRadius="50%";
-    document.body.appendChild(div);
-    setTimeout(()=>div.remove(),3000);
-  }
-}
-
-// ---------------------- RANK MODAL ----------------------
+// ---------------------- RANKS MODAL ----------------------
 document.getElementById("closeRankModal").addEventListener("click",()=>{
   document.getElementById("rankModal").style.display="none";
   document.getElementById("rankOverlay").style.display="none";
@@ -591,8 +547,7 @@ document.querySelectorAll(".rankTypeBtn").forEach(btn=>{
 
     grid.innerHTML="";
     let filteredRanks = storeData.ranks.filter(rank=>{
-      if(type==="lifetime") return rank.name.toLowerCase().includes("(lifetime)");
-      else return rank.name.toLowerCase().includes("(30d)");
+      return type==="lifetime" ? rank.name.toLowerCase().includes("lifetime") : rank.name.toLowerCase().includes("30d");
     });
 
     filteredRanks.forEach(rank=>{
@@ -614,6 +569,9 @@ document.querySelectorAll(".rankTypeBtn").forEach(btn=>{
     });
   });
 });
+
+// ---------------------- INITIAL RENDER ----------------------
+renderCategory("crates");
 </script>
 </body>
 </html>
