@@ -5,14 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CherrySMP Store</title>
 
+<!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
-
-/* ===============================
+/* =================================================
    ROOT VARIABLES
-=================================*/
-
+=================================================*/
 :root{
   --primary:#ff2d6f;
   --secondary:#ff7eb3;
@@ -22,10 +21,9 @@
   --border:rgba(255,255,255,0.08);
 }
 
-/* ===============================
+/* =================================================
    GLOBAL RESET
-=================================*/
-
+=================================================*/
 *{
   margin:0;
   padding:0;
@@ -42,20 +40,18 @@ body{
   overflow-x:hidden;
 }
 
-/* ===============================
+/* =================================================
    BACKGROUND ANIMATION
-=================================*/
-
+=================================================*/
 @keyframes gradient{
   0%{background-position:0% 50%}
   50%{background-position:100% 50%}
   100%{background-position:0% 50%}
 }
 
-/* ===============================
+/* =================================================
    NAVIGATION
-=================================*/
-
+=================================================*/
 nav{
   display:flex;
   justify-content:space-between;
@@ -93,18 +89,23 @@ nav a:hover{
   color:var(--accent);
 }
 
-/* ===============================
-   HERO
-=================================*/
-
+/* =================================================
+   HERO SECTION
+=================================================*/
 .hero{
   text-align:center;
   padding:120px 20px 80px;
 }
 
+.hero img{
+  width:120px;
+  margin-bottom:20px;
+}
+
 .hero h2{
   font-size:64px;
   font-weight:800;
+  margin-bottom:10px;
 }
 
 .hero p{
@@ -113,10 +114,20 @@ nav a:hover{
   opacity:0.85;
 }
 
-/* ===============================
-   CATEGORY BUTTONS
-=================================*/
+.hero input[type="text"]{
+  margin-top:20px;
+  padding:10px 15px;
+  border-radius:10px;
+  border:none;
+  outline:none;
+  font-size:16px;
+  width:250px;
+  text-align:center;
+}
 
+/* =================================================
+   CATEGORY BUTTONS
+=================================================*/
 .categories{
   display:flex;
   justify-content:center;
@@ -144,10 +155,9 @@ nav a:hover{
   transform:scale(1.1);
 }
 
-/* ===============================
+/* =================================================
    PRODUCT GRID
-=================================*/
-
+=================================================*/
 .products{
   padding:40px 8% 100px;
 }
@@ -158,10 +168,9 @@ nav a:hover{
   gap:30px;
 }
 
-/* ===============================
+/* =================================================
    PRODUCT CARD
-=================================*/
-
+=================================================*/
 .card{
   background:var(--glass);
   border:1px solid var(--border);
@@ -211,10 +220,27 @@ nav a:hover{
   background:var(--secondary);
 }
 
-/* ===============================
-   MODAL
-=================================*/
+/* =================================================
+   QUANTITY BUTTONS
+=================================================*/
+.qty-btn{
+  padding:5px 10px;
+  margin-right:5px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:transparent;
+  cursor:pointer;
+  font-weight:600;
+  transition:0.3s;
+}
 
+.qty-btn:hover{
+  background:var(--accent);
+}
+
+/* =================================================
+   MODALS
+=================================================*/
 .modal{
   position:fixed;
   inset:0;
@@ -257,43 +283,49 @@ nav a:hover{
   cursor:pointer;
 }
 
-/* ===============================
+/* =================================================
    FOOTER
-=================================*/
-
+=================================================*/
 footer{
   text-align:center;
   padding:40px;
   opacity:0.6;
 }
 
-/* ===============================
+/* =================================================
    RESPONSIVE
-=================================*/
-
+=================================================*/
 @media(max-width:768px){
   .hero h2{
     font-size:42px;
   }
+  .hero input[type="text"]{
+    width:200px;
+  }
 }
-
 </style>
 </head>
 <body>
 
+<!-- NAVIGATION -->
 <nav>
 <h1>CherrySMP Store</h1>
 <ul>
 <li><a href="#">Home</a></li>
 <li><a href="#">Support</a></li>
+<li><a href="#" onclick="openCart()">Cart 🛒</a></li>
 </ul>
 </nav>
 
+<!-- HERO -->
 <section class="hero">
+<img src="logo.png" alt="CherrySMP Logo">
 <h2>Premium Server Store</h2>
 <p>Support the server and unlock exclusive perks</p>
+<input type="text" id="mcName" placeholder="Enter your Minecraft username">
 </section>
 
+<!-- CATEGORY BUTTONS -->
 <section class="categories">
 <button class="category-btn active" data-category="crates">Crates</button>
 <button class="category-btn" data-category="ranks">Ranks</button>
@@ -302,11 +334,23 @@ footer{
 <button class="category-btn" data-category="bundles">Bundles</button>
 </section>
 
+<!-- PRODUCT GRID -->
 <section class="products">
 <div class="grid" id="productGrid"></div>
 </section>
 
-<!-- MODAL -->
+<!-- CART MODAL -->
+<div class="modal" id="cartModal">
+  <div class="modal-content">
+    <h2>Your Cart</h2>
+    <div id="cartItems"></div>
+    <div style="margin-top:15px;font-weight:700;" id="cartTotal"></div>
+    <button class="buy" id="checkoutBtn">Complete Order</button>
+    <button class="close" onclick="closeCart()">Close</button>
+  </div>
+</div>
+
+<!-- DISCORD MODAL -->
 <div class="modal" id="modal">
 <div class="modal-content">
 <h2>Complete Purchase</h2>
@@ -319,18 +363,16 @@ footer{
 </div>
 </div>
 
+<!-- FOOTER -->
 <footer>
 © 2026 CherrySMP • Not affiliated with Mojang
 </footer>
 
 <script>
-
-/* ===============================
-   PRODUCT DATA
-=================================*/
-
+// ============================================
+// PRODUCT DATA
+// ============================================
 const storeData = {
-
 crates:[
 {name:"Snow Key",price:"0.19€"},
 {name:"Ocean Key",price:"0.49€"},
@@ -338,7 +380,6 @@ crates:[
 {name:"Maple Key",price:"1.79€"},
 {name:"Cherry Key",price:"2.49€"},
 ],
-
 ranks:[
 {name:"VIP (Lifetime)",price:"2€"},
 {name:"Maple (Lifetime)",price:"4€"},
@@ -348,7 +389,6 @@ ranks:[
 {name:"Cherry (30d)",price:"3.50€"},
 {name:"Cherry+ (30d)",price:"5€"},
 ],
-
 credits:[
 {name:"100x Credits",price:"1€"},
 {name:"250x Credits",price:"2.29€"},
@@ -356,7 +396,6 @@ credits:[
 {name:"1000x Credits",price:"9.19€"},
 {name:"2500x Credits",price:"23.50€"},
 ],
-
 spawners:[
 {name:"Skeleton x1",price:"0.05€"},
 {name:"Skeleton x10",price:"0.50€"},
@@ -374,92 +413,122 @@ spawners:[
 {name:"Creeper x50",price:"1.29€"},
 {name:"Creeper x100",price:"2.29€"},
 ],
-
 bundles:[
-{name:"Starter Bundle",price:"3.99€",desc:"VIP Lifetime + 2 Snow Keys"},
+{name:"Starter Bundle",price:"1.99€",desc:"VIP Lifetime + 2 Snow Keys"},
 {name:"Maple Bundle",price:"6.99€",desc:"Maple Lifetime + 2 Maple Keys"},
 {name:"Cherry Elite Bundle",price:"11.99€",desc:"Cherry Lifetime + 5 Cherry Keys"},
 {name:"Ultimate Supporter",price:"19.99€",desc:"Cherry+ 30d + 10 Cherry Keys + 1000 Credits"},
 ]
-
 };
 
-/* ===============================
-   RENDER FUNCTION
-=================================*/
-
+// ============================================
+// CART SYSTEM
+// ============================================
+let cart = [];
 const grid = document.getElementById("productGrid");
 
+// Render products per category
 function renderCategory(category){
-
 grid.innerHTML="";
-
 storeData[category].forEach(product=>{
+  const card=document.createElement("div");
+  card.classList.add("card");
 
-const card=document.createElement("div");
-card.classList.add("card");
+  let qtyButtons = "";
+  if(category==="crates"||category==="spawners"){
+    qtyButtons = `<div style="margin-bottom:10px;">
+      <button class="qty-btn" data-qty="1">1x</button>
+      <button class="qty-btn" data-qty="3">3x</button>
+      <button class="qty-btn" data-qty="5">5x</button>
+      <button class="qty-btn" data-qty="10">10x</button>
+    </div>`;
+  }
 
-card.innerHTML=`
-<h3>${product.name}</h3>
-<p>${product.desc ? product.desc : "Premium server item"}</p>
-<div class="price">${product.price}</div>
-<button class="buy">Purchase</button>
-`;
+  card.innerHTML=`
+    <h3>${product.name}</h3>
+    <p>${product.desc ? product.desc : "Premium server item"}</p>
+    <div class="price">${product.price}</div>
+    ${qtyButtons}
+    <button class="buy">Add to Cart</button>
+  `;
 
-card.querySelector(".buy").addEventListener("click",()=>{
-openModal();
+  let selectedQty = 1;
+  card.querySelectorAll(".qty-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      selectedQty=parseInt(btn.dataset.qty);
+      card.querySelectorAll(".qty-btn").forEach(b=>b.style.background="transparent");
+      btn.style.background="var(--accent)";
+    });
+  });
+
+  card.querySelector(".buy").addEventListener("click",()=>{
+    const mcName = document.getElementById("mcName").value || "No Name";
+    cart.push({
+      name: product.name,
+      qty: selectedQty,
+      price: parseFloat(product.price.replace("€","")),
+      mcName: mcName
+    });
+    alert(`${product.name} x${selectedQty} added to cart!`);
+  });
+
+  grid.appendChild(card);
 });
-
-grid.appendChild(card);
-
-});
-
 }
 
-/* ===============================
-   CATEGORY SWITCHING
-=================================*/
-
-const buttons=document.querySelectorAll(".category-btn");
-
+// CATEGORY BUTTON SWITCH
+const buttons = document.querySelectorAll(".category-btn");
 buttons.forEach(btn=>{
 btn.addEventListener("click",()=>{
-
-buttons.forEach(b=>b.classList.remove("active"));
-btn.classList.add("active");
-
-renderCategory(btn.dataset.category);
-
+  buttons.forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  renderCategory(btn.dataset.category);
 });
 });
 
-/* ===============================
-   MODAL CONTROL
-=================================*/
+// CART MODAL
+function openCart(){
+  const cartModal = document.getElementById("cartModal");
+  cartModal.classList.add("active");
 
-const modal=document.getElementById("modal");
-const closeModal=document.getElementById("closeModal");
+  const cartItemsDiv = document.getElementById("cartItems");
+  cartItemsDiv.innerHTML = "";
 
-function openModal(){
-modal.classList.add("active");
+  let total = 0;
+  cart.forEach((item,i)=>{
+    total += item.price*item.qty;
+    const div = document.createElement("div");
+    div.innerHTML = `${item.name} x${item.qty} - ${(item.price*item.qty).toFixed(2)}€ <button onclick="removeFromCart(${i})">Remove</button>`;
+    cartItemsDiv.appendChild(div);
+  });
+
+  document.getElementById("cartTotal").innerText = `Total: ${total.toFixed(2)}€`;
 }
 
-closeModal.addEventListener("click",()=>{
-modal.classList.remove("active");
-});
-
-window.addEventListener("click",(e)=>{
-if(e.target===modal){
-modal.classList.remove("active");
+function closeCart(){
+  document.getElementById("cartModal").classList.remove("active");
 }
+
+function removeFromCart(index){
+  cart.splice(index,1);
+  openCart();
+}
+
+// CHECKOUT
+document.getElementById("checkoutBtn").addEventListener("click",()=>{
+  document.getElementById("modal").classList.add("active");
+  closeCart();
+  cart = [];
 });
 
-/* ===============================
-   INITIAL LOAD
-=================================*/
+// DISCORD MODAL CLOSE
+const modal = document.getElementById("modal");
+const closeModal = document.getElementById("closeModal");
+closeModal.addEventListener("click",()=>{modal.classList.remove("active");});
+window.addEventListener("click",(e)=>{if(e.target===modal){modal.classList.remove("active");}});
 
+// INITIAL LOAD
 renderCategory("crates");
-
 </script>
 
 </body>
