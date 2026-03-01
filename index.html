@@ -373,30 +373,20 @@ function renderCategory(category){
     card.className="card";
 
     let qtyOptions="";
-    // Add quantity selection for crates
     if(category==="crates"){
       qtyOptions = `<div class="qty-options">
-        <button class="qty-btn" data-qty="1">1x</button>
+        <button class="qty-btn active" data-qty="1">1x</button>
         <button class="qty-btn" data-qty="3">3x</button>
         <button class="qty-btn" data-qty="5">5x</button>
         <button class="qty-btn" data-qty="15">15x</button>
       </div>`;
     }
-    // Add quantity selection for spawners
-    else if(category==="spawners"){
+    if(category==="spawners"){
       qtyOptions = `<div class="qty-options">
-        <button class="qty-btn" data-qty="3">3x</button>
+        <button class="qty-btn active" data-qty="3">3x</button>
         <button class="qty-btn" data-qty="5">5x</button>
         <button class="qty-btn" data-qty="10">10x</button>
         <button class="qty-btn" data-qty="25">25x</button>
-      </div>`;
-    }
-    // Add rank type selection
-    let rankType="";
-    if(category==="ranks"){
-      rankType = `<div class="rank-options">
-        <button class="rank-btn active" data-type="lifetime">Lifetime</button>
-        <button class="rank-btn" data-type="subscription">30 Days</button>
       </div>`;
     }
 
@@ -405,27 +395,15 @@ function renderCategory(category){
       <p>${product.desc}</p>
       <div class="price">${product.price.toFixed(2)}€</div>
       ${qtyOptions}
-      ${rankType}
       <button class="buy">Add to Cart</button>
     `;
 
-    let selectedQty=1;
-    let selectedType="lifetime";
+    let selectedQty = category==="spawners" ? 3 : 1;
 
-    // Quantity selection
     card.querySelectorAll(".qty-btn").forEach(btn=>{
       btn.addEventListener("click",()=>{
         selectedQty=parseInt(btn.dataset.qty);
         card.querySelectorAll(".qty-btn").forEach(b=>b.classList.remove("active"));
-        btn.classList.add("active");
-      });
-    });
-
-    // Rank type selection
-    card.querySelectorAll(".rank-btn").forEach(btn=>{
-      btn.addEventListener("click",()=>{
-        selectedType=btn.dataset.type;
-        card.querySelectorAll(".rank-btn").forEach(b=>b.classList.remove("active"));
         btn.classList.add("active");
       });
     });
@@ -447,11 +425,7 @@ function renderCategory(category){
     card.querySelector(".buy").addEventListener("click",()=>{
       let mc=document.getElementById("mcName")?.value||"Unknown";
       let itemName = product.name;
-      // append qty info for spawners/crates
       if(category==="crates" || category==="spawners") itemName += ` x${selectedQty}`;
-      // append type for ranks
-      if(category==="ranks") itemName += ` (${selectedType})`;
-
       cart.push({name:itemName,qty:selectedQty,price:product.price,mc:mc});
       localStorage.setItem("cart",JSON.stringify(cart));
       showLiveSale(mc,itemName);
@@ -466,7 +440,15 @@ document.querySelectorAll(".category-btn").forEach(btn=>{
   btn.addEventListener("click",()=>{
     document.querySelectorAll(".category-btn").forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
-    renderCategory(btn.dataset.category);
+
+    if(btn.dataset.category==="ranks"){
+      // Open rank type modal
+      document.getElementById("rankModal").style.display="block";
+      document.getElementById("rankOverlay").style.display="block";
+      grid.innerHTML="";
+    } else {
+      renderCategory(btn.dataset.category);
+    }
   });
 });
 
@@ -594,6 +576,44 @@ function confetti(){
     setTimeout(()=>div.remove(),3000);
   }
 }
+
+// ---------------------- RANK MODAL ----------------------
+document.getElementById("closeRankModal").addEventListener("click",()=>{
+  document.getElementById("rankModal").style.display="none";
+  document.getElementById("rankOverlay").style.display="none";
+});
+
+document.querySelectorAll(".rankTypeBtn").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    let type = btn.dataset.type;
+    document.getElementById("rankModal").style.display="none";
+    document.getElementById("rankOverlay").style.display="none";
+
+    grid.innerHTML="";
+    let filteredRanks = storeData.ranks.filter(rank=>{
+      if(type==="lifetime") return rank.name.toLowerCase().includes("(lifetime)");
+      else return rank.name.toLowerCase().includes("(30d)");
+    });
+
+    filteredRanks.forEach(rank=>{
+      let card=document.createElement("div");
+      card.className="card";
+      card.innerHTML=`
+        <h3>${rank.name}</h3>
+        <p>${rank.desc}</p>
+        <div class="price">${rank.price.toFixed(2)}€</div>
+        <button class="buy">Add to Cart</button>
+      `;
+      card.querySelector(".buy").addEventListener("click",()=>{
+        let mc=document.getElementById("mcName")?.value||"Unknown";
+        cart.push({name:rank.name,qty:1,price:rank.price,mc:mc});
+        localStorage.setItem("cart",JSON.stringify(cart));
+        showLiveSale(mc,rank.name);
+      });
+      grid.appendChild(card);
+    });
+  });
+});
 </script>
 </body>
 </html>
