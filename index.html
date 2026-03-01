@@ -371,12 +371,66 @@ function renderCategory(category){
   storeData[category].forEach(product=>{
     let card=document.createElement("div");
     card.className="card";
+
+    let qtyOptions="";
+    // Add quantity selection for crates
+    if(category==="crates"){
+      qtyOptions = `<div class="qty-options">
+        <button class="qty-btn" data-qty="1">1x</button>
+        <button class="qty-btn" data-qty="3">3x</button>
+        <button class="qty-btn" data-qty="5">5x</button>
+        <button class="qty-btn" data-qty="15">15x</button>
+      </div>`;
+    }
+    // Add quantity selection for spawners
+    else if(category==="spawners"){
+      qtyOptions = `<div class="qty-options">
+        <button class="qty-btn" data-qty="3">3x</button>
+        <button class="qty-btn" data-qty="5">5x</button>
+        <button class="qty-btn" data-qty="10">10x</button>
+        <button class="qty-btn" data-qty="25">25x</button>
+      </div>`;
+    }
+    // Add rank type selection
+    let rankType="";
+    if(category==="ranks"){
+      rankType = `<div class="rank-options">
+        <button class="rank-btn active" data-type="lifetime">Lifetime</button>
+        <button class="rank-btn" data-type="subscription">30 Days</button>
+      </div>`;
+    }
+
     card.innerHTML=`
       <h3>${product.name}</h3>
-      <p>Premium server item</p>
+      <p>${product.desc}</p>
       <div class="price">${product.price.toFixed(2)}€</div>
+      ${qtyOptions}
+      ${rankType}
       <button class="buy">Add to Cart</button>
     `;
+
+    let selectedQty=1;
+    let selectedType="lifetime";
+
+    // Quantity selection
+    card.querySelectorAll(".qty-btn").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        selectedQty=parseInt(btn.dataset.qty);
+        card.querySelectorAll(".qty-btn").forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+      });
+    });
+
+    // Rank type selection
+    card.querySelectorAll(".rank-btn").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        selectedType=btn.dataset.type;
+        card.querySelectorAll(".rank-btn").forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+      });
+    });
+
+    // Tooltip
     card.addEventListener("mouseover",e=>{
       tooltip.style.display="block";
       tooltip.textContent=product.desc;
@@ -389,16 +443,23 @@ function renderCategory(category){
     });
     card.addEventListener("mouseleave",()=>{tooltip.style.display="none";});
 
+    // Add to cart
     card.querySelector(".buy").addEventListener("click",()=>{
       let mc=document.getElementById("mcName")?.value||"Unknown";
-      cart.push({name:product.name,qty:1,price:product.price,mc:mc});
+      let itemName = product.name;
+      // append qty info for spawners/crates
+      if(category==="crates" || category==="spawners") itemName += ` x${selectedQty}`;
+      // append type for ranks
+      if(category==="ranks") itemName += ` (${selectedType})`;
+
+      cart.push({name:itemName,qty:selectedQty,price:product.price,mc:mc});
       localStorage.setItem("cart",JSON.stringify(cart));
-      showLiveSale(mc,product.name);
+      showLiveSale(mc,itemName);
     });
+
     grid.appendChild(card);
   });
 }
-renderCategory("crates");
 
 // ---------------------- CATEGORY SWITCH ----------------------
 document.querySelectorAll(".category-btn").forEach(btn=>{
