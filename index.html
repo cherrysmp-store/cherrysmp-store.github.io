@@ -353,82 +353,37 @@ const storeData = {
     {name:"Ultimate Supporter",price:19.99,desc:"All perks + exclusive items."}
   ]
 };
+for(let c in storeData){ storeData[c].sort((a,b)=>a.price-b.price); }
 
-// ---------------------- STORAGE ----------------------
 let cart = JSON.parse(localStorage.getItem("cart"))||[];
 let topCustomers = JSON.parse(localStorage.getItem("topCustomers"))||{};
 let recentOrders = JSON.parse(localStorage.getItem("recentOrders"))||[];
 let lastSpin = localStorage.getItem("lastSpin")||0;
-
-const spinRewards = ["Nothing","Crate","Rank","Bundle"];
-const spinWeights = [91,5,3,1];
+let spinRewards = ["Nothing","Crate","Rank","Bundle"];
+let spinWeights = [91,5,3,1];
 
 const tooltip = document.getElementById("tooltip");
 const grid = document.getElementById("productGrid");
 
-// ---------------------- CLOUDS ----------------------
-const cloudsContainer = document.createElement("div");
-cloudsContainer.style.position="fixed";
-cloudsContainer.style.top=0;
-cloudsContainer.style.left=0;
-cloudsContainer.style.width="100%";
-cloudsContainer.style.height="100%";
-cloudsContainer.style.pointerEvents="none";
-cloudsContainer.style.zIndex=999;
-cloudsContainer.style.display="none";
-document.body.appendChild(cloudsContainer);
-
-let cloudElements = [];
-const cloudCount = 12;
-function createClouds(){
-  for(let i=0;i<cloudCount;i++){
-    const cloud = document.createElement("div");
-    cloud.style.position="absolute";
-    cloud.style.width=(50+Math.random()*100)+"px";
-    cloud.style.height=(20+Math.random()*30)+"px";
-    cloud.style.background="rgba(255,255,255,0.15)";
-    cloud.style.borderRadius="50%";
-    cloud.style.top=Math.random()*window.innerHeight+"px";
-    cloud.style.left=Math.random()*window.innerWidth+"px";
-    cloud.style.filter="blur(3px)";
-    cloudsContainer.appendChild(cloud);
-    cloudElements.push({
-      el:cloud,
-      speed:0.2+Math.random()*0.5,
-      direction: Math.random()<0.5?1:-1
-    });
-  }
-}
-function animateClouds(){
-  cloudElements.forEach(cloud=>{
-    let left=parseFloat(cloud.el.style.left);
-    left+=cloud.speed*cloud.direction;
-    if(left>window.innerWidth) left=-parseFloat(cloud.el.style.width);
-    if(left<-parseFloat(cloud.el.style.width)) left=window.innerWidth;
-    cloud.el.style.left=left+"px";
-  });
-  requestAnimationFrame(animateClouds);
-}
-createClouds(); animateClouds();
-
-// ---------------------- RENDER CATEGORY ----------------------
+// ---------------------- RENDER PRODUCTS ----------------------
 function renderCategory(category){
   grid.innerHTML="";
   storeData[category].forEach(product=>{
-    let card=document.createElement("div"); card.className="card";
+    let card=document.createElement("div");
+    card.className="card";
 
-    // Quantity buttons
+    // quantity buttons only for crates/spawners
     let qtyOptions="";
-    let defaultQty = category==="spawners"?3:1;
     if(category==="crates"){
-      qtyOptions=`<div class="qty-options">
+      qtyOptions = `<div class="qty-options">
         <button class="qty-btn active" data-qty="1">1x</button>
         <button class="qty-btn" data-qty="3">3x</button>
         <button class="qty-btn" data-qty="5">5x</button>
         <button class="qty-btn" data-qty="15">15x</button>
       </div>`;
-    } else if(category==="spawners"){
-      qtyOptions=`<div class="qty-options">
+    }
+    if(category==="spawners"){
+      qtyOptions = `<div class="qty-options">
         <button class="qty-btn active" data-qty="3">3x</button>
         <button class="qty-btn" data-qty="5">5x</button>
         <button class="qty-btn" data-qty="10">10x</button>
@@ -444,7 +399,9 @@ function renderCategory(category){
       <button class="buy">Add to Cart</button>
     `;
 
-    let selectedQty = defaultQty;
+    // set default quantity
+    let selectedQty = (category==="spawners")? 3 : 1;
+
     card.querySelectorAll(".qty-btn").forEach(btn=>{
       btn.addEventListener("click",()=>{
         selectedQty=parseInt(btn.dataset.qty);
@@ -453,22 +410,25 @@ function renderCategory(category){
       });
     });
 
-    // Tooltip
+    // tooltip
     card.addEventListener("mouseover",e=>{
-      tooltip.style.display="block"; tooltip.textContent=product.desc;
-      tooltip.style.left=e.pageX+15+"px"; tooltip.style.top=e.pageY+15+"px";
+      tooltip.style.display="block";
+      tooltip.textContent=product.desc;
+      tooltip.style.left=e.pageX+15+"px";
+      tooltip.style.top=e.pageY+15+"px";
     });
     card.addEventListener("mousemove",e=>{
-      tooltip.style.left=e.pageX+15+"px"; tooltip.style.top=e.pageY+15+"px";
+      tooltip.style.left=e.pageX+15+"px";
+      tooltip.style.top=e.pageY+15+"px";
     });
     card.addEventListener("mouseleave",()=>{tooltip.style.display="none";});
 
-    // Add to cart
+    // add to cart
     card.querySelector(".buy").addEventListener("click",()=>{
       let mc=document.getElementById("mcName")?.value||"Unknown";
-      let totalPrice = product.price * selectedQty;
-      let itemName = product.name + ((category==="crates"||category==="spawners")? ` x${selectedQty}`:"");
-      cart.push({name:itemName,qty:selectedQty,price:totalPrice,mc:mc});
+      let itemName = product.name;
+      if(category==="crates" || category==="spawners") itemName += ` x${selectedQty}`;
+      cart.push({name:itemName,qty:selectedQty,price:(product.price*selectedQty),mc:mc});
       localStorage.setItem("cart",JSON.stringify(cart));
       showLiveSale(mc,itemName);
     });
@@ -477,19 +437,19 @@ function renderCategory(category){
   });
 }
 
-// ---------------------- CATEGORY BUTTONS ----------------------
+// ---------------------- CATEGORY SWITCH ----------------------
 document.querySelectorAll(".category-btn").forEach(btn=>{
   btn.addEventListener("click",()=>{
     document.querySelectorAll(".category-btn").forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
-    cloudsContainer.style.display="none";
 
     if(btn.dataset.category==="ranks"){
-      document.getElementById("rankModal").style.display="block";
+      document.getElementById("rankModal").style.display="flex";
       document.getElementById("rankOverlay").style.display="block";
-      cloudsContainer.style.display="block";
       grid.innerHTML="";
-    } else renderCategory(btn.dataset.category);
+    } else {
+      renderCategory(btn.dataset.category);
+    }
   });
 });
 
@@ -501,86 +461,55 @@ function showLiveSale(player,item){
   setTimeout(()=>popup.classList.remove("active"),4000);
 }
 
-// ---------------------- CART ----------------------
-const cartModal=document.getElementById("cartModal");
-const cartOverlay=document.getElementById("cartOverlay");
-const cartItems=document.getElementById("cartItems");
-document.getElementById("openCartBtn").addEventListener("click",()=>showCart());
-document.getElementById("closeCart").addEventListener("click",()=>hideCart());
+// ---------------------- CART MODAL ----------------------
+const cartModal = document.getElementById("cartModal");
+const cartOverlay = document.getElementById("cartOverlay");
+const cartItems = document.getElementById("cartItems");
+document.getElementById("openCartBtn").addEventListener("click",()=>{showCart();});
+document.getElementById("closeCart").addEventListener("click",()=>{hideCart();});
 function showCart(){cartModal.style.display="flex";cartOverlay.style.display="block";renderCartItems();}
 function hideCart(){cartModal.style.display="none";cartOverlay.style.display="none";}
 function renderCartItems(){
   cartItems.innerHTML="";
   cart.forEach((item,index)=>{
     let li=document.createElement("li");
-    li.textContent=`${item.mc} - ${item.name} - ${item.price.toFixed(2)}€`;
+    li.textContent=`${item.mc} - ${item.qty}x ${item.name} - ${(item.price).toFixed(2)}€`;
     let removeBtn=document.createElement("button"); removeBtn.textContent="❌";
-    removeBtn.addEventListener("click",()=>{
-      cart.splice(index,1); localStorage.setItem("cart",JSON.stringify(cart)); renderCartItems();
-    });
-    li.appendChild(removeBtn); cartItems.appendChild(li);
+    removeBtn.addEventListener("click",()=>{cart.splice(index,1);localStorage.setItem("cart",JSON.stringify(cart));renderCartItems();});
+    li.appendChild(removeBtn);
+    cartItems.appendChild(li);
   });
 }
 document.getElementById("finishOrder").addEventListener("click",()=>{
   cart.forEach(item=>{
     topCustomers[item.mc]=(topCustomers[item.mc]||0)+item.qty;
-    recentOrders.unshift(`${item.mc} bought ${item.name}`);
+    recentOrders.unshift(`${item.mc} bought ${item.qty}x ${item.name}`);
     if(recentOrders.length>8) recentOrders.pop();
   });
-  cart=[]; localStorage.setItem("cart",JSON.stringify(cart));
+  localStorage.setItem("cart",JSON.stringify([]));
   localStorage.setItem("topCustomers",JSON.stringify(topCustomers));
   localStorage.setItem("recentOrders",JSON.stringify(recentOrders));
-  updateTopCustomers(); updateRecentOrders(); hideCart();
+  cart=[];updateTopCustomers();updateRecentOrders();hideCart();
 });
+
+// ---------------------- UPDATE CUSTOMER UI ----------------------
 function updateTopCustomers(){
-  let list=document.getElementById("topCustomers"); list.innerHTML="";
+  let list=document.getElementById("topCustomers");
+  list.innerHTML="";
   Object.entries(topCustomers).sort((a,b)=>b[1]-a[1]).slice(0,5).forEach(entry=>{
-    let li=document.createElement("li"); li.textContent=`${entry[0]} - ${entry[1]} items`; list.appendChild(li);
+    let li=document.createElement("li");
+    li.textContent=`${entry[0]} - ${entry[1]} items`;
+    list.appendChild(li);
   });
 }
 function updateRecentOrders(){
-  let list=document.getElementById("recentOrders"); list.innerHTML="";
-  recentOrders.forEach(order=>{let li=document.createElement("li"); li.textContent=order; list.appendChild(li);});
+  let list=document.getElementById("recentOrders");
+  list.innerHTML="";
+  recentOrders.forEach(order=>{
+    let li=document.createElement("li"); li.textContent=order; list.appendChild(li);
+  });
 }
 updateTopCustomers(); updateRecentOrders();
-
-// ---------------------- RANKS ----------------------
-document.getElementById("closeRankModal").addEventListener("click",()=>{
-  document.getElementById("rankModal").style.display="none";
-  document.getElementById("rankOverlay").style.display="none";
-  cloudsContainer.style.display="none";
-});
-
-document.querySelectorAll(".rankTypeBtn").forEach(btn=>{
-  btn.addEventListener("click",()=>{
-    let type = btn.dataset.type;
-    document.getElementById("rankModal").style.display="none";
-    document.getElementById("rankOverlay").style.display="none";
-    cloudsContainer.style.display="none";
-
-    grid.innerHTML="";
-    let filteredRanks = storeData.ranks.filter(rank=>{
-      return type==="lifetime"? rank.name.toLowerCase().includes("lifetime") : rank.name.toLowerCase().includes("30d");
-    });
-
-    filteredRanks.forEach(rank=>{
-      let card=document.createElement("div"); card.className="card";
-      card.innerHTML=`
-        <h3>${rank.name}</h3>
-        <p>${rank.desc}</p>
-        <div class="price">${rank.price.toFixed(2)}€</div>
-        <button class="buy">Add to Cart</button>
-      `;
-      card.querySelector(".buy").addEventListener("click",()=>{
-        let mc=document.getElementById("mcName")?.value||"Unknown";
-        cart.push({name:rank.name,qty:1,price:rank.price,mc:mc});
-        localStorage.setItem("cart",JSON.stringify(cart));
-        showLiveSale(mc,rank.name);
-      });
-      grid.appendChild(card);
-    });
-  });
-});
 
 // ---------------------- SPIN WHEEL ----------------------
 const spinBtn=document.getElementById("heroSpinBtn");
@@ -592,20 +521,18 @@ spinBtn.addEventListener("click",()=>{spinModal.style.display="flex";});
 closeSpin.addEventListener("click",()=>{spinModal.style.display="none";});
 
 let ctx=spinCanvas.getContext("2d");
-const sectors = spinRewards.length;
-const anglePer = 2*Math.PI/sectors;
-
-function drawWheel(rotation=0){
-  ctx.clearRect(0,0,400,400);
+let sectors = spinRewards.length;
+let anglePer = 2*Math.PI/sectors;
+function drawWheel(){
   for(let i=0;i<sectors;i++){
+    ctx.beginPath();
+    ctx.moveTo(200,200);
+    ctx.arc(200,200,200,i*anglePer,(i+1)*anglePer);
+    ctx.fillStyle=i%2==0?"#FF4081":"#FFEB3B";
+    ctx.fill();
     ctx.save();
     ctx.translate(200,200);
-    ctx.rotate(rotation+i*anglePer);
-    ctx.beginPath();
-    ctx.moveTo(0,0);
-    ctx.arc(0,0,200,0,anglePer);
-    ctx.fillStyle=i%2===0?"#FF4081":"#FFEB3B";
-    ctx.fill();
+    ctx.rotate(i*anglePer+anglePer/2);
     ctx.fillStyle="white";
     ctx.font="16px Inter";
     ctx.fillText(spinRewards[i],120,0);
@@ -618,17 +545,13 @@ function spin(){
   let now=Date.now();
   if(now-lastSpin<24*60*60*1000){spinMsg.textContent="⏳ Already spun today!"; return;}
   lastSpin=now; localStorage.setItem("lastSpin",lastSpin);
-
-  let spins = Math.random()*3 + 5;
-  let randSector=Math.random();
-  let cumulative=0;
-  let chosenIndex=0;
+  let spins=Math.random()*3+5;
+  let randSector=Math.random(); let cumulative=0; let chosenIndex=0;
   for(let i=0;i<spinWeights.length;i++){ cumulative+=spinWeights[i]/100; if(randSector<cumulative){chosenIndex=i;break;}}
-  let totalAngle=spins*2*Math.PI + chosenIndex*anglePer + anglePer/2;
+  let totalAngle=spins*2*Math.PI+chosenIndex*anglePer+anglePer/2;
   let currentAngle=0;
-  const anim = setInterval(()=>{
-    currentAngle+=0.2;
-    drawWheel(currentAngle);
+  let anim=setInterval(()=>{
+    currentAngle+=0.2; ctx.save(); ctx.clearRect(0,0,400,400); ctx.translate(200,200); ctx.rotate(currentAngle); ctx.translate(-200,-200); drawWheel(); ctx.restore();
     if(currentAngle>=totalAngle){
       clearInterval(anim);
       spinMsg.textContent="🎉 You got: "+spinRewards[chosenIndex];
@@ -646,7 +569,7 @@ spinCanvas.addEventListener("click",spin);
 // ---------------------- CONFETTI ----------------------
 function confetti(){
   for(let i=0;i<150;i++){
-    const div=document.createElement("div");
+    let div=document.createElement("div");
     div.style.position="fixed"; div.style.width="6px"; div.style.height="6px";
     div.style.background=["#FF4081","#FFEB3B","#4CAF50","#2196F3","#9C27B0"][Math.floor(Math.random()*5)];
     div.style.left=Math.random()*window.innerWidth+"px";
@@ -657,8 +580,43 @@ function confetti(){
   }
 }
 
-// ---------------------- INITIAL ----------------------
-renderCategory("crates");
+// ---------------------- RANK MODAL ----------------------
+document.getElementById("closeRankModal").addEventListener("click",()=>{
+  document.getElementById("rankModal").style.display="none";
+  document.getElementById("rankOverlay").style.display="none";
+});
+
+document.querySelectorAll(".rankTypeBtn").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    let type = btn.dataset.type; // lifetime or subscription
+    document.getElementById("rankModal").style.display="none";
+    document.getElementById("rankOverlay").style.display="none";
+
+    grid.innerHTML="";
+    let filteredRanks = storeData.ranks.filter(rank=>{
+      if(type==="lifetime") return rank.name.toLowerCase().includes("(lifetime)");
+      else return rank.name.toLowerCase().includes("(30d)");
+    });
+
+    filteredRanks.forEach(rank=>{
+      let card=document.createElement("div");
+      card.className="card";
+      card.innerHTML=`
+        <h3>${rank.name}</h3>
+        <p>${rank.desc}</p>
+        <div class="price">${rank.price.toFixed(2)}€</div>
+        <button class="buy">Add to Cart</button>
+      `;
+      card.querySelector(".buy").addEventListener("click",()=>{
+        let mc=document.getElementById("mcName")?.value||"Unknown";
+        cart.push({name:rank.name,qty:1,price:rank.price,mc:mc});
+        localStorage.setItem("cart",JSON.stringify(cart));
+        showLiveSale(mc,rank.name);
+      });
+      grid.appendChild(card);
+    });
+  });
+});
 </script>
 </body>
 </html>
