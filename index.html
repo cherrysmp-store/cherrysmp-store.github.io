@@ -214,55 +214,134 @@ countdownEl.textContent=`⏳ Event ends in: ${days}d ${hours}h ${minutes}m ${sec
 }
 setInterval(updateCountdown,1000);updateCountdown();
 
-// ================== SPIN WHEEL ==================
-const spinBtn=document.getElementById("spinBtn");
-const spinCanvas=document.getElementById("spinWheel");
-const ctx=spinCanvas.getContext("2d");
-const wheelRadius=180;
-let spinning=false;
-const wheelRewards=[
-{name:"Cherry Key",type:"crate"},{name:"Maple Rank (30d)",type:"rank"},
-{name:"Cherry Rank (30d)",type:"rank"},{name:"Starter Bundle",type:"bundle"},{name:"Nothing",type:"nothing"}];
-const wheelSegments=[
-{reward:wheelRewards[0],weight:15},{reward:wheelRewards[1],weight:10},{reward:wheelRewards[2],weight:10},{reward:wheelRewards[3],weight:5},{reward:wheelRewards[4],weight:60}];
-const colors=["#ff2d6f","#ff7eb3","#ff9ec9","#7b2ff7","#fff176"];
-function drawWheel(){
-const center={x:spinCanvas.width/2,y:spinCanvas.height/2};let startAngle=0;
-wheelSegments.forEach((seg,i)=>{
-const angle=(seg.weight/100)*2*Math.PI;
-ctx.beginPath();ctx.moveTo(center.x,center.y);ctx.arc(center.x,center.y,wheelRadius,startAngle,startAngle+angle);
-ctx.fillStyle=colors[i%colors.length];ctx.fill();ctx.strokeStyle="#111";ctx.lineWidth=2;ctx.stroke();
-ctx.save();ctx.translate(center.x,center.y);ctx.rotate(startAngle+angle/2);
-ctx.textAlign="right";ctx.fillStyle="#fff";ctx.font="14px Inter";ctx.fillText(seg.reward.name,wheelRadius-10,5);ctx.restore();
-startAngle+=angle;
-});
+// ================== PREMIUM SPIN WHEEL ==================
+const spinBtn = document.getElementById("spinBtn");
+const spinCanvas = document.getElementById("spinWheel");
+const ctx = spinCanvas.getContext("2d");
+const wheelRadius = 180;
+let spinning = false;
+
+// Wheel rewards with weights
+const wheelRewards = [
+  {name:"Cherry Key",type:"crate"},
+  {name:"Maple Rank (30d)",type:"rank"},
+  {name:"Cherry Rank (30d)",type:"rank"},
+  {name:"Starter Bundle",type:"bundle"},
+  {name:"Nothing",type:"nothing"}
+];
+const wheelSegments = [
+  {reward:wheelRewards[0],weight:15},
+  {reward:wheelRewards[1],weight:10},
+  {reward:wheelRewards[2],weight:10},
+  {reward:wheelRewards[3],weight:5},
+  {reward:wheelRewards[4],weight:60}
+];
+const colors = ["#ff2d6f","#ff7eb3","#ff9ec9","#7b2ff7","#fff176"];
+
+// Draw the wheel
+function drawWheel() {
+  const center = {x: spinCanvas.width/2, y: spinCanvas.height/2};
+  let startAngle = 0;
+  ctx.clearRect(0,0,spinCanvas.width,spinCanvas.height);
+  wheelSegments.forEach((seg,i)=>{
+    const angle = (seg.weight/100)*2*Math.PI;
+    ctx.beginPath();
+    ctx.moveTo(center.x, center.y);
+    ctx.arc(center.x, center.y, wheelRadius, startAngle, startAngle+angle);
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.fill();
+    ctx.strokeStyle = "#111"; ctx.lineWidth=2; ctx.stroke();
+    ctx.save();
+    ctx.translate(center.x, center.y);
+    ctx.rotate(startAngle + angle/2);
+    ctx.textAlign="right"; ctx.fillStyle="#fff"; ctx.font="14px Inter";
+    ctx.fillText(seg.reward.name, wheelRadius-10, 5);
+    ctx.restore();
+    startAngle += angle;
+  });
 }
 drawWheel();
-function weightedRandom(){const total=wheelSegments.reduce((a,b)=>a+b.weight,0);let r=Math.random()*total;
-for(const seg of wheelSegments){if(r<seg.weight)return seg.reward;r-=seg.weight;}
-return wheelSegments[wheelSegments.length-1].reward;}
-function checkSpinAvailable(){const lastSpin=localStorage.getItem("lastSpinTime");if(!lastSpin)return true;
-return Date.now()-parseInt(lastSpin)>24*60*60*1000;}
-spinBtn.addEventListener("click",()=>{
-if(!checkSpinAvailable()){document.getElementById("spinMessage").textContent="⏱ You can only spin once every 24 hours!";return;}
-if(spinning)return;spinning=true;localStorage.setItem("lastSpinTime",Date.now());
-const reward=weightedRandom();const fullRotations=6;const segIndex=wheelSegments.findIndex(s=>s.reward.name===reward.name);
-let startAngle=0;for(let i=0;i<segIndex;i++) startAngle+=wheelSegments[i].weight/100*360;
-const targetRotation=360*fullRotations+startAngle+Math.random()*(wheelSegments[segIndex].weight/100*360);
-let currentRotation=0;const duration=3000;const startTime=performance.now();
-function animate(time){
-const elapsed=time-startTime;const progress=Math.min(elapsed/duration,1);
-currentRotation=targetRotation*easeOutCubic(progress);
-spinCanvas.style.transform=`rotate(${currentRotation}deg)`;
-if(progress<1)requestAnimationFrame(animate);else{
-spinning=false;document.getElementById("spinMessage").textContent=`🎉 You won: ${reward.name}!`;
-let mc=document.getElementById("mcName").value||"Unknown";
-cart.push({name:reward.name,qty:1,price:0,mc});showLiveSale(mc,reward.name);
-}}
-requestAnimationFrame(animate);
+
+// Weighted random selection
+function weightedRandom() {
+  const total = wheelSegments.reduce((a,b)=>a+b.weight,0);
+  let r = Math.random()*total;
+  for(const seg of wheelSegments){
+    if(r < seg.weight) return seg.reward;
+    r -= seg.weight;
+  }
+  return wheelSegments[wheelSegments.length-1].reward;
+}
+
+// Check if spin allowed (24h per IP)
+function checkSpinAvailable() {
+  const lastSpin = localStorage.getItem("lastSpinTime");
+  if(!lastSpin) return true;
+  return Date.now() - parseInt(lastSpin) > 24*60*60*1000;
+}
+
+// Easing function for realistic spin
+function easeOutQuart(t){ return 1-(--t)*t*t*t; }
+
+// Confetti effect
+function createConfetti(){
+  const colors = ["#ff2d6f","#ff7eb3","#ff9ec9","#7b2ff7","#fff176"];
+  const duration = 2000;
+  const startTime = performance.now();
+  function drawConfetti(now){
+    const elapsed = now - startTime;
+    ctx.clearRect(0,0,spinCanvas.width,spinCanvas.height);
+    drawWheel();
+    for(let i=0;i<30;i++){
+      ctx.beginPath();
+      ctx.fillStyle = colors[Math.floor(Math.random()*colors.length)];
+      ctx.arc(Math.random()*spinCanvas.width, Math.random()*spinCanvas.height, Math.random()*6+2,0,Math.PI*2);
+      ctx.fill();
+    }
+    if(elapsed < duration) requestAnimationFrame(drawConfetti);
+  }
+  requestAnimationFrame(drawConfetti);
+}
+
+// Spin button
+spinBtn.addEventListener("click", ()=>{
+  if(!checkSpinAvailable()){document.getElementById("spinMessage").textContent="⏱ You can only spin once every 24 hours!"; return;}
+  if(spinning) return;
+  spinning=true; localStorage.setItem("lastSpinTime", Date.now());
+
+  const reward = weightedRandom();
+  const fullRotations = 6;
+  const segIndex = wheelSegments.findIndex(s=>s.reward.name===reward.name);
+  let startAngle = 0;
+  for(let i=0;i<segIndex;i++) startAngle += wheelSegments[i].weight/100*360;
+  const targetRotation = 360*fullRotations + startAngle + Math.random()*(wheelSegments[segIndex].weight/100*360);
+  let currentRotation = 0;
+  const duration = 4000; // 4 seconds spin
+  const startTime = performance.now();
+
+  // Sound effects (optional)
+  const spinAudio = new Audio('https://freesound.org/data/previews/466/466719_1007150-lq.mp3'); // short click
+  spinAudio.volume = 0.2; spinAudio.play();
+
+  function animate(time){
+    const elapsed = time - startTime;
+    const progress = Math.min(elapsed/duration,1);
+    currentRotation = targetRotation * easeOutQuart(progress);
+    spinCanvas.style.transform = `rotate(${currentRotation}deg)`;
+    if(progress < 1) requestAnimationFrame(animate);
+    else{
+      spinning=false;
+      document.getElementById("spinMessage").textContent=`🎉 You won: ${reward.name}!`;
+      let mc = document.getElementById("mcName").value||"Unknown";
+      cart.push({name:reward.name, qty:1, price:0, mc});
+      showLiveSale(mc, reward.name);
+      createConfetti();
+      const winAudio = new Audio('https://freesound.org/data/previews/320/320181_5260879-lq.mp3');
+      winAudio.volume = 0.2; winAudio.play();
+    }
+  }
+  requestAnimationFrame(animate);
 });
-function easeOutCubic(t){return (--t)*t*t+1;}
-renderCategory("crates");
 </script>
 </body>
 </html>
