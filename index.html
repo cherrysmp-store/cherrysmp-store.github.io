@@ -446,6 +446,27 @@ function renderCategory(category){
     const buyBtn=card.querySelector(".buy");
     let selectedQty=1;
     const qtyButtons=card.querySelectorAll(".qty-btn");
+    // Loop through all quantity buttons
+qtyButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    // Remove active class from all buttons, then add to clicked one
+    qtyButtons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    // Update selected quantity
+    selectedQty = parseInt(btn.dataset.qty);
+
+    // Update displayed price dynamically
+    const newPrice = product.price * selectedQty * (1 - discount / 100);
+    card.querySelector(".price").textContent = `€${newPrice.toFixed(2)}`;
+
+    // Show original price with strikethrough if discount exists
+    if (discount > 0) {
+      const oldPriceEl = card.querySelector("div[style*='line-through']");
+      if (oldPriceEl) oldPriceEl.textContent = `€${(product.price * selectedQty).toFixed(2)}`;
+    }
+  });
+});
 .qty-buttons {
   display: flex;
   gap: 10px;
