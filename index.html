@@ -489,14 +489,54 @@ document.getElementById("applyDiscount").onclick = ()=>{
 
 /* -------------------- PAYPAL CHECKOUT -------------------- */
 document.getElementById("paypalCheckout").onclick = e=>{
-  if(!document.getElementById("mcUsername").value.trim()){
-    e.preventDefault();
+  e.preventDefault();
+  const username = document.getElementById("mcUsername").value.trim();
+  if(!username){
     alert("Enter Minecraft username.");
+    return;
   }
   if(cart.length===0){
-    e.preventDefault();
     alert("Cart is empty.");
+    return;
   }
+
+  // Generate 5-char order ID
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let orderId = "";
+  for(let i=0;i<5;i++) orderId += chars.charAt(Math.floor(Math.random()*chars.length));
+
+  // Create popup
+  const orderPopup = document.createElement("div");
+  orderPopup.style.position="fixed";
+  orderPopup.style.top="50%";
+  orderPopup.style.left="50%";
+  orderPopup.style.transform="translate(-50%,-50%)";
+  orderPopup.style.background="#111118";
+  orderPopup.style.padding="30px";
+  orderPopup.style.borderRadius="20px";
+  orderPopup.style.color="#fff";
+  orderPopup.style.zIndex="9999";
+  orderPopup.style.maxWidth="400px";
+  orderPopup.style.textAlign="center";
+  orderPopup.innerHTML = `
+    <h2>✅ Order Placed!</h2>
+    <p><strong>Order ID:</strong> ${orderId}</p>
+    <h3>Items:</h3>
+    <ul>${cart.map(item=>`<li>${item.name} x${item.qty}</li>`).join("")}</ul>
+    <p>Please make a screenshot and send it to <strong>youremail@example.com</strong></p>
+    <p style="margin-top:10px;font-size:14px;opacity:0.8;">
+      This order may take a few minutes or hours depending on staff availability. Please be patient!
+    </p>
+    <button id="closeOrder" class="buy" style="margin-top:15px;">Close</button>
+  `;
+  document.body.appendChild(orderPopup);
+
+  document.getElementById("closeOrder").onclick = ()=>{
+    orderPopup.remove();
+    cart = [];
+    updateCart();
+    saveCart();
+  };
 };
 
 /* -------------------- MOBILE MENU -------------------- */
