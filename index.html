@@ -446,45 +446,16 @@ function renderCategory(category){
     const buyBtn=card.querySelector(".buy");
     let selectedQty=1;
     const qtyButtons=card.querySelectorAll(".qty-btn");
-.qty-buttons {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
+    qtyButtons.forEach(btn=>{btn.onclick=()=>{
+      qtyButtons.forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      selectedQty=parseInt(btn.dataset.qty);
+    }});
+    buyBtn.onclick=()=>{ addToCart(product,selectedQty); showAddToCartFeedback(buyBtn); }
+    grid.appendChild(card);
+  });
 }
 
-.qty-btn {
-  padding: 8px 14px;
-  border-radius: 50px;
-  border: 1px solid var(--border);
-  background: var(--glass);
-  backdrop-filter: blur(20px);
-  color: #fff;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.qty-btn.active,
-.qty-btn:hover {
-  background: linear-gradient(90deg, var(--primary), var(--secondary));
-  transform: scale(1.05);
-  box-shadow: 0 0 15px var(--primary), 0 0 25px var(--secondary);
-}
-
-    // Update selected quantity
-    selectedQty = parseInt(btn.dataset.qty);
-
-    // Update displayed price dynamically
-    const newPrice = product.price * selectedQty * (1 - discount / 100);
-    card.querySelector(".price").textContent = `€${newPrice.toFixed(2)}`;
-
-    // Show original price with strikethrough if discount exists
-    if(discount > 0) {
-      const oldPriceEl = card.querySelector("div[style*='line-through']");
-      if(oldPriceEl) oldPriceEl.textContent = `€${(product.price * selectedQty).toFixed(2)}`;
-    }
-  };
-});
 // Category buttons
 document.querySelectorAll(".category-btn").forEach(btn=>{
   const icon = categoryIcons[btn.dataset.category]||"";
