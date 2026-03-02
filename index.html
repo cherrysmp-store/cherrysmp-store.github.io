@@ -238,9 +238,17 @@ footer{text-align:center;padding:30px;opacity:0.6;}
 <!-- SPINNING WHEEL SECTION -->
 <section class="spin-section" style="text-align:center;padding:40px;">
   <h2>🎡 Spin to Win!</h2>
+  <div id="wheelContainer" style="position:relative; width:300px; height:300px; margin:20px auto;">
+    <canvas id="wheelCanvas" width="300" height="300"></canvas>
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-weight:700;color:#fff;">SPIN</div>
+  </div>
   <button id="spinWheel" class="buy">Spin Now</button>
   <p id="spinResult" style="margin-top:15px;font-weight:700;"></p>
 </section>
+
+<!-- Sounds -->
+<audio id="spinSound" src="https://freesound.org/data/previews/341/341695_6242704-lq.mp3"></audio>
+<audio id="addCartSound" src="https://freesound.org/data/previews/402/402112_5121236-lq.mp3"></audio>
 
 <section class="categories">
 <button class="category-btn active" data-category="crates">Crates</button>
@@ -382,6 +390,8 @@ function changeQty(i, amt){
 
 /* -------------------- ADD TO CART FEEDBACK -------------------- */
 function showAddToCartFeedback(button){
+  addCartSound.currentTime = 0;
+  addCartSound.play();
   const feedback = document.createElement("span");
   feedback.textContent = "✔ Added!";
   feedback.style.position = "absolute";
@@ -509,34 +519,81 @@ document.querySelectorAll(".stat").forEach(stat=>{
 });
 
 /* -------------------- SPINNING WHEEL -------------------- */
-const wheel = document.getElementById("wheel");
-const spinBtn = document.getElementById("spinButton");
-const wheelResult = document.getElementById("wheelResult");
-const lastSpin = localStorage.getItem("lastSpin");
-const now = new Date().getTime();
-const cooldown = 24*60*60*1000;
+const canvas = document.getElementById("wheelCanvas");
+const ctx = canvas.getContext("2d");
+const spinBtn = document.getElementById("spinWheel");
+const spinResult = document.getElementById("spinResult");
 
-if(lastSpin && now - lastSpin < cooldown){
-  spinBtn.disabled = true;
-  wheelResult.textContent = "Come back in " + Math.ceil((cooldown - (now - lastSpin))/3600000) + "h to spin again!";
-}
+const prizes = ["10 Credits","5 Credits","VIP Key","Nothing","100 Credits","Mystery Box"];
+const colors = ["#ff2d6f","#ff7eb3","#ff9ec9","#7b2ff7","#ff6f91","#ffb3c6"];
+let spinning = false;
 
-if(spinBtn){
-  spinBtn.onclick = () => {
-    const prizes = ["10 Credits","5 Credits","VIP Key","Nothing"];
-    const selectedPrize = prizes[Math.floor(Math.random()*prizes.length)];
-    const spins = Math.floor(Math.random()*3)+5; 
-    const degPerPrize = 360/prizes.length;
-    const prizeIndex = prizes.indexOf(selectedPrize);
-    const finalDeg = 360*spins - prizeIndex*degPerPrize - degPerPrize/2;
-    wheel.style.transform = `rotate(${finalDeg}deg)`;
-    spinBtn.disabled = true;
-    setTimeout(()=>{
-      wheelResult.textContent = "You won: " + selectedPrize;
-      localStorage.setItem("lastSpin", new Date().getTime());
-    },5000);
+// Draw the wheel
+function drawWheel(angle=0){
+  const center = canvas.width/2;
+  const radius = center-10;
+  const sliceAngle = (2*Math.PI)/prizes.length;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for(let i=0;i<prizes.length;i++){
+    ctx.beginPath();
+    ctx.moveTo(center,center);
+    ctx.arc(center,center,radius, i*sliceAngle + angle, (i+1)*sliceAngle + angle);
+    ctx.fillStyle = colors[i%colors.length];
+    ctx.fill();
+    ctx.strokeStyle="#111118";
+    ctx.lineWidth=2;
+    ctx.stroke();
+    ctx.save();
+    ctx.translate(center,center);
+    ctx.rotate(i*sliceAngle + sliceAngle/2 + angle);
+    ctx.textAlign="right";
+    ctx.fillStyle="#fff";
+    ctx.font="14px sans-serif";
+    ctx.fillText(prizes[i], radius-10,5);
+    ctx.restore();
   }
 }
+drawWheel();
+  let lastSpinTime = localStorage.getItem("lastSpin") || 0;
+const cooldown = 24*60*60*1000; // 24h
+
+spinBtn.onclick = ()=>{
+  const now = new Date().getTime();
+  if(spinning) return;
+  if(now - lastSpinTime < cooldown){
+    spinResult.textContent = `Come back in ${Math.ceil((cooldown-(now-lastSpinTime))/3600000)}h to spin again!`;
+    return;
+  }
+
+  spinning = true;
+  spinSound.currentTime = 0;
+  spinSound.play();
+  let angle = 0;
+  const spins = Math.floor(Math.random()*3)+5; 
+  const selectedPrize = prizes[Math.floor(Math.random()*prizes.length)];
+  const prizeIndex = prizes.indexOf(selectedPrize);
+  const sliceAngle = 2*Math.PI/prizes.length;
+  const finalAngle = spins*2*Math.PI - prizeIndex*sliceAngle - sliceAngle/2;
+
+  let current = 0;
+  const duration = 4000;
+  const start = performance.now();
+  function animate(t){
+    const elapsed = t-start;
+    const progress = Math.min(elapsed/duration,1);
+    const eased = 1-Math.pow(1-progress,3);
+    current = eased*finalAngle;
+    drawWheel(current);
+    if(progress<1) requestAnimationFrame(animate);
+    else{
+      spinResult.textContent = `🎉 You won: ${selectedPrize}!`;
+      spinning=false;
+      lastSpinTime = new Date().getTime();
+      localStorage.setItem("lastSpin", lastSpinTime);
+    }
+  }
+  requestAnimationFrame(animate);
+};
 
 /* -------------------- INITIAL RENDER -------------------- */
 renderCategory("crates");
