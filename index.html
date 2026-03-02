@@ -282,7 +282,7 @@ footer{text-align:center;padding:30px;opacity:0.6;}
 </div>
 
 <script>
-/* STORE DATA */
+/* -------------------- STORE DATA -------------------- */
 const storeData = {
   crates:[
     {name:"Snow Key",price:0.19,desc:"Unlock Snow Crates!"},
@@ -322,11 +322,10 @@ const storeData = {
   ]
 };
 
+/* -------------------- VARIABLES -------------------- */
 let cart = [];
 let discount = 0;
 const discountCodes = {"CHERRY20":20,"VIP10":10};
-
-/* ELEMENTS */
 const grid = document.getElementById("productGrid");
 const cartModal = document.getElementById("cartModal");
 const cartBtn = document.getElementById("cartBtn");
@@ -334,70 +333,19 @@ const closeCart = document.getElementById("closeCart");
 const cartItems = document.getElementById("cartItems");
 const cartTotal = document.getElementById("cartTotal");
 const cartCount = document.getElementById("cartCount");
-
-/* CATEGORY ICONS */
 const categoryIcons = { crates:"📦", ranks:"💎", credits:"💰", spawners:"⚔️", bundles:"🎁" };
-document.querySelectorAll(".category-btn").forEach(btn=>{
-  const icon = categoryIcons[btn.dataset.category] || "";
-  btn.textContent = `${icon} ${btn.textContent}`;
-});
 
-/* LOAD CART FROM LOCAL STORAGE */
+/* -------------------- LOAD/ SAVE CART -------------------- */
 function loadCart(){
   const stored = localStorage.getItem("cherryCart");
   if(stored) cart = JSON.parse(stored);
 }
-loadCart();
-
-/* SAVE CART TO LOCAL STORAGE */
 function saveCart(){
   localStorage.setItem("cherryCart", JSON.stringify(cart));
 }
+loadCart();
 
-/* RENDER PRODUCTS */
-function renderCategory(category){
-  grid.innerHTML="";
-  storeData[category].forEach(product=>{
-    let price = product.price * (1 - discount/100);
-    const card = document.createElement("div");
-    card.classList.add("card");
-
-    let qtySelect = "";
-    if(category==="crates" || category==="spawners"){
-      qtySelect = `<div style="margin:10px 0;">
-        <label>Qty: </label>
-        <select class="qty-select">
-          <option value="1">1x</option>
-          <option value="3">3x</option>
-          <option value="5">5x</option>
-          <option value="10">10x</option>
-        </select>
-      </div>`;
-    }
-
-    card.innerHTML = `
-      ${product.popular?'<span class="popular-badge">⭐ MOST POPULAR</span>':''}
-      <h3 title="${product.desc}">${product.name}</h3>
-      <p>${product.desc || "Premium server item"}</p>
-      ${discount>0?`<div style="text-decoration:line-through;opacity:0.6;">€${product.price.toFixed(2)}</div>`:""}
-      <div class="price">€${price.toFixed(2)}</div>
-      ${qtySelect}
-      <button class="buy">Add to Cart</button>
-    `;
-
-    const buyBtn = card.querySelector(".buy");
-    const qtyElem = card.querySelector(".qty-select");
-    buyBtn.onclick = ()=>{
-      const qty = qtyElem ? parseInt(qtyElem.value) : 1;
-      addToCart(product, qty);
-      showAddToCartFeedback(buyBtn);
-    }
-
-    grid.appendChild(card);
-  });
-}
-
-/* ADD TO CART */
+/* -------------------- CART LOGIC -------------------- */
 function addToCart(product, qty=1){
   let existing = cart.find(i=>i.name===product.name);
   if(existing) existing.qty += qty;
@@ -405,8 +353,6 @@ function addToCart(product, qty=1){
   updateCart();
   saveCart();
 }
-
-/* UPDATE CART */
 function updateCart(){
   cartItems.innerHTML = "";
   let total = 0;
@@ -427,8 +373,6 @@ function updateCart(){
   cartCount.textContent = cart.reduce((a,b)=>a+b.qty,0);
   document.getElementById("paypalCheckout").href = `https://www.paypal.com/paypalme/YOURNAME/${total.toFixed(2)}`;
 }
-
-/* CHANGE QUANTITY */
 function changeQty(i, amt){
   cart[i].qty += amt;
   if(cart[i].qty <= 0) cart.splice(i,1);
@@ -436,30 +380,93 @@ function changeQty(i, amt){
   saveCart();
 }
 
-/* ANIMATED ADD TO CART FEEDBACK */
+/* -------------------- ADD TO CART FEEDBACK -------------------- */
 function showAddToCartFeedback(button){
   const feedback = document.createElement("span");
   feedback.textContent = "✔ Added!";
   feedback.style.position = "absolute";
+  const rect = button.getBoundingClientRect();
+  feedback.style.top = (rect.top + window.scrollY - 30) + "px";
+  feedback.style.left = (rect.left + window.scrollX) + "px";
   feedback.style.color = "#ff2d6f";
   feedback.style.fontWeight = "700";
-  feedback.style.top = (button.getBoundingClientRect().top - 30) + "px";
-  feedback.style.left = (button.getBoundingClientRect().left) + "px";
   feedback.style.transition = "all 1s ease";
   document.body.appendChild(feedback);
   setTimeout(()=>{
-    feedback.style.top = (feedback.getBoundingClientRect().top - 20) + "px";
+    feedback.style.top = (rect.top + window.scrollY - 50) + "px";
     feedback.style.opacity = "0";
   },10);
   setTimeout(()=>feedback.remove(),1000);
 }
 
-/* CART MODAL */
+/* -------------------- RENDER PRODUCTS -------------------- */
+function renderCategory(category){
+  grid.innerHTML="";
+  storeData[category].forEach(product=>{
+    let price = product.price * (1 - discount/100);
+    const card = document.createElement("div");
+    card.classList.add("card");
+
+    /* QUANTITY BUTTONS */
+    let qtyHTML = "";
+    if(category==="crates" || category==="spawners"){
+      qtyHTML = `<div class="qty-buttons">
+        <button class="qty-btn active" data-qty="1">1×</button>
+        <button class="qty-btn" data-qty="5">5×</button>
+        <button class="qty-btn" data-qty="10">10×</button>
+        <button class="qty-btn" data-qty="20">20×</button>
+      </div>`;
+    }
+
+    card.innerHTML = `
+      ${product.popular?'<span class="popular-badge">⭐ MOST POPULAR</span>':''}
+      <h3 title="${product.desc}">${product.name}</h3>
+      <p>${product.desc || "Premium server item"}</p>
+      ${discount>0?`<div style="text-decoration:line-through;opacity:0.6;">€${product.price.toFixed(2)}</div>`:""}
+      <div class="price">€${price.toFixed(2)}</div>
+      ${qtyHTML}
+      <button class="buy">Add to Cart</button>
+    `;
+
+    const buyBtn = card.querySelector(".buy");
+    let selectedQty = 1;
+
+    /* QUANTITY BUTTON LOGIC */
+    const qtyButtons = card.querySelectorAll(".qty-btn");
+    qtyButtons.forEach(btn=>{
+      btn.onclick = ()=>{
+        qtyButtons.forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        selectedQty = parseInt(btn.dataset.qty);
+      };
+    });
+
+    buyBtn.onclick = ()=>{
+      addToCart(product, selectedQty);
+      showAddToCartFeedback(buyBtn);
+    }
+
+    grid.appendChild(card);
+  });
+}
+
+/* -------------------- CATEGORY BUTTONS -------------------- */
+document.querySelectorAll(".category-btn").forEach(btn=>{
+  const icon = categoryIcons[btn.dataset.category] || "";
+  btn.textContent = `${icon} ${btn.textContent}`;
+  btn.onclick = ()=>{
+    document.querySelectorAll(".category-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    renderCategory(btn.dataset.category);
+  };
+});
+
+/* -------------------- CART MODAL -------------------- */
 cartBtn.onclick = e => { e.preventDefault(); cartModal.classList.add("active"); };
 closeCart.onclick = ()=> cartModal.classList.remove("active");
 window.onclick = e => { if(e.target === cartModal) cartModal.classList.remove("active"); };
 
-/* DISCOUNT CODE */
+/* -------------------- DISCOUNT CODES -------------------- */
 document.getElementById("applyDiscount").onclick = ()=>{
   let code = document.getElementById("discountCode").value.toUpperCase();
   if(discountCodes[code]){
@@ -470,7 +477,7 @@ document.getElementById("applyDiscount").onclick = ()=>{
   } else alert("Invalid Code");
 };
 
-/* PAYPAL CHECKOUT VALIDATION */
+/* -------------------- PAYPAL CHECKOUT -------------------- */
 document.getElementById("paypalCheckout").onclick = e=>{
   if(!document.getElementById("mcUsername").value.trim()){
     e.preventDefault();
@@ -482,22 +489,13 @@ document.getElementById("paypalCheckout").onclick = e=>{
   }
 };
 
-/* CATEGORY BUTTONS */
-document.querySelectorAll(".category-btn").forEach(btn=>{
-  btn.onclick = ()=>{
-    document.querySelectorAll(".category-btn").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-    renderCategory(btn.dataset.category);
-  };
-});
-
-/* MOBILE MENU */
+/* -------------------- MOBILE MENU -------------------- */
 const mobileBtn = document.getElementById("mobileMenuBtn");
 if(mobileBtn){
   mobileBtn.onclick = ()=> document.querySelector("nav ul").classList.toggle("show");
 }
 
-/* ANIMATED STATS */
+/* -------------------- STATS ANIMATION -------------------- */
 document.querySelectorAll(".stat").forEach(stat=>{
   let target = parseFloat(stat.dataset.target), count = 0, inc = target/100;
   function update(){ 
@@ -510,17 +508,37 @@ document.querySelectorAll(".stat").forEach(stat=>{
   update();
 });
 
-/* SPINNING WHEEL */
-const spinBtn = document.getElementById("spinWheel");
+/* -------------------- SPINNING WHEEL -------------------- */
+const wheel = document.getElementById("wheel");
+const spinBtn = document.getElementById("spinButton");
+const wheelResult = document.getElementById("wheelResult");
+const lastSpin = localStorage.getItem("lastSpin");
+const now = new Date().getTime();
+const cooldown = 24*60*60*1000;
+
+if(lastSpin && now - lastSpin < cooldown){
+  spinBtn.disabled = true;
+  wheelResult.textContent = "Come back in " + Math.ceil((cooldown - (now - lastSpin))/3600000) + "h to spin again!";
+}
+
 if(spinBtn){
-  spinBtn.onclick = ()=>{
+  spinBtn.onclick = () => {
     const prizes = ["10 Credits","5 Credits","VIP Key","Nothing"];
-    const result = prizes[Math.floor(Math.random()*prizes.length)];
-    document.getElementById("spinResult").textContent = "You won: " + result;
+    const selectedPrize = prizes[Math.floor(Math.random()*prizes.length)];
+    const spins = Math.floor(Math.random()*3)+5; 
+    const degPerPrize = 360/prizes.length;
+    const prizeIndex = prizes.indexOf(selectedPrize);
+    const finalDeg = 360*spins - prizeIndex*degPerPrize - degPerPrize/2;
+    wheel.style.transform = `rotate(${finalDeg}deg)`;
+    spinBtn.disabled = true;
+    setTimeout(()=>{
+      wheelResult.textContent = "You won: " + selectedPrize;
+      localStorage.setItem("lastSpin", new Date().getTime());
+    },5000);
   }
 }
 
-/* INITIAL RENDER */
+/* -------------------- INITIAL RENDER -------------------- */
 renderCategory("crates");
 updateCart();
 </script>
