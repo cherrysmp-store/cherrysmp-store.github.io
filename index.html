@@ -10,6 +10,40 @@
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
+/* SPINNING WHEEL */
+.spin-section .buy{
+  /* ...existing styles... */
+}
+
+/* -------------------- TOAST NOTIFICATIONS -------------------- */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  background: linear-gradient(90deg, #ff2d6f, #ff7eb3);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 25px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transition: all 0.5s ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-20px);
+}
+
+.toast.hide {
+  opacity: 0;
+  transform: translateX(-50%) translateY(0);
+}
+  
 :root{
   --primary:#ff2d6f;
   --secondary:#ff7eb3;
