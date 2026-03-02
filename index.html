@@ -4,8 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CherrySMP Store</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+<!-- CONFETTI LIBRARY -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
 :root{
@@ -98,6 +100,7 @@ nav a:hover{color:var(--accent);}
   padding:20px;
   display:flex;
   flex-direction:column;
+  position:relative;
 }
 .card:hover{transform:translateY(-5px);}
 .price{font-size:20px;font-weight:800;margin-top:auto;}
@@ -111,7 +114,11 @@ nav a:hover{color:var(--accent);}
   background:var(--primary);
   color:white;
 }
-.buy:hover{background:var(--secondary);}
+.buy:hover{
+  background:var(--secondary);
+  box-shadow: 0 0 20px #ff2d6f, 0 0 40px #ff7eb3;
+  transform: scale(1.05);
+}
 .popular-badge{
   background:linear-gradient(90deg,#ff2d6f,#ff7eb3);
   padding:4px 10px;
@@ -162,7 +169,7 @@ nav a:hover{color:var(--accent);}
 .stat-grid div h3{font-size:28px;margin-bottom:5px;}
 footer{text-align:center;padding:30px;opacity:0.6;}
 
-  /* MOBILE MENU */
+/* MOBILE MENU */
 @media (max-width:768px){
   nav ul{
     display:none;
@@ -199,7 +206,7 @@ footer{text-align:center;padding:30px;opacity:0.6;}
   color:#fff;
 }
 
-/* SPINNING WHEEL BUTTON */
+/* SPINNING WHEEL */
 .spin-section .buy{
   padding:12px 25px;
   border-radius:15px;
@@ -212,7 +219,7 @@ footer{text-align:center;padding:30px;opacity:0.6;}
   transition:0.3s;
 }
 .spin-section .buy:hover{
-  background:linear-gradient(90deg,#ff7eb3,#ff2d6f);
+  background:linear-gradient(90deg,#ff7eb3,#ff7eb3);
 }
 </style>
 </head>
@@ -222,7 +229,7 @@ footer{text-align:center;padding:30px;opacity:0.6;}
 
 <nav>
   <h1>CherrySMP Store</h1>
-  <button id="mobileMenuBtn">☰</button> <!-- Mobile menu button -->
+  <button id="mobileMenuBtn">☰</button>
   <ul>
     <li><a href="#">Home</a></li>
     <li><a href="#">Support</a></li>
@@ -233,35 +240,45 @@ footer{text-align:center;padding:30px;opacity:0.6;}
   </ul>
 </nav>
 
-<!-- ...existing sections like hero, categories, products, stats -->
-
-<!-- SPINNING WHEEL SECTION -->
+<!-- SPINNING WHEEL -->
 <section class="spin-section" style="text-align:center;padding:40px;">
   <h2>🎡 Spin to Win!</h2>
   <div id="wheelContainer" style="position:relative; width:300px; height:300px; margin:20px auto;">
     <canvas id="wheelCanvas" width="300" height="300"></canvas>
-    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-weight:700;color:#fff;">SPIN</div>
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-weight:700;color:#fff;pointer-events:none;">SPIN</div>
+    <!-- Pointer Arrow -->
+    <div style="
+      position:absolute;
+      top:-10px;
+      left:50%;
+      transform:translateX(-50%);
+      width:0; 
+      height:0; 
+      border-left:15px solid transparent;
+      border-right:15px solid transparent;
+      border-bottom:25px solid #fff;
+      z-index:10;
+    "></div>
   </div>
   <button id="spinWheel" class="buy">Spin Now</button>
   <p id="spinResult" style="margin-top:15px;font-weight:700;"></p>
 </section>
 
-<!-- Sounds -->
-<audio id="spinSound" src="https://freesound.org/data/previews/341/341695_6242704-lq.mp3"></audio>
-<audio id="addCartSound" src="https://freesound.org/data/previews/402/402112_5121236-lq.mp3"></audio>
-
+<!-- CATEGORIES -->
 <section class="categories">
-<button class="category-btn active" data-category="crates">Crates</button>
-<button class="category-btn" data-category="ranks">Ranks</button>
-<button class="category-btn" data-category="credits">Credits</button>
-<button class="category-btn" data-category="spawners">Spawners</button>
-<button class="category-btn" data-category="bundles">Bundles</button>
+  <button class="category-btn active" data-category="crates">Crates</button>
+  <button class="category-btn" data-category="ranks">Ranks</button>
+  <button class="category-btn" data-category="credits">Credits</button>
+  <button class="category-btn" data-category="spawners">Spawners</button>
+  <button class="category-btn" data-category="bundles">Bundles</button>
 </section>
 
+<!-- PRODUCTS -->
 <section class="products">
 <div class="grid" id="productGrid"></div>
 </section>
 
+<!-- STATS -->
 <section class="stats">
 <h2>Server Stats</h2>
 <div class="stat-grid">
@@ -289,8 +306,13 @@ footer{text-align:center;padding:30px;opacity:0.6;}
 </div>
 </div>
 
+<!-- SOUNDS -->
+<audio id="spinSound" src="https://freesound.org/data/previews/341/341695_6242704-lq.mp3"></audio>
+<audio id="addCartSound" src="https://freesound.org/data/previews/402/402112_5121236-lq.mp3"></audio>
+<audio id="tickSound" src="https://freesound.org/data/previews/66/66717_634166-lq.mp3"></audio>
+
 <script>
-/* -------------------- STORE DATA -------------------- */
+// -------------------- STORE DATA --------------------
 const storeData = {
   crates:[
     {name:"Snow Key",price:0.19,desc:"Unlock Snow Crates!"},
@@ -330,7 +352,7 @@ const storeData = {
   ]
 };
 
-/* -------------------- VARIABLES -------------------- */
+// -------------------- VARIABLES --------------------
 let cart = [];
 let discount = 0;
 const discountCodes = {"CHERRY20":20,"VIP10":10};
@@ -342,18 +364,16 @@ const cartItems = document.getElementById("cartItems");
 const cartTotal = document.getElementById("cartTotal");
 const cartCount = document.getElementById("cartCount");
 const categoryIcons = { crates:"📦", ranks:"💎", credits:"💰", spawners:"⚔️", bundles:"🎁" };
+const spinSound = document.getElementById("spinSound");
+const addCartSound = document.getElementById("addCartSound");
+const tickSound = document.getElementById("tickSound");
 
-/* -------------------- LOAD/ SAVE CART -------------------- */
-function loadCart(){
-  const stored = localStorage.getItem("cherryCart");
-  if(stored) cart = JSON.parse(stored);
-}
-function saveCart(){
-  localStorage.setItem("cherryCart", JSON.stringify(cart));
-}
+// Load/Save Cart
+function loadCart(){ const stored = localStorage.getItem("cherryCart"); if(stored) cart = JSON.parse(stored);}
+function saveCart(){ localStorage.setItem("cherryCart", JSON.stringify(cart));}
 loadCart();
 
-/* -------------------- CART LOGIC -------------------- */
+// -------------------- CART --------------------
 function addToCart(product, qty=1){
   let existing = cart.find(i=>i.name===product.name);
   if(existing) existing.qty += qty;
@@ -362,39 +382,32 @@ function addToCart(product, qty=1){
   saveCart();
 }
 function updateCart(){
-  cartItems.innerHTML = "";
-  let total = 0;
+  cartItems.innerHTML="";
+  let total=0;
   cart.forEach((item,i)=>{
-    total += item.price * item.qty;
-    cartItems.innerHTML += `
-      <div style="display:flex;justify-content:space-between;margin:5px 0;">
-        <span>${item.name} x${item.qty}</span>
-        <div>
-          <button onclick="changeQty(${i},-1)">-</button>
-          <button onclick="changeQty(${i},1)">+</button>
-        </div>
+    total+=item.price*item.qty;
+    cartItems.innerHTML+=`<div style="display:flex;justify-content:space-between;margin:5px 0;">
+      <span>${item.name} x${item.qty}</span>
+      <div>
+        <button onclick="changeQty(${i},-1)">-</button>
+        <button onclick="changeQty(${i},1)">+</button>
       </div>
-    `;
+    </div>`;
   });
-  total = total * (1 - discount/100);
+  total = total*(1-discount/100);
   cartTotal.textContent = total.toFixed(2);
   cartCount.textContent = cart.reduce((a,b)=>a+b.qty,0);
-  document.getElementById("paypalCheckout").href = `https://www.paypal.com/paypalme/YOURNAME/${total.toFixed(2)}`;
+  document.getElementById("paypalCheckout").href=`https://www.paypal.com/paypalme/YOURNAME/${total.toFixed(2)}`;
 }
-function changeQty(i, amt){
-  cart[i].qty += amt;
-  if(cart[i].qty <= 0) cart.splice(i,1);
-  updateCart();
-  saveCart();
-}
+function changeQty(i,amt){ cart[i].qty+=amt; if(cart[i].qty<=0) cart.splice(i,1); updateCart(); saveCart();}
 
-/* -------------------- ADD TO CART FEEDBACK -------------------- */
+// Add-to-cart feedback with sound
 function showAddToCartFeedback(button){
-  addCartSound.currentTime = 0;
+  addCartSound.currentTime=0;
   addCartSound.play();
   const feedback = document.createElement("span");
   feedback.textContent = "✔ Added!";
-  feedback.style.position = "absolute";
+  feedback.style.position="absolute";
   const rect = button.getBoundingClientRect();
   feedback.style.top = (rect.top + window.scrollY - 30) + "px";
   feedback.style.left = (rect.left + window.scrollX) + "px";
@@ -402,67 +415,50 @@ function showAddToCartFeedback(button){
   feedback.style.fontWeight = "700";
   feedback.style.transition = "all 1s ease";
   document.body.appendChild(feedback);
-  setTimeout(()=>{
-    feedback.style.top = (rect.top + window.scrollY - 50) + "px";
-    feedback.style.opacity = "0";
-  },10);
+  setTimeout(()=>{feedback.style.top=(rect.top + window.scrollY - 50)+"px"; feedback.style.opacity="0";},10);
   setTimeout(()=>feedback.remove(),1000);
 }
 
-/* -------------------- RENDER PRODUCTS -------------------- */
+// -------------------- PRODUCTS --------------------
 function renderCategory(category){
   grid.innerHTML="";
   storeData[category].forEach(product=>{
-    let price = product.price * (1 - discount/100);
-    const card = document.createElement("div");
+    let price=product.price*(1-discount/100);
+    const card=document.createElement("div");
     card.classList.add("card");
-
-    /* QUANTITY BUTTONS */
-    let qtyHTML = "";
+    let qtyHTML="";
     if(category==="crates" || category==="spawners"){
-      qtyHTML = `<div class="qty-buttons">
+      qtyHTML=`<div class="qty-buttons">
         <button class="qty-btn active" data-qty="1">1×</button>
         <button class="qty-btn" data-qty="5">5×</button>
         <button class="qty-btn" data-qty="10">10×</button>
         <button class="qty-btn" data-qty="20">20×</button>
       </div>`;
     }
-
-    card.innerHTML = `
-      ${product.popular?'<span class="popular-badge">⭐ MOST POPULAR</span>':''}
+    card.innerHTML=`${product.popular?'<span class="popular-badge">⭐ MOST POPULAR</span>':''}
       <h3 title="${product.desc}">${product.name}</h3>
-      <p>${product.desc || "Premium server item"}</p>
+      <p>${product.desc||"Premium server item"}</p>
       ${discount>0?`<div style="text-decoration:line-through;opacity:0.6;">€${product.price.toFixed(2)}</div>`:""}
       <div class="price">€${price.toFixed(2)}</div>
       ${qtyHTML}
       <button class="buy">Add to Cart</button>
     `;
-
-    const buyBtn = card.querySelector(".buy");
-    let selectedQty = 1;
-
-    /* QUANTITY BUTTON LOGIC */
-    const qtyButtons = card.querySelectorAll(".qty-btn");
-    qtyButtons.forEach(btn=>{
-      btn.onclick = ()=>{
-        qtyButtons.forEach(b=>b.classList.remove("active"));
-        btn.classList.add("active");
-        selectedQty = parseInt(btn.dataset.qty);
-      };
-    });
-
-    buyBtn.onclick = ()=>{
-      addToCart(product, selectedQty);
-      showAddToCartFeedback(buyBtn);
-    }
-
+    const buyBtn=card.querySelector(".buy");
+    let selectedQty=1;
+    const qtyButtons=card.querySelectorAll(".qty-btn");
+    qtyButtons.forEach(btn=>{btn.onclick=()=>{
+      qtyButtons.forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      selectedQty=parseInt(btn.dataset.qty);
+    }});
+    buyBtn.onclick=()=>{ addToCart(product,selectedQty); showAddToCartFeedback(buyBtn); }
     grid.appendChild(card);
   });
 }
 
-/* -------------------- CATEGORY BUTTONS -------------------- */
+// Category buttons
 document.querySelectorAll(".category-btn").forEach(btn=>{
-  const icon = categoryIcons[btn.dataset.category] || "";
+  const icon = categoryIcons[btn.dataset.category]||"";
   btn.textContent = `${icon} ${btn.textContent}`;
   btn.onclick = ()=>{
     document.querySelectorAll(".category-btn").forEach(b=>b.classList.remove("active"));
@@ -471,173 +467,153 @@ document.querySelectorAll(".category-btn").forEach(btn=>{
   };
 });
 
-/* -------------------- CART MODAL -------------------- */
-cartBtn.onclick = e => { e.preventDefault(); cartModal.classList.add("active"); };
-closeCart.onclick = ()=> cartModal.classList.remove("active");
-window.onclick = e => { if(e.target === cartModal) cartModal.classList.remove("active"); };
+// CART MODAL
+cartBtn.onclick=e=>{ e.preventDefault(); cartModal.classList.add("active");};
+closeCart.onclick=()=>cartModal.classList.remove("active");
+window.onclick=e=>{if(e.target===cartModal)cartModal.classList.remove("active");};
 
-/* -------------------- DISCOUNT CODES -------------------- */
-document.getElementById("applyDiscount").onclick = ()=>{
-  let code = document.getElementById("discountCode").value.toUpperCase();
-  if(discountCodes[code]){
-    discount = discountCodes[code];
-    alert("Discount Applied");
-    renderCategory(document.querySelector(".category-btn.active").dataset.category);
-    updateCart();
-  } else alert("Invalid Code");
+// DISCOUNT
+document.getElementById("applyDiscount").onclick=()=>{
+  let code=document.getElementById("discountCode").value.toUpperCase();
+  if(discountCodes[code]){ discount=discountCodes[code]; alert("Discount Applied"); renderCategory(document.querySelector(".category-btn.active").dataset.category); updateCart();}
+  else alert("Invalid Code");
 };
 
-/* -------------------- PAYPAL CHECKOUT -------------------- */
-document.getElementById("paypalCheckout").onclick = e=>{
-  e.preventDefault();
-  const username = document.getElementById("mcUsername").value.trim();
-  if(!username){
-    alert("Enter Minecraft username.");
-    return;
-  }
-  if(cart.length===0){
-    alert("Cart is empty.");
-    return;
-  }
+// PAYPAL CHECKOUT
+document.getElementById("paypalCheckout").onclick=e=>{
+  if(!document.getElementById("mcUsername").value.trim()){ e.preventDefault(); alert("Enter Minecraft username."); return; }
+  if(cart.length===0){ e.preventDefault(); alert("Cart is empty."); return; }
 
-  // Generate 5-char order ID
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let orderId = "";
-  for(let i=0;i<5;i++) orderId += chars.charAt(Math.floor(Math.random()*chars.length));
+  // Generate 5-character order ID
+  const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let orderID="";
+  for(let i=0;i<5;i++) orderID+=chars.charAt(Math.floor(Math.random()*chars.length));
 
-  // Create popup
-  const orderPopup = document.createElement("div");
+  // Create order popup
+  const orderPopup=document.createElement("div");
   orderPopup.style.position="fixed";
   orderPopup.style.top="50%";
   orderPopup.style.left="50%";
   orderPopup.style.transform="translate(-50%,-50%)";
-  orderPopup.style.background="#111118";
-  orderPopup.style.padding="30px";
-  orderPopup.style.borderRadius="20px";
+  orderPopup.style.background="#222";
+  orderPopup.style.padding="20px";
+  orderPopup.style.borderRadius="15px";
+  orderPopup.style.textAlign="center";
   orderPopup.style.color="#fff";
   orderPopup.style.zIndex="9999";
-  orderPopup.style.maxWidth="400px";
-  orderPopup.style.textAlign="center";
-  orderPopup.innerHTML = `
-    <h2>✅ Order Placed!</h2>
-    <p><strong>Order ID:</strong> ${orderId}</p>
-    <h3>Items:</h3>
-    <ul>${cart.map(item=>`<li>${item.name} x${item.qty}</li>`).join("")}</ul>
-    <p>Please make a screenshot and send it to <strong>cherrysmp000@gmail.com</strong></p>
-    <p style="margin-top:10px;font-size:14px;opacity:0.8;">
-      This order may take a few minutes or hours depending on staff availability. Please be patient!
-    </p>
-    <button id="closeOrder" class="buy" style="margin-top:15px;">Close</button>
+  orderPopup.innerHTML=`<h2>Order ID: ${orderID}</h2>
+    <p>Purchased Items:</p>
+    <ul>${cart.map(i=>`<li>${i.name} x${i.qty}</li>`).join("")}</ul>
+    <p>📸 Take a screenshot and send it to: <strong>youremail@example.com</strong></p>
+    <p>⏳ Order will take few minutes or hours depending on staff availability. Please be patient!</p>
+    <button onclick="this.parentElement.remove()">Close</button>
   `;
   document.body.appendChild(orderPopup);
 
-  document.getElementById("closeOrder").onclick = ()=>{
-    orderPopup.remove();
-    cart = [];
-    updateCart();
-    saveCart();
-  };
+  // Clear cart after order
+  cart=[]; discount=0; updateCart(); saveCart();
 };
 
-/* -------------------- MOBILE MENU -------------------- */
+// MOBILE MENU
 const mobileBtn = document.getElementById("mobileMenuBtn");
-if(mobileBtn){
-  mobileBtn.onclick = ()=> document.querySelector("nav ul").classList.toggle("show");
-}
+if(mobileBtn) mobileBtn.onclick=()=>document.querySelector("nav ul").classList.toggle("show");
 
-/* -------------------- STATS ANIMATION -------------------- */
+// STATS ANIMATION
 document.querySelectorAll(".stat").forEach(stat=>{
-  let target = parseFloat(stat.dataset.target), count = 0, inc = target/100;
+  let target=parseFloat(stat.dataset.target),count=0,inc=target/100;
   function update(){ 
-    count += inc;
-    if(count < target){ 
+    count+=inc;
+    if(count<target){ 
       stat.textContent = target%1===0?Math.floor(count):count.toFixed(1);
       requestAnimationFrame(update);
-    } else stat.textContent = target;
+    }else stat.textContent=target;
   }
   update();
 });
 
-/* -------------------- SPINNING WHEEL -------------------- */
-const canvas = document.getElementById("wheelCanvas");
-const ctx = canvas.getContext("2d");
-const spinBtn = document.getElementById("spinWheel");
-const spinResult = document.getElementById("spinResult");
+// -------------------- SPINNING WHEEL --------------------
+const canvas=document.getElementById("wheelCanvas");
+const ctx=canvas.getContext("2d");
+const spinBtn=document.getElementById("spinWheel");
+const spinResult=document.getElementById("spinResult");
 
-const prizes = ["10 Credits","5 Credits","VIP Key","Nothing","100 Credits","Mystery Box"];
-const colors = ["#ff2d6f","#ff7eb3","#ff9ec9","#7b2ff7","#ff6f91","#ffb3c6"];
-let spinning = false;
+const prizes=["10 Credits","5 Credits","VIP Key","Nothing","100 Credits","Snow Key"];
+const colors=["#ff2d6f","#ff7eb3","#ff9ec9","#7b2ff7","#ff6e8c","#ff90c1"];
+let spinning=false;
 
-// Draw the wheel
+// DRAW WHEEL
 function drawWheel(angle=0){
-  const center = canvas.width/2;
-  const radius = center-10;
-  const sliceAngle = (2*Math.PI)/prizes.length;
+  const center=canvas.width/2;
+  const radius=center-10;
+  const sliceAngle=(2*Math.PI)/prizes.length;
   ctx.clearRect(0,0,canvas.width,canvas.height);
   for(let i=0;i<prizes.length;i++){
     ctx.beginPath();
     ctx.moveTo(center,center);
-    ctx.arc(center,center,radius, i*sliceAngle + angle, (i+1)*sliceAngle + angle);
-    ctx.fillStyle = colors[i%colors.length];
+    ctx.arc(center,center,radius,i*sliceAngle+angle,(i+1)*sliceAngle+angle);
+
+    const grad=ctx.createRadialGradient(center,center,radius/3,center,center,radius);
+    grad.addColorStop(0,colors[i%colors.length]);
+    grad.addColorStop(1,"#111118");
+    ctx.fillStyle=grad;
     ctx.fill();
-    ctx.strokeStyle="#111118";
-    ctx.lineWidth=2;
-    ctx.stroke();
+    ctx.strokeStyle="#fff"; ctx.lineWidth=2; ctx.stroke();
+
+    ctx.shadowColor=colors[i%colors.length]; ctx.shadowBlur=10;
     ctx.save();
     ctx.translate(center,center);
-    ctx.rotate(i*sliceAngle + sliceAngle/2 + angle);
-    ctx.textAlign="right";
-    ctx.fillStyle="#fff";
-    ctx.font="14px sans-serif";
-    ctx.fillText(prizes[i], radius-10,5);
-    ctx.restore();
+    ctx.rotate(i*sliceAngle+sliceAngle/2+angle);
+    ctx.textAlign="right"; ctx.fillStyle="#fff"; ctx.font="bold 14px sans-serif";
+    ctx.fillText(prizes[i],radius-10,5);
+    ctx.restore(); ctx.shadowBlur=0;
   }
+  ctx.beginPath(); ctx.arc(center,center,radius,0,2*Math.PI);
+  ctx.strokeStyle="rgba(255,255,255,0.3)"; ctx.lineWidth=4; ctx.shadowColor="#ff2d6f"; ctx.shadowBlur=20; ctx.stroke(); ctx.shadowBlur=0;
 }
-drawWheel();
-  let lastSpinTime = localStorage.getItem("lastSpin") || 0;
-const cooldown = 24*60*60*1000; // 24h
 
-spinBtn.onclick = ()=>{
-  const now = new Date().getTime();
+// SPIN LOGIC
+spinBtn.onclick=()=>{
   if(spinning) return;
-  if(now - lastSpinTime < cooldown){
-    spinResult.textContent = `Come back in ${Math.ceil((cooldown-(now-lastSpinTime))/3600000)}h to spin again!`;
-    return;
-  }
+  spinning=true;
+  spinSound.currentTime=0; spinSound.play();
+  const spins=Math.floor(Math.random()*3)+5;
+  const selectedPrize=prizes[Math.floor(Math.random()*prizes.length)];
+  const degPerPrize=360/prizes.length;
+  const prizeIndex=prizes.indexOf(selectedPrize);
+  const finalDeg=360*spins - prizeIndex*degPerPrize - degPerPrize/2;
+  const duration=4000;
+  const start=performance.now();
+  animate.lastSlice=-1;
 
-  spinning = true;
-  spinSound.currentTime = 0;
-  spinSound.play();
-  let angle = 0;
-  const spins = Math.floor(Math.random()*3)+5; 
-  const selectedPrize = prizes[Math.floor(Math.random()*prizes.length)];
-  const prizeIndex = prizes.indexOf(selectedPrize);
-  const sliceAngle = 2*Math.PI/prizes.length;
-  const finalAngle = spins*2*Math.PI - prizeIndex*sliceAngle - sliceAngle/2;
-
-  let current = 0;
-  const duration = 4000;
-  const start = performance.now();
   function animate(t){
-    const elapsed = t-start;
-    const progress = Math.min(elapsed/duration,1);
-    const eased = 1-Math.pow(1-progress,3);
-    current = eased*finalAngle;
+    const elapsed=t-start;
+    const progress=Math.min(elapsed/duration,1);
+    const eased=1-Math.pow(1-progress,3);
+    const current=eased*finalDeg*(Math.PI/180);
     drawWheel(current);
+
+    const sliceAngle=2*Math.PI/prizes.length;
+    const slicePassed=Math.floor(current/sliceAngle);
+    if(slicePassed!==animate.lastSlice){
+      tickSound.currentTime=0; tickSound.play();
+      animate.lastSlice=slicePassed;
+    }
+
     if(progress<1) requestAnimationFrame(animate);
     else{
-      spinResult.textContent = `🎉 You won: ${selectedPrize}!`;
+      spinResult.textContent=`🎉 You won: ${selectedPrize}!`;
       spinning=false;
-      lastSpinTime = new Date().getTime();
-      localStorage.setItem("lastSpin", lastSpinTime);
+      confetti({particleCount:100,spread:70,origin:{y:0.6}});
     }
   }
   requestAnimationFrame(animate);
-};
+}
 
-/* -------------------- INITIAL RENDER -------------------- */
+// INITIAL
 renderCategory("crates");
 updateCart();
+drawWheel();
+
 </script>
 </body>
 </html>
