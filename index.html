@@ -225,104 +225,246 @@ footer{text-align:center;padding:30px;opacity:0.6;}
 
 <script>
 /* STORE DATA */
-const storeData={
-crates:[{name:"Snow Key",price:0.19},{name:"Ocean Key",price:0.49},{name:"Slime Key",price:0.99},{name:"Maple Key",price:1.79},{name:"Cherry Key",price:2.49,popular:true}],
-ranks:[{name:"VIP (Lifetime)",price:2},{name:"Maple (Lifetime)",price:4},{name:"Cherry (Lifetime)",price:7},{name:"Cherry+ (Lifetime)",price:10,popular:true},{name:"VIP (30d)",price:1},{name:"Maple (30d)",price:2},{name:"Cherry (30d)",price:3.5,popular:true},{name:"Cherry+ (30d)",price:5}],
-credits:[{name:"100x Credits",price:1},{name:"250x Credits",price:2.29},{name:"500x Credits",price:4.69},{name:"1000x Credits",price:9.19,popular:true},{name:"2500x Credits",price:23.5}],
-spawners:[{name:"Skeleton x1",price:0.05},{name:"Skeleton x10",price:0.5},{name:"Skeleton x25",price:1.09},{name:"Skeleton x50",price:2.19},{name:"Skeleton x100",price:4.49}],
-bundles:[{name:"Starter Bundle",price:3.99,desc:"VIP Lifetime + 2 Snow Keys"},{name:"Maple Bundle",price:6.99,desc:"Maple Lifetime + 2 Maple Keys"},{name:"Cherry Elite Bundle",price:11.99,desc:"Cherry Lifetime + 5 Cherry Keys"},{name:"Ultimate Supporter",price:19.99,desc:"Cherry+ 30d + 10 Cherry Keys + 1000 Credits"}]
+const storeData = {
+  crates:[
+    {name:"Snow Key",price:0.19,desc:"Unlock Snow Crates!"},
+    {name:"Ocean Key",price:0.49,desc:"Unlock Ocean Crates!"},
+    {name:"Slime Key",price:0.99,desc:"Unlock Slime Crates!"},
+    {name:"Maple Key",price:1.79,desc:"Unlock Maple Crates!"},
+    {name:"Cherry Key",price:2.49,desc:"Unlock Cherry Crates!",popular:true}
+  ],
+  ranks:[
+    {name:"VIP (Lifetime)",price:2},
+    {name:"Maple (Lifetime)",price:4},
+    {name:"Cherry (Lifetime)",price:7},
+    {name:"Cherry+ (Lifetime)",price:10,popular:true},
+    {name:"VIP (30d)",price:1},
+    {name:"Maple (30d)",price:2},
+    {name:"Cherry (30d)",price:3.5,popular:true},
+    {name:"Cherry+ (30d)",price:5}
+  ],
+  credits:[
+    {name:"100x Credits",price:1},
+    {name:"250x Credits",price:2.29},
+    {name:"500x Credits",price:4.69},
+    {name:"1000x Credits",price:9.19,popular:true},
+    {name:"2500x Credits",price:23.5}
+  ],
+  spawners:[
+    {name:"Skeleton",price:0.05,desc:"Spawn Skeleton x1"},
+    {name:"Blaze",price:0.03,desc:"Spawn Blaze x1"},
+    {name:"Creeper",price:0.04,desc:"Spawn Creeper x1"},
+    {name:"Iron Golem",price:0.07,desc:"Spawn Iron Golem x1"}
+  ],
+  bundles:[
+    {name:"Starter Bundle",price:3.99,desc:"VIP Lifetime + 2 Snow Keys"},
+    {name:"Maple Bundle",price:6.99,desc:"Maple Lifetime + 2 Maple Keys"},
+    {name:"Cherry Elite Bundle",price:11.99,desc:"Cherry Lifetime + 5 Cherry Keys"},
+    {name:"Ultimate Supporter",price:19.99,desc:"Cherry+ 30d + 10 Cherry Keys + 1000 Credits"}
+  ]
 };
 
-let cart=[],discount=0;
-const discountCodes={"CHERRY20":20,"VIP10":10};
+let cart = [];
+let discount = 0;
+const discountCodes = {"CHERRY20":20,"VIP10":10};
 
-const grid=document.getElementById("productGrid");
-const cartModal=document.getElementById("cartModal");
-const cartBtn=document.getElementById("cartBtn");
-const closeCart=document.getElementById("closeCart");
-const cartItems=document.getElementById("cartItems");
-const cartTotal=document.getElementById("cartTotal");
-const cartCount=document.getElementById("cartCount");
+/* ELEMENTS */
+const grid = document.getElementById("productGrid");
+const cartModal = document.getElementById("cartModal");
+const cartBtn = document.getElementById("cartBtn");
+const closeCart = document.getElementById("closeCart");
+const cartItems = document.getElementById("cartItems");
+const cartTotal = document.getElementById("cartTotal");
+const cartCount = document.getElementById("cartCount");
 
-function renderCategory(category){
-grid.innerHTML="";
-storeData[category].forEach(product=>{
-let price=product.price*(1-discount/100);
-const card=document.createElement("div");
-card.classList.add("card");
-card.innerHTML=`
-${product.popular?'<span class="popular-badge">⭐ MOST POPULAR</span>':''}
-<h3>${product.name}</h3>
-<p>${product.desc||"Premium server item"}</p>
-${discount>0?`<div style="text-decoration:line-through;opacity:0.6;">€${product.price.toFixed(2)}</div>`:""}
-<div class="price">€${price.toFixed(2)}</div>
-<button class="buy">Add to Cart</button>
-`;
-card.querySelector(".buy").onclick=()=>addToCart(product);
-grid.appendChild(card);
-});
-}
-
-function addToCart(product){
-let existing=cart.find(i=>i.name===product.name);
-if(existing)existing.qty++;else cart.push({...product,qty:1});
-updateCart();
-}
-
-function updateCart(){
-cartItems.innerHTML="";
-let total=0;
-cart.forEach((item,i)=>{
-total+=item.price*item.qty;
-cartItems.innerHTML+=`
-<div style="display:flex;justify-content:space-between;margin:5px 0;">
-<span>${item.name} x${item.qty}</span>
-<div>
-<button onclick="changeQty(${i},-1)">-</button>
-<button onclick="changeQty(${i},1)">+</button>
-</div>
-</div>`;
-});
-total=total*(1-discount/100);
-cartTotal.textContent=total.toFixed(2);
-cartCount.textContent=cart.reduce((a,b)=>a+b.qty,0);
-document.getElementById("paypalCheckout").href=`https://www.paypal.com/paypalme/TimCherry000/${total.toFixed(2)}`;
-}
-
-function changeQty(i,amt){
-cart[i].qty+=amt;
-if(cart[i].qty<=0)cart.splice(i,1);
-updateCart();
-}
-
-cartBtn.onclick=e=>{e.preventDefault();cartModal.classList.add("active");};
-closeCart.onclick=()=>cartModal.classList.remove("active");
-window.onclick=e=>{if(e.target===cartModal)cartModal.classList.remove("active");};
-
-document.getElementById("applyDiscount").onclick=()=>{
-let code=document.getElementById("discountCode").value.toUpperCase();
-if(discountCodes[code]){discount=discountCodes[code];alert("Discount Applied");renderCategory(document.querySelector(".category-btn.active").dataset.category);updateCart();}
-else alert("Invalid Code");
-};
-
-document.getElementById("paypalCheckout").onclick=e=>{
-if(!document.getElementById("mcUsername").value.trim()){e.preventDefault();alert("Enter Minecraft username.");}
-if(cart.length===0){e.preventDefault();alert("Cart is empty.");}
-};
-
+/* CATEGORY ICONS */
+const categoryIcons = { crates:"📦", ranks:"💎", credits:"💰", spawners:"⚔️", bundles:"🎁" };
 document.querySelectorAll(".category-btn").forEach(btn=>{
-btn.onclick=()=>{document.querySelectorAll(".category-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");renderCategory(btn.dataset.category);};
+  const icon = categoryIcons[btn.dataset.category] || "";
+  btn.textContent = `${icon} ${btn.textContent}`;
 });
 
-/* Animated stats */
+/* LOAD CART FROM LOCAL STORAGE */
+function loadCart(){
+  const stored = localStorage.getItem("cherryCart");
+  if(stored) cart = JSON.parse(stored);
+}
+loadCart();
+
+/* SAVE CART TO LOCAL STORAGE */
+function saveCart(){
+  localStorage.setItem("cherryCart", JSON.stringify(cart));
+}
+
+/* RENDER PRODUCTS */
+function renderCategory(category){
+  grid.innerHTML="";
+  storeData[category].forEach(product=>{
+    let price = product.price * (1 - discount/100);
+    const card = document.createElement("div");
+    card.classList.add("card");
+
+    let qtySelect = "";
+    if(category==="crates" || category==="spawners"){
+      qtySelect = `<div style="margin:10px 0;">
+        <label>Qty: </label>
+        <select class="qty-select">
+          <option value="1">1x</option>
+          <option value="3">3x</option>
+          <option value="5">5x</option>
+          <option value="10">10x</option>
+        </select>
+      </div>`;
+    }
+
+    card.innerHTML = `
+      ${product.popular?'<span class="popular-badge">⭐ MOST POPULAR</span>':''}
+      <h3 title="${product.desc}">${product.name}</h3>
+      <p>${product.desc || "Premium server item"}</p>
+      ${discount>0?`<div style="text-decoration:line-through;opacity:0.6;">€${product.price.toFixed(2)}</div>`:""}
+      <div class="price">€${price.toFixed(2)}</div>
+      ${qtySelect}
+      <button class="buy">Add to Cart</button>
+    `;
+
+    const buyBtn = card.querySelector(".buy");
+    const qtyElem = card.querySelector(".qty-select");
+    buyBtn.onclick = ()=>{
+      const qty = qtyElem ? parseInt(qtyElem.value) : 1;
+      addToCart(product, qty);
+      showAddToCartFeedback(buyBtn);
+    }
+
+    grid.appendChild(card);
+  });
+}
+
+/* ADD TO CART */
+function addToCart(product, qty=1){
+  let existing = cart.find(i=>i.name===product.name);
+  if(existing) existing.qty += qty;
+  else cart.push({...product, qty});
+  updateCart();
+  saveCart();
+}
+
+/* UPDATE CART */
+function updateCart(){
+  cartItems.innerHTML = "";
+  let total = 0;
+  cart.forEach((item,i)=>{
+    total += item.price * item.qty;
+    cartItems.innerHTML += `
+      <div style="display:flex;justify-content:space-between;margin:5px 0;">
+        <span>${item.name} x${item.qty}</span>
+        <div>
+          <button onclick="changeQty(${i},-1)">-</button>
+          <button onclick="changeQty(${i},1)">+</button>
+        </div>
+      </div>
+    `;
+  });
+  total = total * (1 - discount/100);
+  cartTotal.textContent = total.toFixed(2);
+  cartCount.textContent = cart.reduce((a,b)=>a+b.qty,0);
+  document.getElementById("paypalCheckout").href = `https://www.paypal.com/paypalme/YOURNAME/${total.toFixed(2)}`;
+}
+
+/* CHANGE QUANTITY */
+function changeQty(i, amt){
+  cart[i].qty += amt;
+  if(cart[i].qty <= 0) cart.splice(i,1);
+  updateCart();
+  saveCart();
+}
+
+/* ANIMATED ADD TO CART FEEDBACK */
+function showAddToCartFeedback(button){
+  const feedback = document.createElement("span");
+  feedback.textContent = "✔ Added!";
+  feedback.style.position = "absolute";
+  feedback.style.color = "#ff2d6f";
+  feedback.style.fontWeight = "700";
+  feedback.style.top = (button.getBoundingClientRect().top - 30) + "px";
+  feedback.style.left = (button.getBoundingClientRect().left) + "px";
+  feedback.style.transition = "all 1s ease";
+  document.body.appendChild(feedback);
+  setTimeout(()=>{
+    feedback.style.top = (feedback.getBoundingClientRect().top - 20) + "px";
+    feedback.style.opacity = "0";
+  },10);
+  setTimeout(()=>feedback.remove(),1000);
+}
+
+/* CART MODAL */
+cartBtn.onclick = e => { e.preventDefault(); cartModal.classList.add("active"); };
+closeCart.onclick = ()=> cartModal.classList.remove("active");
+window.onclick = e => { if(e.target === cartModal) cartModal.classList.remove("active"); };
+
+/* DISCOUNT CODE */
+document.getElementById("applyDiscount").onclick = ()=>{
+  let code = document.getElementById("discountCode").value.toUpperCase();
+  if(discountCodes[code]){
+    discount = discountCodes[code];
+    alert("Discount Applied");
+    renderCategory(document.querySelector(".category-btn.active").dataset.category);
+    updateCart();
+  } else alert("Invalid Code");
+};
+
+/* PAYPAL CHECKOUT VALIDATION */
+document.getElementById("paypalCheckout").onclick = e=>{
+  if(!document.getElementById("mcUsername").value.trim()){
+    e.preventDefault();
+    alert("Enter Minecraft username.");
+  }
+  if(cart.length===0){
+    e.preventDefault();
+    alert("Cart is empty.");
+  }
+};
+
+/* CATEGORY BUTTONS */
+document.querySelectorAll(".category-btn").forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll(".category-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    renderCategory(btn.dataset.category);
+  };
+});
+
+/* MOBILE MENU */
+const mobileBtn = document.getElementById("mobileMenuBtn");
+if(mobileBtn){
+  mobileBtn.onclick = ()=> document.querySelector("nav ul").classList.toggle("show");
+}
+
+/* ANIMATED STATS */
 document.querySelectorAll(".stat").forEach(stat=>{
-let target=parseFloat(stat.dataset.target),count=0,inc=target/100;
-function update(){count+=inc;if(count<target){stat.textContent=target%1===0?Math.floor(count):count.toFixed(1);requestAnimationFrame(update);}else stat.textContent=target;}
-update();
+  let target = parseFloat(stat.dataset.target), count = 0, inc = target/100;
+  function update(){ 
+    count += inc;
+    if(count < target){ 
+      stat.textContent = target%1===0?Math.floor(count):count.toFixed(1);
+      requestAnimationFrame(update);
+    } else stat.textContent = target;
+  }
+  update();
 });
 
-renderCategory("crates");
-</script>
+/* SPINNING WHEEL */
+const spinBtn = document.getElementById("spinWheel");
+if(spinBtn){
+  spinBtn.onclick = ()=>{
+    const prizes = ["10 Credits","5 Credits","VIP Key","Nothing"];
+    const result = prizes[Math.floor(Math.random()*prizes.length)];
+    document.getElementById("spinResult").textContent = "You won: " + result;
+  }
+}
 
+/* INITIAL RENDER */
+renderCategory("crates");
+updateCart();
+</script>
 </body>
 </html>
