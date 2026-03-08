@@ -29,6 +29,12 @@ footer { text-align:center; padding:30px; background:#1e1e2f; margin-top:50px; c
 @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 .section-title { font-size:28px; text-align:center; margin-bottom:20px; color:#ff77aa; text-shadow:0 0 5px #ff99bb; }
 .particles { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; }
+#cart { background:#1e1e2f; padding:20px; border-radius:15px; margin-top:20px; }
+#cart h3 { margin:0 0 10px 0; }
+#cart ul { list-style:none; padding:0; margin:0; }
+#cart li { padding:5px 0; }
+#generateCode { margin-top:10px; }
+#orderCode { margin-top:10px; color:#ff99bb; font-weight:bold; }
 </style>
 </head>
 <body>
@@ -61,34 +67,40 @@ footer { text-align:center; padding:30px; background:#1e1e2f; margin-top:50px; c
 <div class="container" id="store">
 <h2 class="section-title">Ranks</h2>
 <div class="grid" id="ranks">
-<div class="card"><img src="images/vip.png" alt="VIP"><h3>VIP</h3><div class="price">€1.99</div><button onclick="addToCart('VIP','1.99')">Buy</button></div>
-<div class="card"><img src="images/maple.png" alt="Maple"><h3>Maple</h3><div class="price">€3.99</div><button onclick="addToCart('Maple','3.99')">Buy</button></div>
-<div class="card"><img src="images/cherry.png" alt="Cherry"><h3>Cherry</h3><div class="price">€5.99</div><button onclick="addToCart('Cherry','5.99')">Buy</button></div>
-<div class="card"><img src="images/cherry_plus.png" alt="Cherry+"><h3>Cherry+</h3><div class="price">€7.99</div><button onclick="addToCart('Cherry+','7.99')">Buy</button></div>
+<div class="card"><img src="images/vip.png" alt="VIP"><h3>VIP</h3><div class="price">€1.99</div><button onclick="addToCart('VIP','aA')">Buy</button></div>
+<div class="card"><img src="images/maple.png" alt="Maple"><h3>Maple</h3><div class="price">€3.99</div><button onclick="addToCart('Maple','bB')">Buy</button></div>
+<div class="card"><img src="images/cherry.png" alt="Cherry"><h3>Cherry</h3><div class="price">€5.99</div><button onclick="addToCart('Cherry','cC')">Buy</button></div>
+<div class="card"><img src="images/cherry_plus.png" alt="Cherry+"><h3>Cherry+</h3><div class="price">€7.99</div><button onclick="addToCart('Cherry+','dD')">Buy</button></div>
 </div>
 
 <h2 class="section-title">Crates</h2>
 <div class="grid" id="crates">
-<div class="card"><img src="images/snow_crate.png" alt="Snow Crate"><h3>Snow</h3><div class="price">€0.19</div><button onclick="addToCart('Snow Crate','0.19')">Buy</button></div>
-<div class="card"><img src="images/ocean_crate.png" alt="Ocean Crate"><h3>Ocean</h3><div class="price">€0.39</div><button onclick="addToCart('Ocean Crate','0.39')">Buy</button></div>
-<div class="card"><img src="images/slime_crate.png" alt="Slime Crate"><h3>Slime</h3><div class="price">€0.99</div><button onclick="addToCart('Slime Crate','0.99')">Buy</button></div>
-<div class="card"><img src="images/maple_crate.png" alt="Maple Crate"><h3>Maple</h3><div class="price">€1.49</div><button onclick="addToCart('Maple Crate','1.49')">Buy</button></div>
-<div class="card"><img src="images/cherry_crate.png" alt="Cherry Crate"><h3>Cherry</h3><div class="price">€2.19</div><button onclick="addToCart('Cherry Crate','2.19')">Buy</button></div>
+<div class="card"><img src="images/snow_crate.png" alt="Snow Crate"><h3>Snow</h3><div class="price">€0.19</div><button onclick="addToCart('Snow','01')">Buy</button></div>
+<div class="card"><img src="images/ocean_crate.png" alt="Ocean Crate"><h3>Ocean</h3><div class="price">€0.39</div><button onclick="addToCart('Ocean','02')">Buy</button></div>
+<div class="card"><img src="images/slime_crate.png" alt="Slime Crate"><h3>Slime</h3><div class="price">€0.99</div><button onclick="addToCart('Slime','03')">Buy</button></div>
+<div class="card"><img src="images/maple_crate.png" alt="Maple Crate"><h3>Maple</h3><div class="price">€1.49</div><button onclick="addToCart('Maple','04')">Buy</button></div>
+<div class="card"><img src="images/cherry_crate.png" alt="Cherry Crate"><h3>Cherry</h3><div class="price">€2.19</div><button onclick="addToCart('Cherry','05')">Buy</button></div>
 </div>
 
 <h2 class="section-title">Cherry Tools</h2>
 <div class="grid" id="tools">
-<div class="card"><img src="images/cherry_driller.png" alt="Cherry Driller"><h3>Cherry Driller</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Driller','1.49')">Buy</button></div>
-<div class="card"><img src="images/cherry_cutter.png" alt="Cherry Cutter"><h3>Cherry Cutter</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Cutter','1.49')">Buy</button></div>
-<div class="card"><img src="images/cherry_eater.png" alt="Cherry Eater"><h3>Cherry Eater</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Eater','1.49')">Buy</button></div>
+<div class="card"><img src="images/cherry_driller.png" alt="Cherry Driller"><h3>Cherry Driller</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Driller','10')">Buy</button></div>
+<div class="card"><img src="images/cherry_cutter.png" alt="Cherry Cutter"><h3>Cherry Cutter</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Cutter','20')">Buy</button></div>
+<div class="card"><img src="images/cherry_eater.png" alt="Cherry Eater"><h3>Cherry Eater</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Eater','30')">Buy</button></div>
 </div>
 
 <h2 class="section-title">Bundles</h2>
 <div class="grid" id="bundles">
-<div class="card"><img src="images/pro_bundle.png" alt="Pro Bundle"><h3>Pro Bundle</h3><div class="price">€3.00</div><button onclick="addToCart('Pro Bundle','3.00')">Buy</button></div>
-<div class="card"><img src="images/cherry_bundle.png" alt="Cherry Bundle"><h3>Cherry Bundle</h3><div class="price">€7.00</div><button onclick="addToCart('Cherry Bundle','7.00')">Buy</button></div>
-<div class="card"><img src="images/spring_bundle.png" alt="Spring Bundle"><h3>Spring Bundle</h3><div class="price">€10.00</div><button onclick="addToCart('Spring Bundle','10.00')">Buy</button></div>
+<div class="card"><img src="images/pro_bundle.png" alt="Pro Bundle"><h3>Pro Bundle</h3><div class="price">€3.00</div><button onclick="addToCart('Pro Bundle','Aa')">Buy</button></div>
+<div class="card"><img src="images/cherry_bundle.png" alt="Cherry Bundle"><h3>Cherry Bundle</h3><div class="price">€7.00</div><button onclick="addToCart('Cherry Bundle','Bb')">Buy</button></div>
+<div class="card"><img src="images/spring_bundle.png" alt="Spring Bundle"><h3>Spring Bundle</h3><div class="price">€10.00</div><button onclick="addToCart('Spring Bundle','Cc')">Buy</button></div>
 </div>
+
+<div id="cart">
+<h3>Shopping Cart</h3>
+<ul id="cartItems"></ul>
+<button id="generateCode">Generate Order Code</button>
+<div id="orderCode"></div>
 </div>
 
 <footer>
@@ -98,8 +110,21 @@ footer { text-align:center; padding:30px; background:#1e1e2f; margin-top:50px; c
 <script>
 let playerCount = document.getElementById('playerCount');
 setInterval(()=>{ playerCount.textContent = Math.floor(Math.random()*100); },3000);
+
 let cart = [];
-function addToCart(item,price){ cart.push({item,price}); alert(item + ' added to cart! Total items: '+cart.length); if(item.includes('Bundle')){ for(let i=0;i<50;i++){ createParticle(); }}}
+function addToCart(item,code){ cart.push({item,code}); updateCart(); }
+function updateCart(){
+  const cartItems = document.getElementById('cartItems');
+  cartItems.innerHTML = '';
+  cart.forEach((c,i)=>{ let li = document.createElement('li'); li.textContent = c.item + ' ['+c.code+']'; cartItems.appendChild(li); });
+}
+
+document.getElementById('generateCode').addEventListener('click',()=>{
+  let orderCode = cart.map(c=>c.code).join('');
+  document.getElementById('orderCode').textContent = 'Your Order Code: ' + orderCode;
+});
+
+// Particle Background
 const canvas = document.getElementById('particles');
 const header = document.querySelector('header');
 canvas.width = window.innerWidth; canvas.height = header.offsetHeight;
