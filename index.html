@@ -6,13 +6,10 @@
 <title>CherrySMP Store 🍒</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
-/* GENERAL */
 body { margin:0; font-family:'Press Start 2P', cursive; background:#0f172a; color:white; overflow-x:hidden; }
 a { text-decoration:none; }
 button { font-family:'Press Start 2P', cursive; cursor:pointer; }
-
-/* SMOOTH SCROLL */
-html { scroll-behavior:smooth; }
+html { scroll-behavior: smooth; }
 
 /* HEADER */
 header { background:linear-gradient(90deg,#1e1e2f,#11121a); padding:60px 20px; text-align:center; position:relative; overflow:hidden; }
@@ -29,15 +26,19 @@ nav a:hover { background:#ff3366; color:white; }
 .container { max-width:1400px; margin:auto; padding:40px 20px; }
 .section-title { font-size:32px; text-align:center; margin-bottom:30px; color:#ff77aa; text-shadow:0 0 5px #ff99bb; }
 
-/* GRID */
+/* GRID & CARDS */
 .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:25px; }
 .card { background:#1e293b; padding:20px; border-radius:15px; box-shadow:0 0 15px rgba(255,119,170,0.5); transition:transform 0.3s; position:relative; overflow:hidden; }
 .card:hover { transform:scale(1.05); }
 .card img { width:100%; border-radius:12px; margin-bottom:10px; }
-.card h3 { color:#ff77aa; margin:0 0 10px 0; font-size:18px; }
+.card h3 { color:#ff77aa; margin:0 0 10px 0; font-size:18px; display:inline-block; }
 .price { font-size:18px; margin:10px 0; }
 button { background:#ff3366; border:none; padding:12px 18px; border-radius:10px; color:white; transition:0.3s; }
 button:hover { background:#ff77aa; }
+
+/* INFO BUTTON */
+.info-btn { background:#ff99bb; margin-left:5px; padding:5px 8px; font-size:12px; border-radius:5px; }
+.info-btn:hover { background:#ff3366; }
 
 /* MARQUEE */
 .marquee { width:100%; overflow:hidden; white-space:nowrap; box-sizing:border-box; border:1px solid #ff77aa; padding:10px; margin-bottom:30px; color:#ff99bb; font-size:14px; }
@@ -67,6 +68,12 @@ button:hover { background:#ff77aa; }
 /* PARTICLES */
 .particles { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; }
 
+/* MODAL */
+.modal { display:none; position:fixed; z-index:500; padding-top:100px; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.8); }
+.modal-content { background:#1e293b; margin:auto; padding:20px; border-radius:15px; width:90%; max-width:600px; color:#ff99bb; position:relative; }
+.close { color:#ff3366; position:absolute; top:10px; right:15px; font-size:28px; font-weight:bold; cursor:pointer; }
+.close:hover { color:#ff77aa; }
+
 /* FOOTER */
 footer { text-align:center; padding:50px 20px; background:#1e1e2f; margin-top:50px; color:#ff77aa; }
 </style>
@@ -90,24 +97,23 @@ footer { text-align:center; padding:50px 20px; background:#1e1e2f; margin-top:50
 <a href="#terms">Terms</a>
 </nav>
 
-<!-- Floating Cart Icon -->
 <div id="floatingCart" onclick="document.getElementById('cart').scrollIntoView({behavior:'smooth'})">🛒 <span id="cartCount">0</span></div>
 
 <!-- HOME -->
 <div class="container" id="home">
 <h2 class="section-title">Welcome to CherrySMP Store</h2>
-<div class="marquee"><span>Please confirm everything before you decide to buy it ! Thanks</span></div>
-<p>All purchases are processed via Discord tickets for now. Browse ranks, crates, cherry tools, and bundles below!</p>
+<div class="marquee"><span>Alex bought Cherry+ Rank! Steve purchased 5 Maple Keys! Emma bought Cherry Driller! John bought Pro Bundle!</span></div>
+<p>All purchases are processed via Discord tickets. Browse ranks, crates, tools, and bundles below!</p>
 </div>
 
 <!-- RANKS -->
 <div class="container" id="ranks-section">
 <h2 class="section-title">Ranks</h2>
 <div class="grid">
-<div class="card"><img src="images/vip.png" alt="VIP"><h3>VIP</h3><div class="price">€1.99</div><button onclick="addToCart('VIP',1.99)">Add to Cart</button></div>
-<div class="card"><img src="images/maple.png" alt="Maple"><h3>Maple</h3><div class="price">€3.99</div><button onclick="addToCart('Maple',3.99)">Add to Cart</button></div>
-<div class="card"><img src="images/cherry.png" alt="Cherry"><h3>Cherry</h3><div class="price">€5.99</div><button onclick="addToCart('Cherry',5.99)">Add to Cart</button></div>
-<div class="card"><img src="images/cherry_plus.png" alt="Cherry+"><h3>Cherry+</h3><div class="price">€7.99</div><button onclick="addToCart('Cherry+',7.99)">Add to Cart</button></div>
+<div class="card"><img src="images/vip.png" alt="VIP"><h3>VIP</h3><div class="price">€1.99</div><button onclick="addToCart('VIP',1.99)">Add to Cart</button><button class="info-btn" onclick="showInfo('VIP')">i</button></div>
+<div class="card"><img src="images/maple.png" alt="Maple"><h3>Maple</h3><div class="price">€3.99</div><button onclick="addToCart('Maple',3.99)">Add to Cart</button><button class="info-btn" onclick="showInfo('Maple')">i</button></div>
+<div class="card"><img src="images/cherry.png" alt="Cherry"><h3>Cherry</h3><div class="price">€5.99</div><button onclick="addToCart('Cherry',5.99)">Add to Cart</button><button class="info-btn" onclick="showInfo('Cherry')">i</button></div>
+<div class="card"><img src="images/cherry_plus.png" alt="Cherry+"><h3>Cherry+</h3><div class="price">€7.99</div><button onclick="addToCart('Cherry+',7.99)">Add to Cart</button><button class="info-btn" onclick="showInfo('Cherry+')">i</button></div>
 </div>
 </div>
 
@@ -115,21 +121,21 @@ footer { text-align:center; padding:50px 20px; background:#1e1e2f; margin-top:50
 <div class="container" id="crates-section">
 <h2 class="section-title">Crates</h2>
 <div class="grid">
-<div class="card"><img src="images/snow_crate.png" alt="Snow Crate"><h3>Snow</h3><div class="price">€0.19</div><button onclick="addToCart('Snow Crate',0.19)">Add to Cart</button></div>
-<div class="card"><img src="images/ocean_crate.png" alt="Ocean Crate"><h3>Ocean</h3><div class="price">€0.39</div><button onclick="addToCart('Ocean Crate',0.39)">Add to Cart</button></div>
-<div class="card"><img src="images/slime_crate.png" alt="Slime Crate"><h3>Slime</h3><div class="price">€0.99</div><button onclick="addToCart('Slime Crate',0.99)">Add to Cart</button></div>
-<div class="card"><img src="images/maple_crate.png" alt="Maple Crate"><h3>Maple</h3><div class="price">€1.49</div><button onclick="addToCart('Maple Crate',1.49)">Add to Cart</button></div>
-<div class="card"><img src="images/cherry_crate.png" alt="Cherry Crate"><h3>Cherry</h3><div class="price">€2.19</div><button onclick="addToCart('Cherry Crate',2.19)">Add to Cart</button></div>
+<div class="card"><img src="images/snow_crate.png" alt="Snow Crate"><h3>Snow Crate</h3><div class="price">€0.19</div><button onclick="addToCart('Snow Crate',0.19)">Add to Cart</button><button class="info-btn" onclick="showInfo('Snow Crate')">i</button></div>
+<div class="card"><img src="images/ocean_crate.png" alt="Ocean Crate"><h3>Ocean Crate</h3><div class="price">€0.39</div><button onclick="addToCart('Ocean Crate',0.39)">Add to Cart</button><button class="info-btn" onclick="showInfo('Ocean Crate')">i</button></div>
+<div class="card"><img src="images/slime_crate.png" alt="Slime Crate"><h3>Slime Crate</h3><div class="price">€0.99</div><button onclick="addToCart('Slime Crate',0.99)">Add to Cart</button><button class="info-btn" onclick="showInfo('Slime Crate')">i</button></div>
+<div class="card"><img src="images/maple_crate.png" alt="Maple Crate"><h3>Maple Crate</h3><div class="price">€1.49</div><button onclick="addToCart('Maple Crate',1.49)">Add to Cart</button><button class="info-btn" onclick="showInfo('Maple Crate')">i</button></div>
+<div class="card"><img src="images/cherry_crate.png" alt="Cherry Crate"><h3>Cherry Crate</h3><div class="price">€2.19</div><button onclick="addToCart('Cherry Crate',2.19)">Add to Cart</button><button class="info-btn" onclick="showInfo('Cherry Crate')">i</button></div>
 </div>
 </div>
 
-<!-- CHERRY TOOLS -->
+<!-- TOOLS -->
 <div class="container" id="tools-section">
 <h2 class="section-title">Cherry Tools</h2>
 <div class="grid">
-<div class="card"><img src="images/cherry_driller.png" alt="Cherry Driller"><h3>Cherry Driller</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Driller',1.49)">Add to Cart</button></div>
-<div class="card"><img src="images/cherry_cutter.png" alt="Cherry Cutter"><h3>Cherry Cutter</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Cutter',1.49)">Add to Cart</button></div>
-<div class="card"><img src="images/cherry_eater.png" alt="Cherry Eater"><h3>Cherry Eater</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Eater',1.49)">Add to Cart</button></div>
+<div class="card"><img src="images/cherry_driller.png" alt="Cherry Driller"><h3>Cherry Driller</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Driller',1.49)">Add to Cart</button><button class="info-btn" onclick="showInfo('Cherry Driller')">i</button></div>
+<div class="card"><img src="images/cherry_cutter.png" alt="Cherry Cutter"><h3>Cherry Cutter</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Cutter',1.49)">Add to Cart</button><button class="info-btn" onclick="showInfo('Cherry Cutter')">i</button></div>
+<div class="card"><img src="images/cherry_eater.png" alt="Cherry Eater"><h3>Cherry Eater</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Eater',1.49)">Add to Cart</button><button class="info-btn" onclick="showInfo('Cherry Eater')">i</button></div>
 </div>
 </div>
 
@@ -137,9 +143,9 @@ footer { text-align:center; padding:50px 20px; background:#1e1e2f; margin-top:50
 <div class="container" id="bundles-section">
 <h2 class="section-title">Bundles</h2>
 <div class="grid">
-<div class="card"><img src="images/pro_bundle.png" alt="Pro Bundle"><h3>Pro Bundle</h3><div class="price">€3.00</div><button onclick="addToCart('Pro Bundle',3.00)">Add to Cart</button></div>
-<div class="card"><img src="images/cherry_bundle.png" alt="Cherry Bundle"><h3>Cherry Bundle</h3><div class="price">€7.00</div><button onclick="addToCart('Cherry Bundle',7.00)">Add to Cart</button></div>
-<div class="card"><img src="images/spring_bundle.png" alt="Spring Bundle"><h3>Spring Bundle</h3><div class="price">€10.00</div><button onclick="addToCart('Spring Bundle',10.00)">Add to Cart</button></div>
+<div class="card"><img src="images/pro_bundle.png" alt="Pro Bundle"><h3>Pro Bundle</h3><div class="price">€3.00</div><button onclick="addToCart('Pro Bundle',3.00)">Add to Cart</button><button class="info-btn" onclick="showInfo('Pro Bundle')">i</button></div>
+<div class="card"><img src="images/cherry_bundle.png" alt="Cherry Bundle"><h3>Cherry Bundle</h3><div class="price">€7.00</div><button onclick="addToCart('Cherry Bundle',7.00)">Add to Cart</button><button class="info-btn" onclick="showInfo('Cherry Bundle')">i</button></div>
+<div class="card"><img src="images/spring_bundle.png" alt="Spring Bundle"><h3>Spring Bundle</h3><div class="price">€10.00</div><button onclick="addToCart('Spring Bundle',10.00)">Add to Cart</button><button class="info-btn" onclick="showInfo('Spring Bundle')">i</button></div>
 </div>
 </div>
 
@@ -179,15 +185,24 @@ footer { text-align:center; padding:50px 20px; background:#1e1e2f; margin-top:50
 <p>© 2026 CherrySMP | <a href="https://discord.gg/FWauk2sxQs" target="_blank" style="color:#ff77aa;">Join Discord</a></p>
 </footer>
 
+<!-- MODAL -->
+<div id="infoModal" class="modal">
+<div class="modal-content">
+<span class="close" onclick="closeModal()">&times;</span>
+<h3 id="modalTitle"></h3>
+<p id="modalDesc"></p>
+</div>
+</div>
+
 <!-- BACK TO TOP -->
 <div id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</div>
 
 <script>
-// PLAYER COUNTER
+// Player Counter
 let playerCount = document.getElementById('playerCount');
 setInterval(()=>{ playerCount.textContent = Math.floor(Math.random()*100); },3000);
 
-// CART FUNCTIONALITY
+// Cart
 let cart = [];
 function addToCart(item, price){
   cart.push({item, price});
@@ -214,7 +229,7 @@ document.getElementById('checkout').addEventListener('click', ()=>{
   alert('Please send your order details to our Discord for processing!');
 });
 
-// PARTICLES
+// Particles
 const canvas = document.getElementById('particles');
 const header = document.querySelector('header');
 canvas.width = window.innerWidth; canvas.height = header.offsetHeight;
@@ -225,21 +240,35 @@ for(let i=0;i<100;i++){ particlesArr.push(new Particle()); }
 function animate(){ ctx.clearRect(0,0,canvas.width,canvas.height); particlesArr.forEach(p=>{p.update();p.draw();}); requestAnimationFrame(animate); }
 animate();
 
-// FAQ ACCORDION
+// FAQ Accordion
 let acc = document.getElementsByClassName("accordion");
-for(let i=0;i<acc.length;i++){
-  acc[i].addEventListener("click", function(){
-    this.classList.toggle("active");
-    let panel = this.nextElementSibling;
-    panel.style.display = (panel.style.display==="block")?"none":"block";
-  });
-}
+for(let i=0;i<acc.length;i++){ acc[i].addEventListener("click", function(){ this.classList.toggle("active"); let panel = this.nextElementSibling; panel.style.display = (panel.style.display==="block")?"none":"block"; }); }
 
-// BACK TO TOP
-window.addEventListener('scroll', ()=>{
-  let btn = document.getElementById('backToTop');
-  btn.style.display = (window.scrollY>300)?'block':'none';
-});
+// Back to Top
+window.addEventListener('scroll', ()=>{ let btn = document.getElementById('backToTop'); btn.style.display = (window.scrollY>300)?'block':'none'; });
+
+// Info Modal Data
+const infoData = {
+  "VIP":"3 homes, more orders, more auction sells, /workbench for crafting table, own kit",
+  "Maple":"4 homes, more orders, more auction sells, /anvil for anvil, /smithing table for smithing table, own kit",
+  "Cherry":"5 homes, more orders, more auction sells, /grindstone, /stonecutter, own kit",
+  "Cherry+":"5 homes, more auction sells, more orders, /ec for enderchest, /loom for loom, cherry kit, gets cherries every minute everywhere",
+  "Snow Crate":"Basic diamond gear with worst enchants",
+  "Ocean Crate":"Diamond gear with decent enchants + Heart of Sea",
+  "Slime Crate":"7 kinds of spawners",
+  "Maple Crate":"Best diamond gear possible with best enchants + best trident",
+  "Cherry Crate":"Best Netherite armor with maxed maces and spear and piglin head",
+  "Cherry Driller":"Mines 3x3",
+  "Cherry Cutter":"Breaks trees in 1 shot",
+  "Cherry Eater":"Breaks gravel, sand, dirt etc. 3x3",
+  "Pro Bundle":"VIP rank + Maple Crate + Ocean Crate",
+  "Cherry Bundle":"Cherry rank + Cherry Crate + Maple Crate",
+  "Spring Bundle":"Spring rank + 3 Cherry Crates"
+};
+function showInfo(item){ document.getElementById('modalTitle').textContent = item; document.getElementById('modalDesc').textContent = infoData[item] || "No info available"; document.getElementById('infoModal').style.display = "block"; }
+function closeModal(){ document.getElementById('infoModal').style.display = "none"; }
+window.onclick = function(event){ if(event.target == document.getElementById('infoModal')) closeModal(); }
+window.addEventListener('resize', ()=>{ canvas.width = window.innerWidth; canvas.height = header.offsetHeight; });
 </script>
 
 </body>
