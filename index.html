@@ -7,34 +7,34 @@
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
 body { margin:0; font-family: 'Press Start 2P', cursive; background:#0f172a; color:white; overflow-x:hidden; }
-header { background:linear-gradient(90deg,#1e1e2f,#11121a); padding:40px; text-align:center; position:relative; overflow:hidden; }
-header h1 { color:#ff77aa; font-size:42px; margin-bottom:10px; text-shadow:0 0 10px #ff77aa; animation: glow 2s ease-in-out infinite alternate; }
-header p { margin:5px; color:#ff99bb; }
+header { background:linear-gradient(90deg,#1e1e2f,#11121a); padding:60px 20px; text-align:center; position:relative; overflow:hidden; }
+header h1 { color:#ff77aa; font-size:50px; margin-bottom:10px; text-shadow:0 0 10px #ff77aa; animation: glow 2s ease-in-out infinite alternate; }
+header p { margin:5px; color:#ff99bb; font-size:16px; }
 @keyframes glow { 0% { text-shadow:0 0 10px #ff77aa; } 100% { text-shadow:0 0 20px #ff99bb; } }
-nav { display:flex; justify-content:center; background:#1e293b; padding:15px; flex-wrap:wrap; }
-nav a { color:white; text-decoration:none; margin:5px 15px; padding:5px 10px; border-radius:5px; transition:0.3s; }
+nav { display:flex; justify-content:center; background:#1e293b; padding:15px; flex-wrap:wrap; position:sticky; top:0; z-index:100; }
+nav a { color:white; text-decoration:none; margin:5px 15px; padding:5px 12px; border-radius:5px; transition:0.3s; }
 nav a:hover { background:#ff3366; color:white; }
-.container { max-width:1400px; margin:auto; padding:30px 20px; }
+.container { max-width:1400px; margin:auto; padding:40px 20px; }
 .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:25px; }
 .card { background:#1e293b; padding:20px; border-radius:15px; box-shadow:0 0 15px rgba(255,119,170,0.5); transition:transform 0.3s; position:relative; overflow:hidden; }
 .card:hover { transform:scale(1.05); }
 .card img { width:100%; border-radius:12px; margin-bottom:10px; }
-.card h3 { color:#ff77aa; margin:0 0 10px 0; }
-.price { font-size:20px; margin:10px 0; }
+.card h3 { color:#ff77aa; margin:0 0 10px 0; font-size:18px; }
+.price { font-size:18px; margin:10px 0; }
 button { background:#ff3366; border:none; padding:12px 18px; border-radius:10px; color:white; cursor:pointer; font-family: 'Press Start 2P', cursive; transition:0.3s; }
 button:hover { background:#ff77aa; }
-footer { text-align:center; padding:30px; background:#1e1e2f; margin-top:50px; color:#ff77aa; }
-.marquee { width:100%; overflow:hidden; white-space:nowrap; box-sizing:border-box; border:1px solid #ff77aa; padding:10px; margin-bottom:20px; color:#ff99bb; }
-.marquee span { display:inline-block; padding-right:50px; animation: marquee 20s linear infinite; }
+footer { text-align:center; padding:50px 20px; background:#1e1e2f; margin-top:50px; color:#ff77aa; }
+.marquee { width:100%; overflow:hidden; white-space:nowrap; box-sizing:border-box; border:1px solid #ff77aa; padding:10px; margin-bottom:30px; color:#ff99bb; font-size:14px; }
+.marquee span { display:inline-block; padding-right:50px; animation: marquee 25s linear infinite; }
 @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-.section-title { font-size:28px; text-align:center; margin-bottom:20px; color:#ff77aa; text-shadow:0 0 5px #ff99bb; }
+.section-title { font-size:32px; text-align:center; margin-bottom:30px; color:#ff77aa; text-shadow:0 0 5px #ff99bb; }
 .particles { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; }
-#cart { background:#1e1e2f; padding:20px; border-radius:15px; margin-top:20px; }
-#cart h3 { margin:0 0 10px 0; }
+#cart { background:#1e293b; padding:20px; border-radius:15px; margin-top:40px; }
+#cart h3 { margin:0 0 10px 0; font-size:20px; }
 #cart ul { list-style:none; padding:0; margin:0; }
-#cart li { padding:5px 0; }
-#generateCode { margin-top:10px; }
-#orderCode { margin-top:10px; color:#ff99bb; font-weight:bold; }
+#cart li { padding:5px 0; display:flex; justify-content:space-between; align-items:center; }
+#cart li button { background:red; padding:5px 10px; border-radius:5px; font-size:12px; }
+#checkout { margin-top:10px; background:#ff3366; }
 </style>
 </head>
 <body>
@@ -67,44 +67,55 @@ footer { text-align:center; padding:30px; background:#1e1e2f; margin-top:50px; c
 <div class="container" id="store">
 <h2 class="section-title">Ranks</h2>
 <div class="grid" id="ranks">
-<div class="card"><img src="images/vip.png" alt="VIP"><h3>VIP</h3><div class="price">€1.99</div><button onclick="addToCart('VIP','aA')">Buy</button></div>
-<div class="card"><img src="images/maple.png" alt="Maple"><h3>Maple</h3><div class="price">€3.99</div><button onclick="addToCart('Maple','bB')">Buy</button></div>
-<div class="card"><img src="images/cherry.png" alt="Cherry"><h3>Cherry</h3><div class="price">€5.99</div><button onclick="addToCart('Cherry','cC')">Buy</button></div>
-<div class="card"><img src="images/cherry_plus.png" alt="Cherry+"><h3>Cherry+</h3><div class="price">€7.99</div><button onclick="addToCart('Cherry+','dD')">Buy</button></div>
+<div class="card"><img src="images/vip.png" alt="VIP"><h3>VIP</h3><div class="price">€1.99</div><button onclick="addToCart('VIP',1.99)">Add to Cart</button></div>
+<div class="card"><img src="images/maple.png" alt="Maple"><h3>Maple</h3><div class="price">€3.99</div><button onclick="addToCart('Maple',3.99)">Add to Cart</button></div>
+<div class="card"><img src="images/cherry.png" alt="Cherry"><h3>Cherry</h3><div class="price">€5.99</div><button onclick="addToCart('Cherry',5.99)">Add to Cart</button></div>
+<div class="card"><img src="images/cherry_plus.png" alt="Cherry+"><h3>Cherry+</h3><div class="price">€7.99</div><button onclick="addToCart('Cherry+',7.99)">Add to Cart</button></div>
 </div>
 
 <h2 class="section-title">Crates</h2>
 <div class="grid" id="crates">
-<div class="card"><img src="images/snow_crate.png" alt="Snow Crate"><h3>Snow</h3><div class="price">€0.19</div><button onclick="addToCart('Snow','01')">Buy</button></div>
-<div class="card"><img src="images/ocean_crate.png" alt="Ocean Crate"><h3>Ocean</h3><div class="price">€0.39</div><button onclick="addToCart('Ocean','02')">Buy</button></div>
-<div class="card"><img src="images/slime_crate.png" alt="Slime Crate"><h3>Slime</h3><div class="price">€0.99</div><button onclick="addToCart('Slime','03')">Buy</button></div>
-<div class="card"><img src="images/maple_crate.png" alt="Maple Crate"><h3>Maple</h3><div class="price">€1.49</div><button onclick="addToCart('Maple','04')">Buy</button></div>
-<div class="card"><img src="images/cherry_crate.png" alt="Cherry Crate"><h3>Cherry</h3><div class="price">€2.19</div><button onclick="addToCart('Cherry','05')">Buy</button></div>
+<div class="card"><img src="images/snow_crate.png" alt="Snow Crate"><h3>Snow</h3><div class="price">€0.19</div><button onclick="addToCart('Snow Crate',0.19)">Add to Cart</button></div>
+<div class="card"><img src="images/ocean_crate.png" alt="Ocean Crate"><h3>Ocean</h3><div class="price">€0.39</div><button onclick="addToCart('Ocean Crate',0.39)">Add to Cart</button></div>
+<div class="card"><img src="images/slime_crate.png" alt="Slime Crate"><h3>Slime</h3><div class="price">€0.99</div><button onclick="addToCart('Slime Crate',0.99)">Add to Cart</button></div>
+<div class="card"><img src="images/maple_crate.png" alt="Maple Crate"><h3>Maple</h3><div class="price">€1.49</div><button onclick="addToCart('Maple Crate',1.49)">Add to Cart</button></div>
+<div class="card"><img src="images/cherry_crate.png" alt="Cherry Crate"><h3>Cherry</h3><div class="price">€2.19</div><button onclick="addToCart('Cherry Crate',2.19)">Add to Cart</button></div>
 </div>
 
 <h2 class="section-title">Cherry Tools</h2>
 <div class="grid" id="tools">
-<div class="card"><img src="images/cherry_driller.png" alt="Cherry Driller"><h3>Cherry Driller</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Driller','10')">Buy</button></div>
-<div class="card"><img src="images/cherry_cutter.png" alt="Cherry Cutter"><h3>Cherry Cutter</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Cutter','20')">Buy</button></div>
-<div class="card"><img src="images/cherry_eater.png" alt="Cherry Eater"><h3>Cherry Eater</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Eater','30')">Buy</button></div>
+<div class="card"><img src="images/cherry_driller.png" alt="Cherry Driller"><h3>Cherry Driller</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Driller',1.49)">Add to Cart</button></div>
+<div class="card"><img src="images/cherry_cutter.png" alt="Cherry Cutter"><h3>Cherry Cutter</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Cutter',1.49)">Add to Cart</button></div>
+<div class="card"><img src="images/cherry_eater.png" alt="Cherry Eater"><h3>Cherry Eater</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Eater',1.49)">Add to Cart</button></div>
 </div>
 
 <h2 class="section-title">Bundles</h2>
 <div class="grid" id="bundles">
-<div class="card"><img src="images/pro_bundle.png" alt="Pro Bundle"><h3>Pro Bundle</h3><div class="price">€3.00</div><button onclick="addToCart('Pro Bundle','Aa')">Buy</button></div>
-<div class="card"><img src="images/cherry_bundle.png" alt="Cherry Bundle"><h3>Cherry Bundle</h3><div class="price">€7.00</div><button onclick="addToCart('Cherry Bundle','Bb')">Buy</button></div>
-<div class="card"><img src="images/spring_bundle.png" alt="Spring Bundle"><h3>Spring Bundle</h3><div class="price">€10.00</div><button onclick="addToCart('Spring Bundle','Cc')">Buy</button></div>
+<div class="card"><img src="images/pro_bundle.png" alt="Pro Bundle"><h3>Pro Bundle</h3><div class="price">€3.00</div><button onclick="addToCart('Pro Bundle',3.00)">Add to Cart</button></div>
+<div class="card"><img src="images/cherry_bundle.png" alt="Cherry Bundle"><h3>Cherry Bundle</h3><div class="price">€7.00</div><button onclick="addToCart('Cherry Bundle',7.00)">Add to Cart</button></div>
+<div class="card"><img src="images/spring_bundle.png" alt="Spring Bundle"><h3>Spring Bundle</h3><div class="price">€10.00</div><button onclick="addToCart('Spring Bundle',10.00)">Add to Cart</button></div>
 </div>
 
-<div id="cart">
-<h3>Shopping Cart</h3>
+<div class="container" id="cart">
+<h3>Your Cart</h3>
 <ul id="cartItems"></ul>
-<button id="generateCode">Generate Order Code</button>
-<div id="orderCode"></div>
+<p>Total: €<span id="totalPrice">0.00</span></p>
+<button id="checkout">Checkout via Discord</button>
+</div>
+
+<div class="container" id="vote">
+<h2 class="section-title">Vote for CherrySMP</h2>
+<p>Support our server by voting on Minecraft server lists!</p>
+<button onclick="window.open('https://minecraftservers.org','_blank')">Vote Now</button>
+</div>
+
+<div class="container" id="terms">
+<h2 class="section-title">Terms & Refund Policy</h2>
+<p>All purchases are final. Any issues or refunds should be addressed via our Discord support.</p>
 </div>
 
 <footer>
-<p>© 2026 CherrySMP | <a href="https://discord.gg/FWauk2sxQs" target="_blank" style="color:#ff77aa;">Join Discord</a> | Terms & Refund Policy</p>
+<p>© 2026 CherrySMP | <a href="https://discord.gg/FWauk2sxQs" target="_blank" style="color:#ff77aa;">Join Discord</a></p>
 </footer>
 
 <script>
@@ -112,16 +123,27 @@ let playerCount = document.getElementById('playerCount');
 setInterval(()=>{ playerCount.textContent = Math.floor(Math.random()*100); },3000);
 
 let cart = [];
-function addToCart(item,code){ cart.push({item,code}); updateCart(); }
+function addToCart(item, price){
+  cart.push({item, price});
+  updateCart();
+}
+function removeFromCart(index){ cart.splice(index,1); updateCart(); }
 function updateCart(){
   const cartItems = document.getElementById('cartItems');
+  const totalPrice = document.getElementById('totalPrice');
   cartItems.innerHTML = '';
-  cart.forEach((c,i)=>{ let li = document.createElement('li'); li.textContent = c.item + ' ['+c.code+']'; cartItems.appendChild(li); });
+  let total = 0;
+  cart.forEach((c,i)=>{
+    total += c.price;
+    let li = document.createElement('li');
+    li.innerHTML = c.item + ' - €' + c.price.toFixed(2) + ' <button onclick="removeFromCart('+i+')">Remove</button>';
+    cartItems.appendChild(li);
+  });
+  totalPrice.textContent = total.toFixed(2);
 }
-
-document.getElementById('generateCode').addEventListener('click',()=>{
-  let orderCode = cart.map(c=>c.code).join('');
-  document.getElementById('orderCode').textContent = 'Your Order Code: ' + orderCode;
+document.getElementById('checkout').addEventListener('click', ()=>{
+  if(cart.length === 0){ alert('Your cart is empty!'); return; }
+  alert('Please send your order details to our Discord for processing!');
 });
 
 // Particle Background
@@ -134,7 +156,6 @@ function Particle(){ this.x = Math.random()*canvas.width; this.y = Math.random()
 for(let i=0;i<100;i++){ particlesArr.push(new Particle()); }
 function animate(){ ctx.clearRect(0,0,canvas.width,canvas.height); particlesArr.forEach(p=>{p.update();p.draw();}); requestAnimationFrame(animate); }
 animate();
-function createParticle(){ let p = new Particle(); particlesArr.push(p); setTimeout(()=>{particlesArr.splice(particlesArr.indexOf(p),1)},2000); }
 </script>
 
 </body>
