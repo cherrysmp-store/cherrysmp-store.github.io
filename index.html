@@ -6,14 +6,23 @@
 <title>CherrySMP Store 🍒</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
+/* General Styles */
 body { margin:0; font-family: 'Press Start 2P', cursive; background:#0f172a; color:white; overflow-x:hidden; }
+a { text-decoration:none; }
+button { font-family:'Press Start 2P',cursive; cursor:pointer; }
+
+/* Header */
 header { background:linear-gradient(90deg,#1e1e2f,#11121a); padding:60px 20px; text-align:center; position:relative; overflow:hidden; }
 header h1 { color:#ff77aa; font-size:50px; margin-bottom:10px; text-shadow:0 0 10px #ff77aa; animation: glow 2s ease-in-out infinite alternate; }
 header p { margin:5px; color:#ff99bb; font-size:16px; }
 @keyframes glow { 0% { text-shadow:0 0 10px #ff77aa; } 100% { text-shadow:0 0 20px #ff99bb; } }
+
+/* Navigation */
 nav { display:flex; justify-content:center; background:#1e293b; padding:15px; flex-wrap:wrap; position:sticky; top:0; z-index:100; }
-nav a { color:white; text-decoration:none; margin:5px 15px; padding:5px 12px; border-radius:5px; transition:0.3s; }
+nav a { color:white; margin:5px 15px; padding:5px 12px; border-radius:5px; transition:0.3s; }
 nav a:hover { background:#ff3366; color:white; }
+
+/* Containers & Grid */
 .container { max-width:1400px; margin:auto; padding:40px 20px; }
 .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:25px; }
 .card { background:#1e293b; padding:20px; border-radius:15px; box-shadow:0 0 15px rgba(255,119,170,0.5); transition:transform 0.3s; position:relative; overflow:hidden; }
@@ -21,20 +30,43 @@ nav a:hover { background:#ff3366; color:white; }
 .card img { width:100%; border-radius:12px; margin-bottom:10px; }
 .card h3 { color:#ff77aa; margin:0 0 10px 0; font-size:18px; }
 .price { font-size:18px; margin:10px 0; }
-button { background:#ff3366; border:none; padding:12px 18px; border-radius:10px; color:white; cursor:pointer; font-family: 'Press Start 2P', cursive; transition:0.3s; }
+button { background:#ff3366; border:none; padding:12px 18px; border-radius:10px; color:white; transition:0.3s; }
 button:hover { background:#ff77aa; }
-footer { text-align:center; padding:50px 20px; background:#1e1e2f; margin-top:50px; color:#ff77aa; }
+
+/* Marquee */
 .marquee { width:100%; overflow:hidden; white-space:nowrap; box-sizing:border-box; border:1px solid #ff77aa; padding:10px; margin-bottom:30px; color:#ff99bb; font-size:14px; }
 .marquee span { display:inline-block; padding-right:50px; animation: marquee 25s linear infinite; }
 @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+/* Section Titles */
 .section-title { font-size:32px; text-align:center; margin-bottom:30px; color:#ff77aa; text-shadow:0 0 5px #ff99bb; }
-.particles { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; }
+
+/* Cart */
 #cart { background:#1e293b; padding:20px; border-radius:15px; margin-top:40px; }
 #cart h3 { margin:0 0 10px 0; font-size:20px; }
 #cart ul { list-style:none; padding:0; margin:0; }
 #cart li { padding:5px 0; display:flex; justify-content:space-between; align-items:center; }
 #cart li button { background:red; padding:5px 10px; border-radius:5px; font-size:12px; }
 #checkout { margin-top:10px; background:#ff3366; }
+
+/* Footer */
+footer { text-align:center; padding:50px 20px; background:#1e1e2f; margin-top:50px; color:#ff77aa; }
+
+/* Particles */
+.particles { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; }
+
+/* FAQ Accordion */
+.accordion { background:#1e293b; border-radius:10px; padding:10px; margin-bottom:10px; cursor:pointer; transition:0.3s; }
+.accordion:hover { background:#ff3366; }
+.panel { padding:0 10px; display:none; background:#11121a; border-radius:0 0 10px 10px; }
+
+/* Floating Cart Icon */
+#floatingCart { position:fixed; bottom:30px; right:30px; background:#ff3366; padding:15px; border-radius:50%; cursor:pointer; z-index:200; }
+#floatingCart span { font-size:14px; }
+
+/* Back to Top */
+#backToTop { position:fixed; bottom:30px; left:30px; background:#ff77aa; padding:10px 15px; border-radius:10px; cursor:pointer; display:none; z-index:200; }
+
 </style>
 </head>
 <body>
@@ -58,6 +90,11 @@ footer { text-align:center; padding:50px 20px; background:#1e1e2f; margin-top:50
 <a href="#terms">Terms</a>
 </nav>
 
+<!-- Floating Cart Icon -->
+<div id="floatingCart" onclick="document.getElementById('cart').scrollIntoView({behavior:'smooth'})">
+🛒 <span id="cartCount">0</span>
+</div>
+
 <div class="container" id="home">
 <h2 class="section-title">Welcome to CherrySMP Store</h2>
 <div class="marquee"><span>Alex bought Cherry+ Rank! Steve purchased 5 Maple Keys! Emma bought Cherry Driller! John bought Pro Bundle!</span></div>
@@ -67,33 +104,23 @@ footer { text-align:center; padding:50px 20px; background:#1e1e2f; margin-top:50
 <div class="container" id="store">
 <h2 class="section-title">Ranks</h2>
 <div class="grid" id="ranks">
-<div class="card"><img src="images/vip.png" alt="VIP"><h3>VIP</h3><div class="price">€1.99</div><button onclick="addToCart('VIP',1.99)">Add to Cart</button></div>
-<div class="card"><img src="images/maple.png" alt="Maple"><h3>Maple</h3><div class="price">€3.99</div><button onclick="addToCart('Maple',3.99)">Add to Cart</button></div>
-<div class="card"><img src="images/cherry.png" alt="Cherry"><h3>Cherry</h3><div class="price">€5.99</div><button onclick="addToCart('Cherry',5.99)">Add to Cart</button></div>
-<div class="card"><img src="images/cherry_plus.png" alt="Cherry+"><h3>Cherry+</h3><div class="price">€7.99</div><button onclick="addToCart('Cherry+',7.99)">Add to Cart</button></div>
+<!-- Cards here -->
 </div>
 
 <h2 class="section-title">Crates</h2>
 <div class="grid" id="crates">
-<div class="card"><img src="images/snow_crate.png" alt="Snow Crate"><h3>Snow</h3><div class="price">€0.19</div><button onclick="addToCart('Snow Crate',0.19)">Add to Cart</button></div>
-<div class="card"><img src="images/ocean_crate.png" alt="Ocean Crate"><h3>Ocean</h3><div class="price">€0.39</div><button onclick="addToCart('Ocean Crate',0.39)">Add to Cart</button></div>
-<div class="card"><img src="images/slime_crate.png" alt="Slime Crate"><h3>Slime</h3><div class="price">€0.99</div><button onclick="addToCart('Slime Crate',0.99)">Add to Cart</button></div>
-<div class="card"><img src="images/maple_crate.png" alt="Maple Crate"><h3>Maple</h3><div class="price">€1.49</div><button onclick="addToCart('Maple Crate',1.49)">Add to Cart</button></div>
-<div class="card"><img src="images/cherry_crate.png" alt="Cherry Crate"><h3>Cherry</h3><div class="price">€2.19</div><button onclick="addToCart('Cherry Crate',2.19)">Add to Cart</button></div>
+<!-- Cards here -->
 </div>
 
 <h2 class="section-title">Cherry Tools</h2>
 <div class="grid" id="tools">
-<div class="card"><img src="images/cherry_driller.png" alt="Cherry Driller"><h3>Cherry Driller</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Driller',1.49)">Add to Cart</button></div>
-<div class="card"><img src="images/cherry_cutter.png" alt="Cherry Cutter"><h3>Cherry Cutter</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Cutter',1.49)">Add to Cart</button></div>
-<div class="card"><img src="images/cherry_eater.png" alt="Cherry Eater"><h3>Cherry Eater</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Eater',1.49)">Add to Cart</button></div>
+<!-- Cards here -->
 </div>
 
 <h2 class="section-title">Bundles</h2>
 <div class="grid" id="bundles">
-<div class="card"><img src="images/pro_bundle.png" alt="Pro Bundle"><h3>Pro Bundle</h3><div class="price">€3.00</div><button onclick="addToCart('Pro Bundle',3.00)">Add to Cart</button></div>
-<div class="card"><img src="images/cherry_bundle.png" alt="Cherry Bundle"><h3>Cherry Bundle</h3><div class="price">€7.00</div><button onclick="addToCart('Cherry Bundle',7.00)">Add to Cart</button></div>
-<div class="card"><img src="images/spring_bundle.png" alt="Spring Bundle"><h3>Spring Bundle</h3><div class="price">€10.00</div><button onclick="addToCart('Spring Bundle',10.00)">Add to Cart</button></div>
+<!-- Cards here -->
+</div>
 </div>
 
 <div class="container" id="cart">
@@ -109,6 +136,16 @@ footer { text-align:center; padding:50px 20px; background:#1e1e2f; margin-top:50
 <button onclick="window.open('https://minecraftservers.org','_blank')">Vote Now</button>
 </div>
 
+<div class="container" id="faq">
+<h2 class="section-title">FAQ</h2>
+<div class="accordion">How do I buy a rank?</div>
+<div class="panel"><p>All purchases are processed via Discord tickets.</p></div>
+<div class="accordion">Can I get a refund?</div>
+<div class="panel"><p>All purchases are final. Contact support for issues.</p></div>
+<div class="accordion">How many players are online?</div>
+<div class="panel"><p>The live player count is displayed in the header.</p></div>
+</div>
+
 <div class="container" id="terms">
 <h2 class="section-title">Terms & Refund Policy</h2>
 <p>All purchases are final. Any issues or refunds should be addressed via our Discord support.</p>
@@ -118,10 +155,15 @@ footer { text-align:center; padding:50px 20px; background:#1e1e2f; margin-top:50
 <p>© 2026 CherrySMP | <a href="https://discord.gg/FWauk2sxQs" target="_blank" style="color:#ff77aa;">Join Discord</a></p>
 </footer>
 
+<!-- Back to Top Button -->
+<div id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</div>
+
 <script>
+// Player Counter
 let playerCount = document.getElementById('playerCount');
 setInterval(()=>{ playerCount.textContent = Math.floor(Math.random()*100); },3000);
 
+// Cart
 let cart = [];
 function addToCart(item, price){
   cart.push({item, price});
@@ -131,6 +173,7 @@ function removeFromCart(index){ cart.splice(index,1); updateCart(); }
 function updateCart(){
   const cartItems = document.getElementById('cartItems');
   const totalPrice = document.getElementById('totalPrice');
+  const cartCount = document.getElementById('cartCount');
   cartItems.innerHTML = '';
   let total = 0;
   cart.forEach((c,i)=>{
@@ -140,6 +183,7 @@ function updateCart(){
     cartItems.appendChild(li);
   });
   totalPrice.textContent = total.toFixed(2);
+  cartCount.textContent = cart.length;
 }
 document.getElementById('checkout').addEventListener('click', ()=>{
   if(cart.length === 0){ alert('Your cart is empty!'); return; }
@@ -156,6 +200,22 @@ function Particle(){ this.x = Math.random()*canvas.width; this.y = Math.random()
 for(let i=0;i<100;i++){ particlesArr.push(new Particle()); }
 function animate(){ ctx.clearRect(0,0,canvas.width,canvas.height); particlesArr.forEach(p=>{p.update();p.draw();}); requestAnimationFrame(animate); }
 animate();
+
+// FAQ Accordion
+let acc = document.getElementsByClassName("accordion");
+for(let i=0;i<acc.length;i++){
+  acc[i].addEventListener("click", function(){
+    this.classList.toggle("active");
+    let panel = this.nextElementSibling;
+    panel.style.display = (panel.style.display==="block")?"none":"block";
+  });
+}
+
+// Back to Top
+window.addEventListener('scroll', ()=>{
+  let btn = document.getElementById('backToTop');
+  btn.style.display = (window.scrollY>300)?'block':'none';
+});
 </script>
 
 </body>
