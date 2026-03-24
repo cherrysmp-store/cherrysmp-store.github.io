@@ -1,32 +1,25 @@
-// =======================================
-// CherrySMP Store - Expanded Script
-// =======================================
 
-// =======================
+// ===============================
+// CherrySMP Store - Unified Script
+// ===============================
+
 // CONFIG
-// =======================
-
 const CONFIG = {
     DISCOUNT: 0.20,
-    CURRENCY: "€",
+    PAYPAL_LINK: "https://www.paypal.com/paypalme/TimCherry000",
     COUPONS: {
-        "CHERRY20": 0.20,
-        "SPRING10": 0.10
-    },
-    PAYPAL_LINK: "https://www.paypal.com/paypalme/YOUR_USERNAME"
+        "CHERRY5": 0.05,
+        "SPRING5": 0.05
+    }
 };
 
-// =======================
 // STATE
-// =======================
-
 let cart = [];
-let activeDiscount = 0;
 let appliedCoupon = null;
 
-// =======================
+// ===============================
 // PRODUCTS
-// =======================
+// ===============================
 
 const PRODUCTS = {
     ranks: [
@@ -34,7 +27,7 @@ const PRODUCTS = {
         { name: "Maple", price: 4 },
         { name: "Cherry", price: 6 },
         { name: "Cherry+", price: 8 },
-        { name: "Spring", price: 10 }
+        { name: "Spring", price: 10, highlight: true }
     ],
     crates: [
         { name: "Slime Crate", price: 1 },
@@ -54,15 +47,37 @@ const PRODUCTS = {
     ]
 };
 
-// =======================
-// UTILITIES
-// =======================
+// ===============================
+// INIT
+// ===============================
 
-function formatPrice(price) {
-    return CONFIG.CURRENCY + price.toFixed(2);
+document.addEventListener("DOMContentLoaded", () => {
+    renderAllProducts();
+    showSection("ranks");
+});
+
+// ===============================
+// NAVIGATION
+// ===============================
+
+function showSection(sectionId) {
+    document.querySelectorAll(".section").forEach(sec => {
+        sec.classList.remove("active");
+    });
+
+    const target = document.getElementById(sectionId);
+    if (target) {
+        target.classList.add("active");
+    }
 }
 
-function calculateDiscount(price) {
+// ===============================
+// PRICING
+// ===============================
+
+function getDiscounted(price, isSubscription = false) {
+    if (isSubscription) return price;
+
     let discount = CONFIG.DISCOUNT;
 
     if (appliedCoupon && CONFIG.COUPONS[appliedCoupon]) {
@@ -72,41 +87,11 @@ function calculateDiscount(price) {
     return +(price * (1 - discount)).toFixed(2);
 }
 
-// =======================
-// NAVIGATION
-// =======================
-
-function showSection(sectionId) {
-    const sections = document.querySelectorAll(".section");
-
-    sections.forEach(sec => {
-        sec.classList.remove("active");
-    });
-
-    const target = document.getElementById(sectionId);
-    if (target) {
-        target.classList.add("active");
-        animateSection(target);
-    }
-}
-
-// Smooth animation
-function animateSection(section) {
-    section.style.opacity = 0;
-    section.style.transform = "translateY(10px)";
-
-    setTimeout(() => {
-        section.style.transition = "all 0.4s ease";
-        section.style.opacity = 1;
-        section.style.transform = "translateY(0)";
-    }, 50);
-}
-
-// =======================
+// ===============================
 // RENDER PRODUCTS
-// =======================
+// ===============================
 
-function renderProducts() {
+function renderAllProducts() {
     Object.keys(PRODUCTS).forEach(category => {
         const container = document.getElementById(category);
         if (!container) return;
@@ -115,7 +100,7 @@ function renderProducts() {
 
         PRODUCTS[category].forEach(item => {
             const original = item.price;
-            const discounted = calculateDiscount(original);
+            const discounted = getDiscounted(original, false);
 
             const card = document.createElement("div");
             card.className = "card";
@@ -124,9 +109,9 @@ function renderProducts() {
                 <h3>${item.name}</h3>
 
                 <p>
-                    <span class="price-old">${formatPrice(original)}</span>
-                    <span> → </span>
-                    <span class="price-new">${formatPrice(discounted)}</span>
+                    <span class="price-old">€${original}</span>
+                    → 
+                    <span class="price-new">€${discounted}</span>
                 </p>
 
                 <button onclick="addToCart('${item.name}', ${discounted})">
@@ -134,19 +119,32 @@ function renderProducts() {
                 </button>
             `;
 
+            if (item.highlight) {
+                card.style.border = "2px solid #7cf07c";
+                card.style.boxShadow = "0 0 15px rgba(124,240,124,0.4)";
+            }
+
             container.appendChild(card);
         });
     });
 }
 
-// =======================
-// CART SYSTEM
-// =======================
+// ===============================
+// SUBSCRIPTION (NO DISCOUNT)
+// ===============================
+
+function addSubscription() {
+    addToCart("Cherry Subscription", 10);
+}
+
+// ===============================
+// CART
+// ===============================
 
 function addToCart(name, price) {
     cart.push({ name, price });
     renderCart();
-    cartAnimation();
+    pulseCart();
 }
 
 function removeFromCart(index) {
@@ -155,41 +153,39 @@ function removeFromCart(index) {
 }
 
 function renderCart() {
-    const cartContainer = document.getElementById("cart-items");
-    cartContainer.innerHTML = "";
+    const cartItems = document.getElementById("cart-items");
+    cartItems.innerHTML = "";
 
     let total = 0;
 
-    cart.forEach((item, index) => {
+    cart.forEach((item, i) => {
         total += item.price;
 
         const div = document.createElement("div");
-        div.className = "cart-item";
-
         div.innerHTML = `
-            <span>${item.name} - ${formatPrice(item.price)}</span>
-            <button onclick="removeFromCart(${index})">x</button>
+            ${item.name} - €${item.price}
+            <button onclick="removeFromCart(${i})">x</button>
         `;
 
-        cartContainer.appendChild(div);
+        cartItems.appendChild(div);
     });
 
     document.getElementById("total").innerText =
-        "Total: " + formatPrice(total);
+        "Total: €" + total.toFixed(2);
 }
 
-// Cart animation
-function cartAnimation() {
+// ===============================
+// CART TOGGLE (IMPORTANT)
+// ===============================
+
+function toggleCart() {
     const cartBox = document.getElementById("cart");
-    cartBox.style.transform = "scale(1.05)";
-    setTimeout(() => {
-        cartBox.style.transform = "scale(1)";
-    }, 150);
+    cartBox.classList.toggle("show");
 }
 
-// =======================
+// ===============================
 // COUPON SYSTEM
-// =======================
+// ===============================
 
 function applyCoupon() {
     const input = document.getElementById("coupon");
@@ -199,47 +195,46 @@ function applyCoupon() {
         appliedCoupon = code;
         alert("Coupon applied: " + code);
 
-        renderProducts();
+        renderAllProducts();
         renderCart();
     } else {
-        alert("Invalid coupon code");
+        alert("Invalid coupon");
     }
 }
 
-// =======================
+// ===============================
 // CHECKOUT
-// =======================
+// ===============================
 
 function checkoutPayPal() {
-    if (cart.length === 0) {
-        alert("Your cart is empty!");
-        return;
-    }
+    if (cart.length === 0) return alert("Cart is empty");
 
     window.open(CONFIG.PAYPAL_LINK, "_blank");
 }
 
 function checkoutBank() {
-    if (cart.length === 0) {
-        alert("Your cart is empty!");
-        return;
-    }
+    if (cart.length === 0) return alert("Cart is empty");
 
     alert(
-        "Bank Transfer Details:\n\n" +
-        "IBAN: XXXX XXXX XXXX\n" +
-        "BIC: XXXXX\n\n" +
-        "Please include your IGN as reference."
+        "Bank Transfer:\n\nIBAN: XXXX XXXX XXXX\nBIC: XXXXX\n\nInclude your IGN."
     );
 }
 
-// =======================
+// ===============================
 // UI EFFECTS
-// =======================
+// ===============================
+
+function pulseCart() {
+    const cartBox = document.getElementById("cart");
+    cartBox.style.transform = "scale(1.05)";
+    setTimeout(() => {
+        cartBox.style.transform = "scale(1)";
+    }, 150);
+}
 
 // Floating particles
 function createParticles() {
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 40; i++) {
         const p = document.createElement("div");
 
         p.style.position = "fixed";
@@ -251,7 +246,7 @@ function createParticles() {
         p.style.top = Math.random() * 100 + "vh";
         p.style.opacity = Math.random();
 
-        const duration = 5 + Math.random() * 10;
+        const duration = 6 + Math.random() * 10;
         p.style.animation = `float ${duration}s linear infinite`;
 
         document.body.appendChild(p);
@@ -267,34 +262,22 @@ function createParticles() {
     document.head.appendChild(style);
 }
 
-// Page fade-in
-function initPage() {
-    document.body.style.opacity = 0;
-
-    setTimeout(() => {
-        document.body.style.transition = "opacity 0.8s ease";
-        document.body.style.opacity = 1;
-    }, 100);
-}
-
-// =======================
-// EVENTS
-// =======================
+// ===============================
+// INIT AFTER LOAD
+// ===============================
 
 document.addEventListener("DOMContentLoaded", () => {
-    initPage();
     createParticles();
-    renderProducts();
+    renderAllProducts();
     showSection("ranks");
 });
 
-// =======================
+// ===============================
 // DEBUG
-// =======================
+// ===============================
 
 function debugCart() {
-    console.log("Cart:", cart);
-    console.log("Coupon:", appliedCoupon);
+    console.log(cart);
 }
 
 window.debugCart = debugCart;
