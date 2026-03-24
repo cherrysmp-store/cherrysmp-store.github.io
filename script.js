@@ -216,7 +216,7 @@ function checkoutBank() {
     if (cart.length === 0) return alert("Cart is empty");
 
     alert(
-        "Bank Transfer:\n\nIBAN: XXXX XXXX XXXX\nBIC: XXXXX\n\nInclude your IGN."
+        "Bank Transfer:\n\nNot available at the moment please try paypal !"
     );
 }
 
