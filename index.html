@@ -3,206 +3,177 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CherrySMP Store</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-
+<title>CherrySMP Store 🍒</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#0b1020;
-  --card:#121a33;
-  --accent:#ff4d8d;
-  --accent2:#ff9ec0;
-}
+body { margin:0; font-family:'Press Start 2P', cursive; background:#0f172a; color:white; overflow-x:hidden; }
+a { text-decoration:none; }
+button { font-family:'Press Start 2P', cursive; cursor:pointer; }
+html { scroll-behavior: smooth; }
 
-body{
-  margin:0;
-  background:linear-gradient(180deg,#0b1020,#050814);
-  color:white;
-  font-family:'Inter',sans-serif;
-}
+header { background:linear-gradient(90deg,#1e1e2f,#11121a); padding:60px 20px; text-align:center; position:relative; overflow:hidden; }
+header h1 { color:#ff77aa; font-size:50px; margin-bottom:10px; text-shadow:0 0 10px #ff77aa; animation: glow 2s ease-in-out infinite alternate; }
+header p { margin:5px; color:#ff99bb; font-size:16px; }
+@keyframes glow { 0% { text-shadow:0 0 10px #ff77aa; } 100% { text-shadow:0 0 20px #ff99bb; } }
 
-h1,h2,h3{font-family:'Press Start 2P',cursive;}
+nav { display:flex; justify-content:center; background:#1e293b; padding:15px; flex-wrap:wrap; position:sticky; top:0; z-index:100; }
+nav a { color:white; margin:5px 15px; padding:5px 12px; border-radius:5px; transition:0.3s; }
+nav a:hover { background:#ff3366; color:white; }
 
-header{
-  text-align:center;
-  padding:60px 20px;
-}
+.container { max-width:1400px; margin:auto; padding:40px 20px; }
+.section-title { font-size:32px; text-align:center; margin-bottom:30px; color:#ff77aa; text-shadow:0 0 5px #ff99bb; }
 
-header h1{
-  color:var(--accent);
-  font-size:42px;
-}
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:25px; }
+.card { background:#1e293b; padding:20px; border-radius:15px; box-shadow:0 0 15px rgba(255,119,170,0.5); transition:transform 0.3s; position:relative; overflow:hidden; }
+.card:hover { transform:scale(1.05); }
+.card img { width:100%; border-radius:12px; margin-bottom:10px; }
+.card h3 { color:#ff77aa; margin:0 0 10px 0; font-size:18px; display:inline-block; }
+.price { font-size:18px; margin:10px 0; }
+button { background:#ff3366; border:none; padding:12px 18px; border-radius:10px; color:white; transition:0.3s; }
+button:hover { background:#ff77aa; }
 
-.sale-banner{
-  background:linear-gradient(90deg,#ff4d8d,#ff9ec0);
-  padding:12px;
-  border-radius:12px;
-  margin-top:20px;
-  font-weight:bold;
-}
+.info-btn { background:#ff99bb; margin-left:5px; padding:5px 8px; font-size:12px; border-radius:5px; }
+.info-btn:hover { background:#ff3366; }
 
-.container{
-  max-width:1200px;
-  margin:auto;
-  padding:30px 20px;
-}
+.marquee { width:100%; overflow:hidden; white-space:nowrap; box-sizing:border-box; border:1px solid #ff77aa; padding:10px; margin-bottom:30px; color:#ff99bb; font-size:14px; }
+.marquee span { display:inline-block; padding-right:50px; animation: marquee 25s linear infinite; }
+@keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:20px;
-}
+#cart { background:#1e293b; padding:20px; border-radius:15px; margin-top:40px; }
+#cart h3 { margin:0 0 10px 0; font-size:20px; }
+#cart ul { list-style:none; padding:0; margin:0; }
+#cart li { padding:5px 0; display:flex; justify-content:space-between; align-items:center; }
+#cart li button { background:red; padding:5px 10px; border-radius:5px; font-size:12px; }
+#checkout { margin-top:10px; background:#ff3366; }
 
-.card{
-  background:var(--card);
-  border-radius:20px;
-  padding:20px;
-  transition:0.3s;
-  position:relative;
-  border:1px solid rgba(255,255,255,0.05);
-}
+.accordion { background:#1e293b; border-radius:10px; padding:10px; margin-bottom:10px; cursor:pointer; transition:0.3s; }
+.accordion:hover { background:#ff3366; }
+.panel { padding:0 10px; display:none; background:#11121a; border-radius:0 0 10px 10px; }
 
-.card:hover{
-  transform:translateY(-5px);
-  box-shadow:0 10px 25px rgba(255,77,141,0.3);
-}
+#floatingCart { position:fixed; bottom:30px; right:30px; background:#ff3366; padding:15px; border-radius:50%; cursor:pointer; z-index:200; }
+#floatingCart span { font-size:14px; }
 
-.price{
-  margin:10px 0;
-}
+#backToTop { position:fixed; bottom:30px; left:30px; background:#ff77aa; padding:10px 15px; border-radius:10px; cursor:pointer; display:none; z-index:200; }
 
-.old-price{
-  text-decoration:line-through;
-  opacity:0.6;
-  font-size:12px;
-}
+.particles { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; }
 
-button{
-  background:var(--accent);
-  border:none;
-  padding:10px 15px;
-  border-radius:10px;
-  color:white;
-  cursor:pointer;
-}
+.modal { display:none; position:fixed; z-index:500; padding-top:100px; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.8); }
+.modal-content { background:#1e293b; margin:auto; padding:20px; border-radius:15px; width:90%; max-width:600px; color:#ff99bb; position:relative; }
+.close { color:#ff3366; position:absolute; top:10px; right:15px; font-size:28px; font-weight:bold; cursor:pointer; }
+.close:hover { color:#ff77aa; }
 
-#cart{
-  margin-top:40px;
-}
-
-.code-box{
-  background:#000;
-  padding:15px;
-  border-radius:10px;
-  margin-top:10px;
-  font-family:monospace;
-}
+footer { text-align:center; padding:50px 20px; background:#1e1e2f; margin-top:50px; color:#ff77aa; }
 </style>
 </head>
-
 <body>
 
 <header>
-<h1>CherrySMP 🍒</h1>
-
-<div class="sale-banner">
-🌸 SPRING SALE - 20% OFF EVERYTHING 🌸<br>
-Ends April 4
-</div>
-
+<canvas id="particles" class="particles"></canvas>
+<h1>CherrySMP Store 🍒</h1>
+<p>Economy Survival with RPG Biomes</p>
+<p>Server IP: <strong>cherrysmp.top</strong> | Players Online: <span id="playerCount">42</span></p>
 </header>
 
-<div class="container">
-<h2>Ranks</h2>
+<nav>
+<a href="#ranks-section">Ranks</a>
+<a href="#crates-section">Crates</a>
+<a href="#tools-section">Cherry Tools</a>
+<a href="#bundles-section">Bundles</a>
+<a href="#vote">Vote</a>
+<a href="https://discord.gg/FWauk2sxQs" target="_blank">Discord</a>
+<a href="#terms">Terms</a>
+</nav>
+
+<div id="floatingCart" onclick="document.getElementById('cart').scrollIntoView({behavior:'smooth'})">🛒 <span id="cartCount">0</span></div>
+
+<div class="container" id="home">
+<h2 class="section-title">Welcome to CherrySMP Store</h2>
+<div class="marquee"><span>Please confirm everything before even buying something ! Read FAQ or Terms & Refund Policy .</span></div>
+<p>All purchases are processed via Discord tickets. Browse ranks, crates, tools, and bundles below!</p>
+</div>
+
+<div class="container" id="ranks-section">
+<h2 class="section-title">Ranks</h2>
 <div class="grid">
-
-<div class="card">
-<h3>VIP</h3>
-<div class="old-price">€1.99</div>
-<div class="price">€1.59</div>
-<button onclick="addToCart('VIP',1.59)">Add</button>
+<div class="card"><img src="images/vip.png" alt="VIP"><h3>VIP</h3><div class="price">€1.99</div><button onclick="addToCart('VIP',1.99)">Add to Cart</button><button class="info-btn" onclick="showInfo('VIP')">i</button></div>
+<div class="card"><img src="images/maple.png" alt="Maple"><h3>Maple</h3><div class="price">€3.99</div><button onclick="addToCart('Maple',3.99)">Add to Cart</button><button class="info-btn" onclick="showInfo('Maple')">i</button></div>
+<div class="card"><img src="images/cherry.png" alt="Cherry"><h3>Cherry</h3><div class="price">€5.99</div><button onclick="addToCart('Cherry',5.99)">Add to Cart</button><button class="info-btn" onclick="showInfo('Cherry')">i</button></div>
+<div class="card"><img src="images/cherry_plus.png" alt="Cherry+"><h3>Cherry+</h3><div class="price">€7.99</div><button onclick="addToCart('Cherry+',7.99)">Add to Cart</button><button class="info-btn" onclick="showInfo('Cherry+')">i</button></div>
+</div>
 </div>
 
-<div class="card">
-<h3>Cherry+</h3>
-<div class="old-price">€7.99</div>
-<div class="price">€6.39</div>
-<button onclick="addToCart('Cherry+',6.39)">Add</button>
-</div>
-
-<div class="card">
-<h3>🌸 Spring Rank (LIMITED)</h3>
-<div class="old-price">€9.99</div>
-<div class="price">€7.99</div>
-<p>Same perks as Cherry+ + Exclusive Kit</p>
-<button onclick="addToCart('Spring Rank',7.99)">Add</button>
-</div>
-
-</div>
-
-<h2>Crates</h2>
+<div class="container" id="crates-section">
+<h2 class="section-title">Crates</h2>
 <div class="grid">
-<div class="card">
-<h3>Cherry Crate</h3>
-<div class="old-price">€2.19</div>
-<div class="price">€1.75</div>
-<button onclick="addToCart('Cherry Crate',1.75)">Add</button>
+<div class="card"><img src="images/snow_crate.png" alt="Snow Crate"><h3>Snow Crate</h3><div class="price">€0.19</div><button onclick="addToCart('Snow Crate',0.19)">Add to Cart</button><button class="info-btn" onclick="showInfo('Snow Crate')">i</button></div>
+<div class="card"><img src="images/ocean_crate.png" alt="Ocean Crate"><h3>Ocean Crate</h3><div class="price">€0.39</div><button onclick="addToCart('Ocean Crate',0.39)">Add to Cart</button><button class="info-btn" onclick="showInfo('Ocean Crate')">i</button></div>
+<div class="card"><img src="images/slime_crate.png" alt="Slime Crate"><h3>Slime Crate</h3><div class="price">€0.99</div><button onclick="addToCart('Slime Crate',0.99)">Add to Cart</button><button class="info-btn" onclick="showInfo('Slime Crate')">i</button></div>
+<div class="card"><img src="images/maple_crate.png" alt="Maple Crate"><h3>Maple Crate</h3><div class="price">€1.49</div><button onclick="addToCart('Maple Crate',1.49)">Add to Cart</button><button class="info-btn" onclick="showInfo('Maple Crate')">i</button></div>
+<div class="card"><img src="images/cherry_crate.png" alt="Cherry Crate"><h3>Cherry Crate</h3><div class="price">€2.19</div><button onclick="addToCart('Cherry Crate',2.19)">Add to Cart</button><button class="info-btn" onclick="showInfo('Cherry Crate')">i</button></div>
 </div>
 </div>
 
-<div id="cart">
-<h2>Cart</h2>
+<div class="container" id="tools-section">
+<h2 class="section-title">Cherry Tools</h2>
+<div class="grid">
+<div class="card"><img src="images/cherry_driller.png" alt="Cherry Driller"><h3>Cherry Driller</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Driller',1.49)">Add to Cart</button><button class="info-btn" onclick="showInfo('Cherry Driller')">i</button></div>
+<div class="card"><img src="images/cherry_cutter.png" alt="Cherry Cutter"><h3>Cherry Cutter</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Cutter',1.49)">Add to Cart</button><button class="info-btn" onclick="showInfo('Cherry Cutter')">i</button></div>
+<div class="card"><img src="images/cherry_eater.png" alt="Cherry Eater"><h3>Cherry Eater</h3><div class="price">€1.49</div><button onclick="addToCart('Cherry Eater',1.49)">Add to Cart</button><button class="info-btn" onclick="showInfo('Cherry Eater')">i</button></div>
+</div>
+</div>
+
+<div class="container" id="bundles-section">
+<h2 class="section-title">Bundles</h2>
+<div class="grid">
+<div class="card"><img src="images/pro_bundle.png" alt="Pro Bundle"><h3>Pro Bundle</h3><div class="price">€3.00</div><button onclick="addToCart('Pro Bundle',3.00)">Add to Cart</button><button class="info-btn" onclick="showInfo('Pro Bundle')">i</button></div>
+<div class="card"><img src="images/cherry_bundle.png" alt="Cherry Bundle"><h3>Cherry Bundle</h3><div class="price">€7.00</div><button onclick="addToCart('Cherry Bundle',7.00)">Add to Cart</button><button class="info-btn" onclick="showInfo('Cherry Bundle')">i</button></div>
+<div class="card"><img src="images/spring_bundle.png" alt="Spring Bundle"><h3>Spring Bundle</h3><div class="price">€10.00</div><button onclick="addToCart('Spring Bundle',10.00)">Add to Cart</button><button class="info-btn" onclick="showInfo('Spring Bundle')">i</button></div>
+</div>
+</div>
+
+<div class="container" id="cart">
+<h3>Your Cart</h3>
 <ul id="cartItems"></ul>
-<p>Total: €<span id="total">0</span></p>
-<button onclick="checkout()">Checkout</button>
-
-<div id="generatedCode" class="code-box" style="display:none"></div>
+<p>Total: €<span id="totalPrice">0.00</span></p>
+<button id="checkout">Checkout via Discord</button>
 </div>
 
+<div class="container" id="vote">
+<h2 class="section-title">Vote for CherrySMP</h2>
+<p>Support our server by voting on Minecraft server lists!</p>
+<button onclick="window.open('https://minecraftservers.org','_blank')">Vote Now</button>
 </div>
 
-<script>
-let cart=[];
+<div class="container" id="faq">
+<h2 class="section-title">FAQ</h2>
+<div class="accordion">How do I buy a rank?</div>
+<div class="panel"><p>All purchases are processed via Discord tickets.</p></div>
+<div class="accordion">Can I get a refund?</div>
+<div class="panel"><p>All purchases are final. Contact support for issues.</p></div>
+<div class="accordion">How many players are online?</div>
+<div class="panel"><p>The live player count is displayed in the header.</p></div>
+</div>
 
-function addToCart(name,price){
-  cart.push({name,price});
-  updateCart();
-}
+<div class="container" id="terms">
+<h2 class="section-title">Terms & Refund Policy</h2>
+<p>All purchases are final. Any issues or refunds should be addressed via our Discord support.</p>
+</div>
 
-function updateCart(){
-  let list=document.getElementById('cartItems');
-  let total=0;
-  list.innerHTML='';
+<footer>
+<p>© 2026 CherrySMP | <a href="https://discord.gg/FWauk2sxQs" target="_blank" style="color:#ff77aa;">Join Discord</a></p>
+</footer>
 
-  cart.forEach(i=>{
-    total+=i.price;
-    let li=document.createElement('li');
-    li.textContent=i.name + ' €'+i.price;
-    list.appendChild(li);
-  });
+<div id="infoModal" class="modal">
+<div class="modal-content">
+<span class="close" onclick="closeModal()">&times;</span>
+<h3 id="modalTitle"></h3>
+<p id="modalDesc"></p>
+</div>
+</div>
 
-  document.getElementById('total').textContent=total.toFixed(2);
-}
+<div id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</div>
 
-function generateCode(){
-  let items=cart.map(i=>i.name.replace(/ /g,'')).join('-');
-  let random=Math.random().toString(36).substring(2,8).toUpperCase();
-  return "CHERRY-"+items+"-"+random;
-}
-
-function checkout(){
-  if(cart.length===0){alert('Empty');return;}
-
-  let code=generateCode();
-
-  document.getElementById('generatedCode').style.display='block';
-  document.getElementById('generatedCode').innerText=
-    "Your Order Code:\n"+code+"\n\nSend this code in Discord ticket.";
-
-  // OPTIONAL: open discord
-  window.open("https://discord.gg/FWauk2sxQs");
-}
-</script>
+<script src="script.js"></script>
 
 </body>
 </html>
