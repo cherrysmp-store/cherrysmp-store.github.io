@@ -3,279 +3,167 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CherrySMP Store 🍒</title>
+<title>CherrySMP Store</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-:root{
-  --bg:#0f172a;
-  --card:#1e293b;
-  --accent:#ff3366;
-  --accent2:#ff77aa;
-}
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #d4f8d4, #fff0f5);
+        color: #333;
+        overflow-x: hidden;
+    }
 
-body{
-  margin:0;
-  font-family:'Press Start 2P', cursive;
-  background:linear-gradient(180deg,#0f172a,#1e293b,#0f172a);
-  color:#fff;
-}
+    header {
+        text-align: center;
+        padding: 40px 20px;
+        background: rgba(255,255,255,0.6);
+        backdrop-filter: blur(10px);
+        border-bottom: 2px solid #a8e6a3;
+    }
 
-header{
-  text-align:center;
-  padding:40px 20px;
-  background:linear-gradient(90deg,#ff77aa,#ffd1dc);
-}
+    h1 {
+        font-size: 3em;
+        color: #ff6fa5;
+        text-shadow: 0 0 10px rgba(255, 111, 165, 0.6);
+    }
 
-nav{
-  position:sticky;
-  top:0;
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-  background:#111827;
-  padding:10px;
-  z-index:100;
-}
+    .sale-banner {
+        background: #ffb6c1;
+        color: white;
+        padding: 10px;
+        font-weight: bold;
+        animation: glow 2s infinite alternate;
+    }
 
-nav a{
-  color:#fff;
-  margin:5px 10px;
-  text-decoration:none;
-  padding:6px 10px;
-  border-radius:6px;
-}
+    @keyframes glow {
+        from { box-shadow: 0 0 10px #ffb6c1; }
+        to { box-shadow: 0 0 25px #ff6fa5; }
+    }
 
-nav a:hover{
-  background:var(--accent);
-}
+    .container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        padding: 40px;
+    }
 
-.container{
-  max-width:1200px;
-  margin:auto;
-  padding:20px;
-}
+    .card {
+        background: rgba(255,255,255,0.8);
+        border-radius: 15px;
+        padding: 20px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        cursor: pointer;
+        border: 2px solid #c8f7c5;
+    }
 
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:15px;
-}
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
 
-.card{
-  background:var(--card);
-  padding:15px;
-  border-radius:12px;
-  text-align:center;
-  transition:0.3s;
-}
+    .card h2 {
+        color: #6fcf97;
+    }
 
-.card:hover{
-  transform:translateY(-5px);
-  box-shadow:0 0 15px rgba(255,119,170,0.5);
-}
+    .hidden {
+        display: none;
+    }
 
-button{
-  background:var(--accent);
-  border:none;
-  padding:8px;
-  border-radius:6px;
-  color:#fff;
-  cursor:pointer;
-}
+    .product {
+        padding: 10px;
+        margin: 10px 0;
+        border-bottom: 1px solid #ddd;
+    }
 
-button:hover{
-  background:var(--accent2);
-}
+    button {
+        background: #6fcf97;
+        border: none;
+        padding: 8px 12px;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
 
-#searchBar{
-  width:100%;
-  padding:12px;
-  margin-bottom:20px;
-  border-radius:8px;
-  border:none;
-}
+    button:hover {
+        background: #57b87f;
+    }
 
-#cart{
-  margin-top:40px;
-  background:#111827;
-  padding:20px;
-  border-radius:12px;
-}
+    #cart {
+        position: fixed;
+        right: 20px;
+        top: 20px;
+        width: 300px;
+        background: white;
+        border-radius: 15px;
+        padding: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
 
-#floatingCart{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  background:var(--accent);
-  padding:15px;
-  border-radius:50%;
-  cursor:pointer;
-}
+    #cart h3 {
+        margin-top: 0;
+    }
 
-.modal{
-  display:none;
-  position:fixed;
-  top:0;left:0;
-  width:100%;height:100%;
-  background:rgba(0,0,0,0.8);
-}
+    .checkout {
+        margin-top: 10px;
+    }
 
-.modal-content{
-  background:var(--card);
-  margin:10% auto;
-  padding:20px;
-  width:90%;
-  max-width:400px;
-  border-radius:10px;
-}
+    .spring-glow {
+        animation: springPulse 2s infinite;
+        border: 2px solid #7cf07c;
+    }
 
-.close{
-  float:right;
-  cursor:pointer;
-}
+    @keyframes springPulse {
+        0% { box-shadow: 0 0 5px #7cf07c; }
+        50% { box-shadow: 0 0 20px #aaffaa; }
+        100% { box-shadow: 0 0 5px #7cf07c; }
+    }
+
 </style>
 </head>
 
 <body>
 
 <header>
-<h1>CherrySMP Store 🍒</h1>
-<p>IP: cherrysmp.top</p>
-<p>Players: <span id="playerCount">Loading...</span></p>
+    <h1>🌸 CherrySMP Store 🌸</h1>
 </header>
 
-<nav>
-<a href="#ranks">Ranks</a>
-<a href="#crates">Crates</a>
-<a href="#tools">Tools</a>
-<a href="#bundles">Bundles</a>
-<a href="#cart">Cart</a>
-</nav>
+<div class="sale-banner">
+    🌷 Spring Sale - 20% OFF EVERYTHING 🌷
+</div>
 
 <div class="container">
-<input id="searchBar" placeholder="Search items..." onkeyup="filterItems()">
+    <div class="card" onclick="openCategory('ranks')">
+        <h2>Ranks</h2>
+    </div>
+    <div class="card" onclick="openCategory('crates')">
+        <h2>Crates</h2>
+    </div>
+    <div class="card" onclick="openCategory('bundles')">
+        <h2>Bundles</h2>
+    </div>
+    <div class="card" onclick="openCategory('stuff')">
+        <h2>Stuff</h2>
+    </div>
 </div>
 
-<div class="container" id="ranks">
-<h2>Ranks</h2>
-<div class="grid">
-<div class="card"><h3>VIP</h3><p>€1.99</p><button onclick="addToCart('VIP',1.99)">Add</button></div>
-<div class="card"><h3>Maple</h3><p>€3.99</p><button onclick="addToCart('Maple',3.99)">Add</button></div>
-<div class="card"><h3>Cherry</h3><p>€5.99</p><button onclick="addToCart('Cherry',5.99)">Add</button></div>
-</div>
-</div>
+<div id="products" class="container hidden"></div>
 
-<div class="container" id="crates">
-<h2>Crates</h2>
-<div class="grid">
-<div class="card"><h3>Snow Crate</h3><p>€0.19</p><button onclick="addToCart('Snow Crate',0.19)">Add</button></div>
-<div class="card"><h3>Ocean Crate</h3><p>€0.39</p><button onclick="addToCart('Ocean Crate',0.39)">Add</button></div>
-</div>
+<div id="cart">
+    <h3>🛒 Cart</h3>
+    <div id="cart-items"></div>
+    <p id="total"></p>
+
+    <div class="checkout">
+        <button onclick="checkoutPayPal()">PayPal</button>
+        <button onclick="checkoutBank()">Bank Transfer</button>
+    </div>
 </div>
 
-<div class="container" id="tools">
-<h2>Tools</h2>
-<div class="grid">
-<div class="card"><h3>Cherry Drill</h3><p>€1.49</p><button onclick="addToCart('Cherry Drill',1.49)">Add</button></div>
-<div class="card"><h3>Cherry Cutter</h3><p>€1.49</p><button onclick="addToCart('Cherry Cutter',1.49)">Add</button></div>
-</div>
-</div>
-
-<div class="container" id="bundles">
-<h2>Bundles</h2>
-<div class="grid">
-<div class="card"><h3>VIP Bundle</h3><p>€2.49</p><button onclick="addToCart('VIP Bundle',2.49)">Add</button></div>
-</div>
-</div>
-
-<div class="container" id="cart">
-<h2>Your Cart</h2>
-<ul id="cartItems"></ul>
-<p>Total: €<span id="totalPrice">0</span></p>
-<button onclick="checkout()">Checkout</button>
-</div>
-
-<div id="floatingCart" onclick="document.getElementById('cart').scrollIntoView()">
-🛒 <span id="cartCount">0</span>
-</div>
-
-<div id="paymentModal" class="modal">
-<div class="modal-content">
-<span class="close" onclick="closeModal()">&times;</span>
-<h3>Payment</h3>
-<button onclick="payPal()">PayPal</button>
-<button onclick="bankTransfer()">Bank Transfer</button>
-</div>
-</div>
-
-<script>
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-function addToCart(item,price){
-  cart.push({item,price});
-  updateCart();
-}
-
-function updateCart(){
-  let list = document.getElementById("cartItems");
-  list.innerHTML="";
-  let total=0;
-
-  cart.forEach((c,i)=>{
-    total+=c.price;
-    let li=document.createElement("li");
-    li.innerHTML=`${c.item} €${c.price} <button onclick="removeItem(${i})">X</button>`;
-    list.appendChild(li);
-  });
-
-  document.getElementById("totalPrice").innerText=total.toFixed(2);
-  document.getElementById("cartCount").innerText=cart.length;
-  localStorage.setItem("cart",JSON.stringify(cart));
-}
-
-function removeItem(i){
-  cart.splice(i,1);
-  updateCart();
-}
-
-function checkout(){
-  if(cart.length===0) return alert("Cart empty");
-  document.getElementById("paymentModal").style.display="block";
-}
-
-function closeModal(){
-  document.getElementById("paymentModal").style.display="none";
-}
-
-function payPal(){
-  window.open("https://www.paypal.com/","_blank");
-}
-
-function bankTransfer(){
-  alert("Bank details copied");
-}
-
-function filterItems(){
-  let q=document.getElementById("searchBar").value.toLowerCase();
-  document.querySelectorAll(".card").forEach(c=>{
-    c.style.display=c.innerText.toLowerCase().includes(q)?"block":"none";
-  });
-}
-
-async function updateServer(){
-  try{
-    let r=await fetch("https://api.mcsrvstat.us/2/cherrysmp.top");
-    let d=await r.json();
-    document.getElementById("playerCount").innerText=d.online?d.players.online:"Offline";
-  }catch{}
-}
-
-updateServer();
-setInterval(updateServer,30000);
-updateCart();
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
