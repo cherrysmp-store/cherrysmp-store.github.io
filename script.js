@@ -191,7 +191,7 @@ function closePayment(){
 }
 
 function payPal(){
-  window.open("https://www.paypal.me/YOURUSERNAME","_blank");
+  window.open("https://www.paypal.me/TimCherry000","_blank");
 }
 
 function bankTransfer(){
