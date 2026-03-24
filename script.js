@@ -340,9 +340,9 @@ const infoData = {
 "Cherry Cutter":"Tree breaker",
 "Cherry Eater":"3x3 terrain tools",
 
-"Pro Bundle":"Vip Rank + 2 Slime Crates",
-"Cherry Bundle":"Maple Rank + 2 Maple Crates",
-"Spring Bundle":"Cherry rank + 2 Cherry Crates"
+"Vip Bundle":"Vip Rank + 2 Slime Crates",
+"Maple Bundle":"Maple Rank + 2 Maple Crates",
+"Cherry Bundle":"Cherry rank + 2 Cherry Crates"
 
 };
 
