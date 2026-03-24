@@ -336,7 +336,7 @@ const infoData = {
 "Maple Crate":"High-tier diamond gear",
 "Cherry Crate":"Netherite gear",
 
-"Cherry Driller":"Mines 3x3",
+"Cherry Drill":"Mines 3x3",
 "Cherry Cutter":"Tree breaker",
 "Cherry Eater":"3x3 terrain tools",
 
