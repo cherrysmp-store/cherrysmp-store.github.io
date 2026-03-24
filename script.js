@@ -1,18 +1,40 @@
+// =======================================
+// CherrySMP Store - Expanded Script
+// =======================================
 
-// ================================
-// CherrySMP Store - Final Upgrade
-// ================================
+// =======================
+// CONFIG
+// =======================
 
-const DISCOUNT = 0.20;
+const CONFIG = {
+    DISCOUNT: 0.20,
+    CURRENCY: "€",
+    COUPONS: {
+        "CHERRY20": 0.20,
+        "SPRING10": 0.10
+    },
+    PAYPAL_LINK: "https://www.paypal.com/paypalme/YOUR_USERNAME"
+};
 
-// Products
-const productsData = {
+// =======================
+// STATE
+// =======================
+
+let cart = [];
+let activeDiscount = 0;
+let appliedCoupon = null;
+
+// =======================
+// PRODUCTS
+// =======================
+
+const PRODUCTS = {
     ranks: [
         { name: "VIP", price: 2 },
         { name: "Maple", price: 4 },
         { name: "Cherry", price: 6 },
         { name: "Cherry+", price: 8 },
-        { name: "Spring", price: 10, highlight: true }
+        { name: "Spring", price: 10 }
     ],
     crates: [
         { name: "Slime Crate", price: 1 },
@@ -20,128 +42,121 @@ const productsData = {
         { name: "Cherry Crate", price: 2.2 }
     ],
     bundles: [
-        { name: "Pro Bundle", desc: "VIP + 2 Slime Crates", price: 3 },
-        { name: "Immortal Bundle", desc: "Maple + 2 Maple Crates", price: 5 },
-        { name: "Cherry Bundle", desc: "Cherry + 2 Cherry Crates", price: 7 },
-        { name: "Spring Bundle", desc: "Spring + all crates", price: 11.5 }
+        { name: "Pro Bundle", price: 3 },
+        { name: "Immortal Bundle", price: 5 },
+        { name: "Cherry Bundle", price: 7 },
+        { name: "Spring Bundle", price: 11.5 }
     ],
     stuff: [
-        { name: "Cherry Driller", desc: "Mines 3x3 (5 days)", price: 1.5 },
-        { name: "Cherry Cutter", desc: "Breaks trees", price: 1.5 },
-        { name: "Cherry Eater", desc: "Bulk mining", price: 1.5 }
+        { name: "Cherry Driller", price: 1.5 },
+        { name: "Cherry Cutter", price: 1.5 },
+        { name: "Cherry Eater", price: 1.5 }
     ]
 };
 
-// Subscription (NOT discounted)
-const subscription = {
-    name: "Cherry Subscription",
-    price: 10,
-    desc: "Monthly perks + weekly crate + Discord benefits"
-};
+// =======================
+// UTILITIES
+// =======================
 
-let cart = [];
-
-// ================================
-// Pricing Logic
-// ================================
-
-function getDiscounted(price, isSubscription = false) {
-    if (isSubscription) return price; // no discount
-    return +(price * (1 - DISCOUNT)).toFixed(2);
+function formatPrice(price) {
+    return CONFIG.CURRENCY + price.toFixed(2);
 }
 
-// ================================
-// Category Rendering
-// ================================
+function calculateDiscount(price) {
+    let discount = CONFIG.DISCOUNT;
 
-function openCategory(category) {
-    const container = document.getElementById("products");
-    container.innerHTML = "";
-    container.classList.remove("hidden");
+    if (appliedCoupon && CONFIG.COUPONS[appliedCoupon]) {
+        discount = CONFIG.COUPONS[appliedCoupon];
+    }
 
-    const title = document.createElement("h2");
-    title.innerText = category.toUpperCase();
-    title.style.textAlign = "center";
-    title.style.marginBottom = "20px";
-    container.appendChild(title);
+    return +(price * (1 - discount)).toFixed(2);
+}
 
-    productsData[category].forEach(item => {
-        const card = document.createElement("div");
-        card.className = "product-card";
+// =======================
+// NAVIGATION
+// =======================
 
-        const oldPrice = item.price;
-        const newPrice = getDiscounted(oldPrice, false);
+function showSection(sectionId) {
+    const sections = document.querySelectorAll(".section");
 
-        card.innerHTML = `
-            <h3>${item.name}</h3>
-            <p>${item.desc || ""}</p>
+    sections.forEach(sec => {
+        sec.classList.remove("active");
+    });
 
-            <div class="price-block">
-                <span class="price-old">€${oldPrice}</span>
-                <span> → </span>
-                <span class="price-new">€${newPrice}</span>
-            </div>
+    const target = document.getElementById(sectionId);
+    if (target) {
+        target.classList.add("active");
+        animateSection(target);
+    }
+}
 
-            <button onclick="addToCart('${item.name}', ${newPrice})">
-                Add to Cart
-            </button>
-        `;
+// Smooth animation
+function animateSection(section) {
+    section.style.opacity = 0;
+    section.style.transform = "translateY(10px)";
 
-        if (item.highlight) {
-            card.classList.add("spring-glow");
-        }
+    setTimeout(() => {
+        section.style.transition = "all 0.4s ease";
+        section.style.opacity = 1;
+        section.style.transform = "translateY(0)";
+    }, 50);
+}
 
-        container.appendChild(card);
+// =======================
+// RENDER PRODUCTS
+// =======================
+
+function renderProducts() {
+    Object.keys(PRODUCTS).forEach(category => {
+        const container = document.getElementById(category);
+        if (!container) return;
+
+        container.innerHTML = "";
+
+        PRODUCTS[category].forEach(item => {
+            const original = item.price;
+            const discounted = calculateDiscount(original);
+
+            const card = document.createElement("div");
+            card.className = "card";
+
+            card.innerHTML = `
+                <h3>${item.name}</h3>
+
+                <p>
+                    <span class="price-old">${formatPrice(original)}</span>
+                    <span> → </span>
+                    <span class="price-new">${formatPrice(discounted)}</span>
+                </p>
+
+                <button onclick="addToCart('${item.name}', ${discounted})">
+                    Add to Cart
+                </button>
+            `;
+
+            container.appendChild(card);
+        });
     });
 }
 
-// ================================
-// Subscription (SPECIAL UI)
-// ================================
-
-function renderSubscription() {
-    const container = document.getElementById("products");
-
-    const subCard = document.createElement("div");
-    subCard.className = "product-card spring-glow";
-    subCard.style.gridColumn = "1 / -1"; // span full width
-    subCard.style.textAlign = "center";
-    subCard.style.marginTop = "40px";
-
-    subCard.innerHTML = `
-        <h2>⭐ ${subscription.name}</h2>
-        <p>${subscription.desc}</p>
-
-        <div class="price-block">
-            <span class="price-new">€${subscription.price}</span>
-        </div>
-
-        <button onclick="addToCart('${subscription.name}', ${subscription.price})">
-            Subscribe
-        </button>
-    `;
-
-    container.appendChild(subCard);
-}
-
-// ================================
-// Cart
-// ================================
+// =======================
+// CART SYSTEM
+// =======================
 
 function addToCart(name, price) {
     cart.push({ name, price });
     renderCart();
-    pulseCart();
+    cartAnimation();
 }
 
-function removeItem(index) {
+function removeFromCart(index) {
     cart.splice(index, 1);
     renderCart();
 }
 
 function renderCart() {
-    const cartItems = document.getElementById("cart-items");
-    cartItems.innerHTML = "";
+    const cartContainer = document.getElementById("cart-items");
+    cartContainer.innerHTML = "";
 
     let total = 0;
 
@@ -149,57 +164,137 @@ function renderCart() {
         total += item.price;
 
         const div = document.createElement("div");
+        div.className = "cart-item";
 
         div.innerHTML = `
-            ${item.name} - €${item.price}
-            <button onclick="removeItem(${index})">x</button>
+            <span>${item.name} - ${formatPrice(item.price)}</span>
+            <button onclick="removeFromCart(${index})">x</button>
         `;
 
-        cartItems.appendChild(div);
+        cartContainer.appendChild(div);
     });
 
     document.getElementById("total").innerText =
-        "Total: €" + total.toFixed(2);
+        "Total: " + formatPrice(total);
 }
 
-// ================================
-// Checkout
-// ================================
+// Cart animation
+function cartAnimation() {
+    const cartBox = document.getElementById("cart");
+    cartBox.style.transform = "scale(1.05)";
+    setTimeout(() => {
+        cartBox.style.transform = "scale(1)";
+    }, 150);
+}
+
+// =======================
+// COUPON SYSTEM
+// =======================
+
+function applyCoupon() {
+    const input = document.getElementById("coupon");
+    const code = input.value.trim().toUpperCase();
+
+    if (CONFIG.COUPONS[code]) {
+        appliedCoupon = code;
+        alert("Coupon applied: " + code);
+
+        renderProducts();
+        renderCart();
+    } else {
+        alert("Invalid coupon code");
+    }
+}
+
+// =======================
+// CHECKOUT
+// =======================
 
 function checkoutPayPal() {
-    if (cart.length === 0) return alert("Cart empty");
-    alert("Redirecting to PayPal (demo)");
+    if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+    }
+
+    window.open(CONFIG.PAYPAL_LINK, "_blank");
 }
 
 function checkoutBank() {
-    if (cart.length === 0) return alert("Cart empty");
-    alert("Bank Transfer:\nIBAN: XXXX XXXX XXXX");
+    if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+    }
+
+    alert(
+        "Bank Transfer Details:\n\n" +
+        "IBAN: XXXX XXXX XXXX\n" +
+        "BIC: XXXXX\n\n" +
+        "Please include your IGN as reference."
+    );
 }
 
-// ================================
-// UI Effects
-// ================================
+// =======================
+// UI EFFECTS
+// =======================
 
-function pulseCart() {
-    const cartBox = document.getElementById("cart");
-    cartBox.style.transform = "scale(1.05)";
-    setTimeout(() => cartBox.style.transform = "scale(1)", 200);
+// Floating particles
+function createParticles() {
+    for (let i = 0; i < 50; i++) {
+        const p = document.createElement("div");
+
+        p.style.position = "fixed";
+        p.style.width = "5px";
+        p.style.height = "5px";
+        p.style.borderRadius = "50%";
+        p.style.background = "#7cf07c";
+        p.style.left = Math.random() * 100 + "vw";
+        p.style.top = Math.random() * 100 + "vh";
+        p.style.opacity = Math.random();
+
+        const duration = 5 + Math.random() * 10;
+        p.style.animation = `float ${duration}s linear infinite`;
+
+        document.body.appendChild(p);
+    }
+
+    const style = document.createElement("style");
+    style.innerHTML = `
+        @keyframes float {
+            from { transform: translateY(0); }
+            to { transform: translateY(-120vh); }
+        }
+    `;
+    document.head.appendChild(style);
 }
 
-// ================================
-// Init
-// ================================
-
-document.addEventListener("DOMContentLoaded", () => {
-    document.body.style.opacity = "0";
-    document.body.style.transition = "opacity 1s ease";
+// Page fade-in
+function initPage() {
+    document.body.style.opacity = 0;
 
     setTimeout(() => {
-        document.body.style.opacity = "1";
+        document.body.style.transition = "opacity 0.8s ease";
+        document.body.style.opacity = 1;
     }, 100);
+}
 
-    openCategory("ranks");
+// =======================
+// EVENTS
+// =======================
 
-    // Render subscription separately
-    setTimeout(renderSubscription, 300);
+document.addEventListener("DOMContentLoaded", () => {
+    initPage();
+    createParticles();
+    renderProducts();
+    showSection("ranks");
 });
+
+// =======================
+// DEBUG
+// =======================
+
+function debugCart() {
+    console.log("Cart:", cart);
+    console.log("Coupon:", appliedCoupon);
+}
+
+window.debugCart = debugCart;
