@@ -1,9 +1,8 @@
 
 // ================================
-// CherrySMP Store - Enhanced Script
+// CherrySMP Store - Final Upgrade
 // ================================
 
-// Discount
 const DISCOUNT = 0.20;
 
 // Products
@@ -28,25 +27,31 @@ const productsData = {
     ],
     stuff: [
         { name: "Cherry Driller", desc: "Mines 3x3 (5 days)", price: 1.5 },
-        { name: "Cherry Cutter", desc: "Breaks down whole trees", price: 1.5 },
-        { name: "Cherry Eater", desc: "Bulk mines soft blocks", price: 1.5 },
-        { name: "Cherry Subscription", desc: "Monthly perks", price: 10 }
+        { name: "Cherry Cutter", desc: "Breaks trees", price: 1.5 },
+        { name: "Cherry Eater", desc: "Bulk mining", price: 1.5 }
     ]
 };
 
-// Cart
+// Subscription (NOT discounted)
+const subscription = {
+    name: "Cherry Subscription",
+    price: 10,
+    desc: "Monthly perks + weekly crate + Discord benefits"
+};
+
 let cart = [];
 
 // ================================
-// Utility
+// Pricing Logic
 // ================================
 
-function getDiscounted(price) {
+function getDiscounted(price, isSubscription = false) {
+    if (isSubscription) return price; // no discount
     return +(price * (1 - DISCOUNT)).toFixed(2);
 }
 
 // ================================
-// Category UI
+// Category Rendering
 // ================================
 
 function openCategory(category) {
@@ -65,7 +70,7 @@ function openCategory(category) {
         card.className = "product-card";
 
         const oldPrice = item.price;
-        const newPrice = getDiscounted(oldPrice);
+        const newPrice = getDiscounted(oldPrice, false);
 
         card.innerHTML = `
             <h3>${item.name}</h3>
@@ -73,7 +78,7 @@ function openCategory(category) {
 
             <div class="price-block">
                 <span class="price-old">€${oldPrice}</span>
-                <span class="price-arrow"> → </span>
+                <span> → </span>
                 <span class="price-new">€${newPrice}</span>
             </div>
 
@@ -91,7 +96,36 @@ function openCategory(category) {
 }
 
 // ================================
-// Cart System
+// Subscription (SPECIAL UI)
+// ================================
+
+function renderSubscription() {
+    const container = document.getElementById("products");
+
+    const subCard = document.createElement("div");
+    subCard.className = "product-card spring-glow";
+    subCard.style.gridColumn = "1 / -1"; // span full width
+    subCard.style.textAlign = "center";
+    subCard.style.marginTop = "40px";
+
+    subCard.innerHTML = `
+        <h2>⭐ ${subscription.name}</h2>
+        <p>${subscription.desc}</p>
+
+        <div class="price-block">
+            <span class="price-new">€${subscription.price}</span>
+        </div>
+
+        <button onclick="addToCart('${subscription.name}', ${subscription.price})">
+            Subscribe
+        </button>
+    `;
+
+    container.appendChild(subCard);
+}
+
+// ================================
+// Cart
 // ================================
 
 function addToCart(name, price) {
@@ -115,10 +149,9 @@ function renderCart() {
         total += item.price;
 
         const div = document.createElement("div");
-        div.className = "cart-item";
 
         div.innerHTML = `
-            <span>${item.name} - €${item.price}</span>
+            ${item.name} - €${item.price}
             <button onclick="removeItem(${index})">x</button>
         `;
 
@@ -130,79 +163,27 @@ function renderCart() {
 }
 
 // ================================
-// Checkout (Mock)
+// Checkout
 // ================================
 
 function checkoutPayPal() {
-    if (cart.length === 0) {
-        alert("Cart is empty!");
-        return;
-    }
+    if (cart.length === 0) return alert("Cart empty");
     alert("Redirecting to PayPal (demo)");
 }
 
 function checkoutBank() {
-    if (cart.length === 0) {
-        alert("Cart is empty!");
-        return;
-    }
-    alert("Bank Transfer:\nIBAN: XXXX XXXX XXXX\nBIC: XXXXX");
+    if (cart.length === 0) return alert("Cart empty");
+    alert("Bank Transfer:\nIBAN: XXXX XXXX XXXX");
 }
 
 // ================================
 // UI Effects
 // ================================
 
-// Cart pulse animation
 function pulseCart() {
     const cartBox = document.getElementById("cart");
     cartBox.style.transform = "scale(1.05)";
-    setTimeout(() => {
-        cartBox.style.transform = "scale(1)";
-    }, 200);
-}
-
-// Background floating particles (spring vibe)
-function createParticles() {
-    const body = document.body;
-
-    for (let i = 0; i < 40; i++) {
-        const p = document.createElement("div");
-
-        p.style.position = "fixed";
-        p.style.width = "6px";
-        p.style.height = "6px";
-        p.style.borderRadius = "50%";
-        p.style.background = "#7cf07c";
-        p.style.left = Math.random() * 100 + "vw";
-        p.style.top = Math.random() * 100 + "vh";
-        p.style.opacity = Math.random();
-
-        const duration = 8 + Math.random() * 10;
-
-        p.style.animation = `float ${duration}s linear infinite`;
-
-        body.appendChild(p);
-    }
-
-    const style = document.createElement("style");
-    style.innerHTML = `
-        @keyframes float {
-            from { transform: translateY(0px); }
-            to { transform: translateY(-120vh); }
-        }
-    `;
-    document.head.appendChild(style);
-}
-
-// Smooth entrance animation
-function initAnimations() {
-    document.body.style.opacity = "0";
-    document.body.style.transition = "opacity 1s ease";
-
-    setTimeout(() => {
-        document.body.style.opacity = "1";
-    }, 100);
+    setTimeout(() => cartBox.style.transform = "scale(1)", 200);
 }
 
 // ================================
@@ -210,19 +191,15 @@ function initAnimations() {
 // ================================
 
 document.addEventListener("DOMContentLoaded", () => {
-    initAnimations();
-    createParticles();
+    document.body.style.opacity = "0";
+    document.body.style.transition = "opacity 1s ease";
 
-    // Default open ranks
+    setTimeout(() => {
+        document.body.style.opacity = "1";
+    }, 100);
+
     openCategory("ranks");
+
+    // Render subscription separately
+    setTimeout(renderSubscription, 300);
 });
-
-// ================================
-// Debug helpers
-// ================================
-
-function debugCart() {
-    console.log(cart);
-}
-
-window.debugCart = debugCart;
