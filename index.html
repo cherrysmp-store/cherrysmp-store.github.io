@@ -5,124 +5,131 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CherrySMP Store</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-    body {
-        margin: 0;
-        font-family: 'Poppins', sans-serif;
-        background: linear-gradient(135deg, #d4f8d4, #fff0f5);
-        color: #333;
-        overflow-x: hidden;
-    }
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #1f2a1f, #2c3e50);
+    color: #e8f5e9;
+    min-height: 100vh;
+    overflow-y: auto;
+}
 
-    header {
-        text-align: center;
-        padding: 40px 20px;
-        background: rgba(255,255,255,0.6);
-        backdrop-filter: blur(10px);
-        border-bottom: 2px solid #a8e6a3;
-    }
+/* Header */
+header {
+    text-align: center;
+    padding: 30px;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #3a5a40;
+}
 
-    h1 {
-        font-size: 3em;
-        color: #ff6fa5;
-        text-shadow: 0 0 10px rgba(255, 111, 165, 0.6);
-    }
+h1 {
+    color: #7cf07c;
+    text-shadow: 0 0 10px rgba(124,240,124,0.4);
+}
 
-    .sale-banner {
-        background: #ffb6c1;
-        color: white;
-        padding: 10px;
-        font-weight: bold;
-        animation: glow 2s infinite alternate;
-    }
+/* Sale banner */
+.sale-banner {
+    text-align: center;
+    padding: 10px;
+    background: linear-gradient(90deg, #4caf50, #81c784);
+    font-weight: bold;
+    color: white;
+}
 
-    @keyframes glow {
-        from { box-shadow: 0 0 10px #ffb6c1; }
-        to { box-shadow: 0 0 25px #ff6fa5; }
-    }
+/* Layout */
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    padding: 40px;
+}
 
-    .container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-        padding: 40px;
-    }
+/* Cards */
+.card {
+    background: rgba(255,255,255,0.05);
+    border-radius: 15px;
+    padding: 20px;
+    border: 1px solid rgba(124,240,124,0.2);
+    transition: 0.3s;
+    cursor: pointer;
+}
 
-    .card {
-        background: rgba(255,255,255,0.8);
-        border-radius: 15px;
-        padding: 20px;
-        transition: transform 0.3s, box-shadow 0.3s;
-        cursor: pointer;
-        border: 2px solid #c8f7c5;
-    }
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    border-color: #7cf07c;
+}
 
-    .card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
+/* Product cards */
+.product-card {
+    background: rgba(255,255,255,0.07);
+    border-radius: 15px;
+    padding: 15px;
+    border: 1px solid rgba(124,240,124,0.2);
+    transition: 0.3s;
+}
 
-    .card h2 {
-        color: #6fcf97;
-    }
+.product-card:hover {
+    transform: scale(1.03);
+}
 
-    .hidden {
-        display: none;
-    }
+/* Highlight spring item */
+.spring-glow {
+    border: 2px solid #7cf07c;
+    box-shadow: 0 0 15px rgba(124,240,124,0.4);
+}
 
-    .product {
-        padding: 10px;
-        margin: 10px 0;
-        border-bottom: 1px solid #ddd;
-    }
+/* Prices */
+.price-old {
+    text-decoration: line-through;
+    opacity: 0.6;
+    font-size: 0.9em;
+}
 
-    button {
-        background: #6fcf97;
-        border: none;
-        padding: 8px 12px;
-        color: white;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: 0.2s;
-    }
+.price-new {
+    color: #7cf07c;
+    font-weight: bold;
+    font-size: 1.2em;
+}
 
-    button:hover {
-        background: #57b87f;
-    }
+/* Buttons */
+button {
+    background: #7cf07c;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-weight: bold;
+}
 
-    #cart {
-        position: fixed;
-        right: 20px;
-        top: 20px;
-        width: 300px;
-        background: white;
-        border-radius: 15px;
-        padding: 15px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-    }
+button:hover {
+    background: #5edc5e;
+}
 
-    #cart h3 {
-        margin-top: 0;
-    }
+/* Cart */
+#cart {
+    position: fixed;
+    right: 20px;
+    top: 20px;
+    width: 280px;
+    background: rgba(0,0,0,0.6);
+    padding: 15px;
+    border-radius: 15px;
+    border: 1px solid #3a5a40;
+}
 
-    .checkout {
-        margin-top: 10px;
-    }
+#products {
+    padding: 40px;
+}
 
-    .spring-glow {
-        animation: springPulse 2s infinite;
-        border: 2px solid #7cf07c;
-    }
-
-    @keyframes springPulse {
-        0% { box-shadow: 0 0 5px #7cf07c; }
-        50% { box-shadow: 0 0 20px #aaffaa; }
-        100% { box-shadow: 0 0 5px #7cf07c; }
-    }
-
+.hidden {
+    display: none;
+}
 </style>
 </head>
 
@@ -137,18 +144,10 @@
 </div>
 
 <div class="container">
-    <div class="card" onclick="openCategory('ranks')">
-        <h2>Ranks</h2>
-    </div>
-    <div class="card" onclick="openCategory('crates')">
-        <h2>Crates</h2>
-    </div>
-    <div class="card" onclick="openCategory('bundles')">
-        <h2>Bundles</h2>
-    </div>
-    <div class="card" onclick="openCategory('stuff')">
-        <h2>Stuff</h2>
-    </div>
+    <div class="card" onclick="openCategory('ranks')"><h2>Ranks</h2></div>
+    <div class="card" onclick="openCategory('crates')"><h2>Crates</h2></div>
+    <div class="card" onclick="openCategory('bundles')"><h2>Bundles</h2></div>
+    <div class="card" onclick="openCategory('stuff')"><h2>Stuff</h2></div>
 </div>
 
 <div id="products" class="container hidden"></div>
@@ -157,11 +156,8 @@
     <h3>🛒 Cart</h3>
     <div id="cart-items"></div>
     <p id="total"></p>
-
-    <div class="checkout">
-        <button onclick="checkoutPayPal()">PayPal</button>
-        <button onclick="checkoutBank()">Bank Transfer</button>
-    </div>
+    <button onclick="checkoutPayPal()">PayPal</button>
+    <button onclick="checkoutBank()">Bank Transfer</button>
 </div>
 
 <script src="script.js"></script>
